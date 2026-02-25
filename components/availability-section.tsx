@@ -13,10 +13,6 @@ interface UnitInfo {
   status: UnitStatus;
 }
 
-// ========================================
-// EASY TO CHANGE STATUS:
-// Just change "available" to "reserved" or "sold"
-// ========================================
 const units: Record<"A" | "B", UnitInfo> = {
   A: {
     name: "A",
@@ -38,36 +34,58 @@ const units: Record<"A" | "B", UnitInfo> = {
 
 const statusConfig: Record<
   UnitStatus,
-  { label: string; overlayColor: string; badgeBg: string; badgeText: string; dotColor: string }
+  { label: string; color: string; badgeBg: string; badgeText: string; dotColor: string }
 > = {
   available: {
-    label: "Dostepny",
-    overlayColor: "bg-green-500/25",
+    label: "Dost\u0119pny",
+    color: "rgba(34,197,94,0.35)",
     badgeBg: "bg-green-600",
     badgeText: "text-white",
     dotColor: "bg-green-400",
   },
   reserved: {
     label: "Zarezerwowany",
-    overlayColor: "bg-amber-500/25",
+    color: "rgba(245,158,11,0.35)",
     badgeBg: "bg-amber-500",
     badgeText: "text-white",
     dotColor: "bg-amber-400",
   },
   sold: {
     label: "Sprzedany",
-    overlayColor: "bg-red-500/25",
+    color: "rgba(239,68,68,0.35)",
     badgeBg: "bg-red-600",
     badgeText: "text-white",
     dotColor: "bg-red-400",
   },
 };
 
+const statusColorActive: Record<UnitStatus, string> = {
+  available: "rgba(34,197,94,0.55)",
+  reserved: "rgba(245,158,11,0.55)",
+  sold: "rgba(239,68,68,0.55)",
+};
+
 const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
-  { status: "available", label: "Dostepny", dotColor: "bg-green-500" },
+  { status: "available", label: "Dost\u0119pny", dotColor: "bg-green-500" },
   { status: "reserved", label: "Zarezerwowany", dotColor: "bg-amber-500" },
   { status: "sold", label: "Sprzedany", dotColor: "bg-red-500" },
 ];
+
+/*
+ * Clip-path polygons tracing each half of the house.
+ * Coordinates are % of the image container.
+ * The house center seam is at ~50%.
+ * Left segment (A): from left wall up to the gable peak, down to base.
+ * Right segment (B): from center seam up to the right gable peak, down to right wall.
+ */
+
+// Segment A (left half of house)
+const clipA =
+  "polygon(5% 85%, 5% 48%, 8% 48%, 8% 28%, 26% 13%, 44% 28%, 44% 22%, 50% 17%, 50% 85%)";
+
+// Segment B (right half of house)
+const clipB =
+  "polygon(50% 85%, 50% 17%, 56% 22%, 56% 28%, 74% 13%, 92% 28%, 92% 48%, 95% 48%, 95% 85%)";
 
 function InfoCard({
   unit,
@@ -83,13 +101,15 @@ function InfoCard({
   return (
     <div
       className={`transition-all duration-500 ${
-        isActive
-          ? "translate-y-0 opacity-100"
-          : "translate-y-2 opacity-60"
+        isActive ? "translate-y-0 opacity-100" : "translate-y-2 opacity-60"
       }`}
     >
       <div className={`${side === "left" ? "text-left" : "text-right"}`}>
-        <div className={`flex items-center gap-2.5 ${side === "right" ? "justify-end" : ""}`}>
+        <div
+          className={`flex items-center gap-2.5 ${
+            side === "right" ? "justify-end" : ""
+          }`}
+        >
           <h3 className="font-serif text-2xl font-bold text-foreground md:text-3xl">
             {unit.label}
           </h3>
@@ -113,9 +133,7 @@ function InfoCard({
               }`}
             >
               <span className="text-muted-foreground">{item.label}</span>
-              <span className="font-semibold text-foreground">
-                {item.value}
-              </span>
+              <span className="font-semibold text-foreground">{item.value}</span>
             </div>
           ))}
         </div>
@@ -127,19 +145,44 @@ function InfoCard({
 export function AvailabilitySection() {
   const [activeUnit, setActiveUnit] = useState<"A" | "B" | null>(null);
 
+  const getOverlayStyle = (
+    segment: "A" | "B"
+  ): React.CSSProperties => {
+    const unit = units[segment];
+    const isActive = activeUnit === segment;
+    const isIdle = activeUnit === null;
+    const clip = segment === "A" ? clipA : clipB;
+
+    return {
+      position: "absolute",
+      inset: 0,
+      clipPath: clip,
+      WebkitClipPath: clip,
+      backgroundColor: isActive
+        ? statusColorActive[unit.status]
+        : isIdle
+        ? statusConfig[unit.status].color
+        : "rgba(0,0,0,0.05)",
+      transition: "background-color 0.5s ease",
+      cursor: "pointer",
+    };
+  };
+
   return (
     <section id="dostepnosc" className="py-24 lg:py-32 bg-muted/30">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
-            {"Dostepnosc"}
+            {"Dost\u0119pno\u015b\u0107"}
           </p>
           <h2 className="mt-4 font-serif text-3xl font-bold text-foreground md:text-5xl text-balance">
-            {"Wybierz swoj segment"}
+            {"Wybierz sw\u00f3j segment"}
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            {"Kazdy segment to niezalezna jednostka mieszkalna z osobnym wejsciem, garazem i ogrodem. Najedz na segment, aby poznac szczegoly."}
+            {
+              "Ka\u017cdy segment to niezale\u017cna jednostka mieszkalna z osobnym wej\u015bciem, gara\u017cem i ogrodem. Naje\u017ad\u017c na segment, aby pozna\u0107 szczeg\u00f3\u0142y."
+            }
           </p>
         </div>
 
@@ -155,91 +198,78 @@ export function AvailabilitySection() {
           ))}
         </div>
 
-        {/* Interactive house image */}
-        <div className="mx-auto mt-16 max-w-5xl">
+        {/* Interactive house image - constrained width */}
+        <div className="mx-auto mt-16 max-w-3xl">
           <div
-            className="relative mx-auto overflow-hidden shadow-2xl"
+            className="relative mx-auto overflow-hidden rounded-lg"
             onMouseLeave={() => setActiveUnit(null)}
           >
             {/* House image */}
             <img
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
-              alt="Wizualizacja architektoniczna zabudowy blizniacze - widok z przodu"
+              alt="Wizualizacja architektoniczna zabudowy bli\u017aniaczej - widok z przodu"
               className="block w-full"
-              crossOrigin="anonymous"
+              draggable={false}
             />
 
-            {/* Segment A overlay - left half */}
+            {/* Segment A overlay - clipped to left half of house */}
             <button
-              className="absolute inset-y-0 left-0 w-1/2 cursor-pointer border-0 bg-transparent p-0 focus:outline-none group"
+              type="button"
+              className="absolute inset-0 border-0 bg-transparent p-0 focus:outline-none"
+              style={getOverlayStyle("A")}
               onMouseEnter={() => setActiveUnit("A")}
               onClick={() =>
                 setActiveUnit((prev) => (prev === "A" ? null : "A"))
               }
-              aria-label="Segment A - Dostepny"
-            >
-              {/* Color tint overlay */}
-              <div
-                className={`absolute inset-0 transition-all duration-500 ${
-                  statusConfig[units.A.status].overlayColor
-                } ${
-                  activeUnit === "A"
-                    ? "opacity-80"
-                    : activeUnit === null
-                    ? "opacity-40"
-                    : "opacity-20"
-                }`}
-              />
-              {/* Segment label on the house */}
-              <div
-                className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-                  activeUnit === "A" ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                }`}
-              >
-                <div className="bg-black/60 backdrop-blur-sm px-6 py-3">
-                  <span className="text-white text-lg font-bold tracking-wide">
-                    SEGMENT A
-                  </span>
-                </div>
-              </div>
-              {/* Divider line */}
-              <div className="absolute right-0 top-0 h-full w-px bg-white/40" />
-            </button>
+              aria-label="Segment A - Dost\u0119pny"
+            />
 
-            {/* Segment B overlay - right half */}
+            {/* Segment B overlay - clipped to right half of house */}
             <button
-              className="absolute inset-y-0 right-0 w-1/2 cursor-pointer border-0 bg-transparent p-0 focus:outline-none group"
+              type="button"
+              className="absolute inset-0 border-0 bg-transparent p-0 focus:outline-none"
+              style={getOverlayStyle("B")}
               onMouseEnter={() => setActiveUnit("B")}
               onClick={() =>
                 setActiveUnit((prev) => (prev === "B" ? null : "B"))
               }
               aria-label="Segment B - Zarezerwowany"
+            />
+
+            {/* Segment A label */}
+            <div
+              className={`pointer-events-none absolute left-[22%] top-[45%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+                activeUnit === "A"
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
+              }`}
             >
-              {/* Color tint overlay */}
-              <div
-                className={`absolute inset-0 transition-all duration-500 ${
-                  statusConfig[units.B.status].overlayColor
-                } ${
-                  activeUnit === "B"
-                    ? "opacity-80"
-                    : activeUnit === null
-                    ? "opacity-40"
-                    : "opacity-20"
-                }`}
-              />
-              {/* Segment label on the house */}
-              <div
-                className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
-                  activeUnit === "B" ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                }`}
-              >
-                <div className="bg-black/60 backdrop-blur-sm px-6 py-3">
-                  <span className="text-white text-lg font-bold tracking-wide">
-                    SEGMENT B
-                  </span>
-                </div>
+              <div className="bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded">
+                <span className="text-white text-sm font-bold tracking-widest uppercase">
+                  Segment A
+                </span>
               </div>
-            </button>
+            </div>
+
+            {/* Segment B label */}
+            <div
+              className={`pointer-events-none absolute left-[78%] top-[45%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+                activeUnit === "B"
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-90"
+              }`}
+            >
+              <div className="bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded">
+                <span className="text-white text-sm font-bold tracking-widest uppercase">
+                  Segment B
+                </span>
+              </div>
+            </div>
+
+            {/* Center divider line on the house */}
+            <div
+              className="pointer-events-none absolute top-[17%] bottom-[15%] left-1/2 w-px bg-white/50"
+            />
           </div>
 
           {/* Unit info cards below the image */}
@@ -257,10 +287,9 @@ export function AvailabilitySection() {
           </div>
         </div>
 
-        {/* Divider label */}
         <div className="mx-auto mt-10 max-w-3xl text-center">
           <p className="text-xs uppercase tracking-widest text-muted-foreground/60">
-            {"Zabudowa blizniacza - dwa niezalezne segmenty"}
+            {"Zabudowa bli\u017aniacza \u2014 dwa niezale\u017cne segmenty"}
           </p>
         </div>
       </div>
