@@ -9,7 +9,7 @@ export function HeroSection() {
       <div className="absolute inset-0">
         <img
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
-          alt="Nowoczesny dom bliźniaczy - wizualizacja architektoniczna"
+          alt="VMD Development - wizualizacja architektoniczna"
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
@@ -21,16 +21,19 @@ export function HeroSection() {
           VMD Development
         </p>
         <h1 className="font-serif text-4xl font-bold leading-tight text-primary-foreground md:text-6xl lg:text-7xl text-balance">
-          Nowoczesny dom w zabudowie bliźniaczej
+          {
+            "Tworzymy przestrzenie,\nkt\u00f3re inspiruj\u0105"
+          }
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-primary-foreground/80 md:text-xl text-pretty">
-          Komfort, nowoczesna architektura i prestiżowa lokalizacja
+          Nowoczesna architektura, najwy\u017csze standardy wykonania i
+          dba\u0142o\u015b\u0107 o ka\u017cdy detal. Poznaj nasze inwestycje.
         </p>
         <a
-          href="#dostepnosc"
+          href="#projekty"
           className="mt-10 inline-flex items-center gap-2 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
         >
-          Sprawdź dostępność
+          Zobacz projekty
         </a>
       </div>
 

@@ -1,47 +1,43 @@
+import Link from "next/link";
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="font-serif text-lg font-bold text-foreground">
               VMD
             </span>
             <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
               Development
             </span>
-          </div>
+          </Link>
 
           <div className="flex items-center gap-8">
-            <a
-              href="#o-inwestycji"
+            <Link
+              href="/#projekty"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              O inwestycji
-            </a>
-            <a
-              href="#galeria"
+              Projekty
+            </Link>
+            <Link
+              href="/projects/wola-house"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
-              Galeria
-            </a>
-            <a
-              href="#dostepnosc"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Dostępność
-            </a>
-            <a
-              href="#kontakt"
+              Wola House
+            </Link>
+            <Link
+              href="/#kontakt"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Kontakt
-            </a>
+            </Link>
           </div>
 
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} VMD Development. Wszelkie prawa
-            zastrzeżone.
+            zastrze\u017cone.
           </p>
         </div>
       </div>

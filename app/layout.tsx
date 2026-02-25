@@ -14,9 +14,9 @@ const _playfairDisplay = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "VMD Development | Nowoczesny dom w zabudowie bliźniaczej",
+  title: "VMD Development | Nowoczesna architektura, presti\u017cowe inwestycje",
   description:
-    "Komfort, nowoczesna architektura i prestiżowa lokalizacja. Poznaj naszą inwestycję - nowoczesny dom bliźniaczy od VMD Development.",
+    "VMD Development - tworzymy nowoczesne inwestycje mieszkaniowe o najwy\u017cszym standardzie. Poznaj nasze projekty.",
   generator: "v0.app",
   icons: {
     icon: [
