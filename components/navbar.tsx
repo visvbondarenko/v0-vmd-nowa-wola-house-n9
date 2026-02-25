@@ -64,7 +64,7 @@ export function Navbar() {
           className={`md:hidden transition-colors ${
             scrolled ? "text-foreground" : "text-primary-foreground"
           }`}
-          aria-label={mobileOpen ? "Zamknij menu" : "Otw\u00f3rz menu"}
+          aria-label={mobileOpen ? "Zamknij menu" : "Otwórz menu"}
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>

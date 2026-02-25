@@ -5,27 +5,27 @@ const projects = [
   {
     slug: "wola-house",
     title: "Wola House",
-    subtitle: "Zabudowa bli\u017aniacza",
+    subtitle: "Zabudowa bliźniacza",
     location: "Wola, Warszawa",
-    status: "W sprzeda\u017cy",
+    status: "W sprzedaży",
     statusColor: "bg-green-600",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg",
     description:
-      "Nowoczesny dom w zabudowie bli\u017aniaczej. Po\u0142\u0105czenie ceg\u0142y klinkierowej z ciemn\u0105 elewacj\u0105 metalow\u0105. Dwa niezale\u017cne segmenty, ka\u017cdy po 144 m\u00B2.",
+      "Nowoczesny dom w zabudowie bliźniaczej. Połączenie cegły klinkierowej z ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 144 m².",
     available: true,
   },
   {
     slug: null,
     title: "Nowy projekt",
-    subtitle: "Wkr\u00f3tce",
+    subtitle: "Wkrótce",
     location: "Lokalizacja w przygotowaniu",
-    status: "Wkr\u00f3tce",
+    status: "Wkrótce",
     statusColor: "bg-muted-foreground",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-02-25%20at%2017.31.26-dUOOVqlr5rlGEsbSrCK7Wx8RYIzTzh.png",
     description:
-      "Kolejna inwestycja VMD Development jest w fazie planowania. \u015aled\u017a nasze aktualno\u015bci, aby nie przegapi\u0107 premiery.",
+      "Kolejna inwestycja VMD Development jest w fazie planowania. Śledź nasze aktualności, aby nie przegapić premiery.",
     available: false,
   },
 ];
@@ -43,8 +43,7 @@ export function ProjectsSection() {
             Projekty
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            Tworzymy przestrzenie, w kt&oacute;rych architektura spotyka si\u0119
-            z komfortem. Poznaj nasze aktualne i nadchodz\u0105ce inwestycje.
+            {"Tworzymy przestrzenie, w których architektura spotyka się z komfortem. Poznaj nasze aktualne i nadchodzące inwestycje."}
           </p>
         </div>
 
@@ -102,12 +101,12 @@ export function ProjectsSection() {
                     href={`/projects/${project.slug}`}
                     className="mt-6 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary transition-all duration-300 group-hover:gap-3"
                   >
-                    {"Dowiedz si\u0119 wi\u0119cej"}
+                    {"Dowiedz się więcej"}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 ) : (
                   <p className="mt-6 text-sm font-medium text-muted-foreground/60 uppercase tracking-widest">
-                    {"Informacje wkr\u00f3tce"}
+                    {"Informacje wkrótce"}
                   </p>
                 )}
               </div>
