@@ -79,15 +79,16 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
  * Right segment (B): from center seam up to the right gable peak, down to right wall.
  */
 
-// Segment A (left half of house) – traces from bottom-left of house,
-// up the left wall, across the left gable peak, down to center seam at ~47%.
+// Segment A (left / green outline): bottom-left wall → up left wall →
+// left gable peak → down to center seam → straight down to bottom.
+// Traced from the user-annotated screenshot.
 const clipA =
-  "polygon(4% 80%, 4% 50%, 7% 50%, 7% 32%, 25% 14%, 42% 31%, 42% 25%, 47% 20%, 47% 80%)";
+  "polygon(3% 93%, 3% 55%, 6% 55%, 6% 37%, 24% 13%, 41% 31%, 43% 25%, 43% 93%)";
 
-// Segment B (right half of house) – from center seam at ~47%,
-// up the right gable peak, down the right wall to bottom-right.
+// Segment B (right / red outline): center seam → up to right gable peak →
+// down right side → right wall → bottom-right.
 const clipB =
-  "polygon(47% 80%, 47% 20%, 52% 25%, 52% 31%, 70% 12%, 90% 32%, 90% 50%, 94% 50%, 94% 80%)";
+  "polygon(43% 93%, 43% 25%, 46% 20%, 48% 27%, 69% 9%, 91% 30%, 93% 48%, 96% 48%, 96% 93%)";
 
 function InfoCard({
   unit,
@@ -240,7 +241,7 @@ export function AvailabilitySection() {
 
             {/* Segment A label */}
             <div
-              className={`pointer-events-none absolute left-[25%] top-[50%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[23%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "A"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -255,7 +256,7 @@ export function AvailabilitySection() {
 
             {/* Segment B label */}
             <div
-              className={`pointer-events-none absolute left-[72%] top-[50%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[70%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "B"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -270,7 +271,7 @@ export function AvailabilitySection() {
 
             {/* Center divider line on the house */}
             <div
-              className="pointer-events-none absolute top-[20%] bottom-[20%] left-[47%] w-px bg-white/50"
+              className="pointer-events-none absolute top-[25%] bottom-[7%] left-[43%] w-px bg-white/50"
             />
           </div>
 
