@@ -22,7 +22,8 @@ const projects = [
     location: "Lokalizacja w przygotowaniu",
     status: "Wkr\u00f3tce",
     statusColor: "bg-muted-foreground",
-    image: null,
+    image:
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-02-25%20at%2017.31.26-dUOOVqlr5rlGEsbSrCK7Wx8RYIzTzh.png",
     description:
       "Kolejna inwestycja VMD Development jest w fazie planowania. \u015aled\u017a nasze aktualno\u015bci, aby nie przegapi\u0107 premiery.",
     available: false,
