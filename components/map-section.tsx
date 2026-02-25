@@ -13,9 +13,7 @@ export function MapSection() {
             Gdzie nas znajdziesz
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            Presti\u017cowa lokalizacja z doskona\u0142ym dost\u0119pem do
-            komunikacji, teren\u00f3w zielonych i pe\u0142nej infrastruktury
-            miejskiej.
+            {"Prestiżowa lokalizacja z doskonałym dostępem do komunikacji, terenów zielonych i pełnej infrastruktury miejskiej."}
           </p>
         </div>
 
@@ -30,12 +28,12 @@ export function MapSection() {
               },
               {
                 title: "Komunikacja",
-                detail: "Doskona\u0142y dost\u0119p do drogi krajowej i komunikacji miejskiej",
+                detail: "Doskonały dostęp do drogi krajowej i komunikacji miejskiej",
               },
               {
                 title: "Otoczenie",
                 detail:
-                  "Spokojna okolica, tereny zielone, pe\u0142na infrastruktura",
+                  "Spokojna okolica, tereny zielone, pełna infrastruktura",
               },
             ].map((item) => (
               <div

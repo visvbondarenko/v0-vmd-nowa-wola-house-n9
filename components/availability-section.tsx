@@ -17,7 +17,7 @@ const units: Record<"A" | "B", UnitInfo> = {
   A: {
     name: "A",
     label: "Segment A",
-    area: "144 m\u00B2",
+    area: "144 m²",
     rooms: "5 pokoi",
     floors: "2 kondygnacje",
     status: "available",
@@ -25,7 +25,7 @@ const units: Record<"A" | "B", UnitInfo> = {
   B: {
     name: "B",
     label: "Segment B",
-    area: "144 m\u00B2",
+    area: "144 m²",
     rooms: "5 pokoi",
     floors: "2 kondygnacje",
     status: "reserved",
@@ -37,7 +37,7 @@ const statusConfig: Record<
   { label: string; color: string; badgeBg: string; badgeText: string; dotColor: string }
 > = {
   available: {
-    label: "Dost\u0119pny",
+    label: "Dostępny",
     color: "rgba(34,197,94,0.35)",
     badgeBg: "bg-green-600",
     badgeText: "text-white",
@@ -66,7 +66,7 @@ const statusColorActive: Record<UnitStatus, string> = {
 };
 
 const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
-  { status: "available", label: "Dost\u0119pny", dotColor: "bg-green-500" },
+  { status: "available", label: "Dostępny", dotColor: "bg-green-500" },
   { status: "reserved", label: "Zarezerwowany", dotColor: "bg-amber-500" },
   { status: "sold", label: "Sprzedany", dotColor: "bg-red-500" },
 ];
@@ -177,15 +177,13 @@ export function AvailabilitySection() {
         {/* Header */}
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
-            {"Dost\u0119pno\u015b\u0107"}
+            {"Dostępność"}
           </p>
           <h2 className="mt-4 font-serif text-3xl font-bold text-foreground md:text-5xl text-balance">
-            {"Wybierz sw\u00f3j segment"}
+            {"Wybierz swój segment"}
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            {
-              "Ka\u017cdy segment to niezale\u017cna jednostka mieszkalna z osobnym wej\u015bciem, gara\u017cem i ogrodem. Naje\u017ad\u017c na segment, aby pozna\u0107 szczeg\u00f3\u0142y."
-            }
+            {"Każdy segment to niezależna jednostka mieszkalna z osobnym wejściem, garażem i ogrodem. Najedź na segment, aby poznać szczegóły."}
           </p>
         </div>
 

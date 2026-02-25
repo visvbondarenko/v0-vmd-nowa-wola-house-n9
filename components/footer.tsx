@@ -37,7 +37,7 @@ export function Footer() {
 
           <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} VMD Development. Wszelkie prawa
-            zastrze\u017cone.
+            zastrzeżone.
           </p>
         </div>
       </div>

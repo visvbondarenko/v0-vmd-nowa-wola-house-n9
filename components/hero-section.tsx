@@ -20,14 +20,11 @@ export function HeroSection() {
         <p className="mb-6 text-sm font-medium uppercase tracking-[0.3em] text-primary-foreground/60">
           VMD Development
         </p>
-        <h1 className="font-serif text-4xl font-bold leading-tight text-primary-foreground md:text-6xl lg:text-7xl text-balance">
-          {
-            "Tworzymy przestrzenie,\nkt\u00f3re inspiruj\u0105"
-          }
+        <h1 className="font-serif text-4xl font-bold leading-tight text-primary-foreground md:text-6xl lg:text-7xl text-balance whitespace-pre-line">
+          {"Tworzymy przestrzenie,\nktóre inspirują"}
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-primary-foreground/80 md:text-xl text-pretty">
-          Nowoczesna architektura, najwy\u017csze standardy wykonania i
-          dba\u0142o\u015b\u0107 o ka\u017cdy detal. Poznaj nasze inwestycje.
+          {"Nowoczesna architektura, najwyższe standardy wykonania i dbałość o każdy detal. Poznaj nasze inwestycje."}
         </p>
         <a
           href="#projekty"
