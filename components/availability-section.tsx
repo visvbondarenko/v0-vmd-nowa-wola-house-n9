@@ -79,13 +79,15 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
  * Right segment (B): from center seam up to the right gable peak, down to right wall.
  */
 
-// Segment A (left half of house)
+// Segment A (left half of house) – traces from bottom-left of house,
+// up the left wall, across the left gable peak, down to center seam at ~47%.
 const clipA =
-  "polygon(5% 85%, 5% 48%, 8% 48%, 8% 28%, 26% 13%, 44% 28%, 44% 22%, 50% 17%, 50% 85%)";
+  "polygon(4% 80%, 4% 50%, 7% 50%, 7% 32%, 25% 14%, 42% 31%, 42% 25%, 47% 20%, 47% 80%)";
 
-// Segment B (right half of house)
+// Segment B (right half of house) – from center seam at ~47%,
+// up the right gable peak, down the right wall to bottom-right.
 const clipB =
-  "polygon(50% 85%, 50% 17%, 56% 22%, 56% 28%, 74% 13%, 92% 28%, 92% 48%, 95% 48%, 95% 85%)";
+  "polygon(47% 80%, 47% 20%, 52% 25%, 52% 31%, 70% 12%, 90% 32%, 90% 50%, 94% 50%, 94% 80%)";
 
 function InfoCard({
   unit,
@@ -238,7 +240,7 @@ export function AvailabilitySection() {
 
             {/* Segment A label */}
             <div
-              className={`pointer-events-none absolute left-[22%] top-[45%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[25%] top-[50%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "A"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -253,7 +255,7 @@ export function AvailabilitySection() {
 
             {/* Segment B label */}
             <div
-              className={`pointer-events-none absolute left-[78%] top-[45%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[72%] top-[50%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "B"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -268,7 +270,7 @@ export function AvailabilitySection() {
 
             {/* Center divider line on the house */}
             <div
-              className="pointer-events-none absolute top-[17%] bottom-[15%] left-1/2 w-px bg-white/50"
+              className="pointer-events-none absolute top-[20%] bottom-[20%] left-[47%] w-px bg-white/50"
             />
           </div>
 
