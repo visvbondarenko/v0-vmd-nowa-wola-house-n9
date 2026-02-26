@@ -6,13 +6,13 @@ const projects = [
     slug: "wola-house",
     title: "Wola House",
     subtitle: "Zabudowa bliźniacza",
-    location: "Wola, Warszawa",
+    location: "Nowa Wola, Warszawa",
     status: "W sprzedaży",
     statusColor: "bg-green-600",
     image:
       "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg",
     description:
-      "Nowoczesny dom w zabudowie bliźniaczej. Połączenie cegły klinkierowej z ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 144 m².",
+      "Nowoczesny dom w zabudowie bliźniaczej. Połączenie cegły klinkierowej z ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 130 m².",
     available: true,
   },
   {
@@ -49,15 +49,13 @@ export function ProjectsSection() {
 
         {/* Projects grid */}
         <div className="mt-16 grid gap-8 md:grid-cols-2">
-          {projects.map((project) => (
-            <div
-              key={project.title}
-              className={`group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 ${
-                project.available
-                  ? "hover:border-primary/30 hover:shadow-xl"
-                  : "opacity-70"
-              }`}
-            >
+          {projects.map((project) =>
+            project.available && project.slug ? (
+              <Link
+                key={project.title}
+                href={`/projects/${project.slug}`}
+                className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-xl"
+              >
               {/* Image */}
               <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                 {project.image ? (
@@ -96,22 +94,61 @@ export function ProjectsSection() {
                   {project.description}
                 </p>
 
-                {project.available && project.slug ? (
-                  <Link
-                    href={`/projects/${project.slug}`}
-                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary transition-all duration-300 group-hover:gap-3"
-                  >
-                    {"Dowiedz się więcej"}
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
+                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary transition-all duration-300 group-hover:gap-3">
+                  {"Dowiedz się więcej"}
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            </Link>
+          ) : (
+            <div
+              key={project.title}
+              className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 opacity-70"
+            >
+              {/* Image */}
+              <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                {project.image ? (
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
                 ) : (
-                  <p className="mt-6 text-sm font-medium text-muted-foreground/60 uppercase tracking-widest">
-                    {"Informacje wkrótce"}
-                  </p>
+                  <div className="flex h-full w-full items-center justify-center bg-secondary">
+                    <Clock className="h-12 w-12 text-muted-foreground/40" />
+                  </div>
                 )}
+                {/* Status badge */}
+                <div className="absolute top-4 left-4">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white ${project.statusColor}`}
+                  >
+                    {project.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="flex flex-1 flex-col p-8">
+                <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                  {project.location}
+                </p>
+                <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
+                  {project.title}
+                </h3>
+                <p className="mt-1 text-sm font-medium text-primary">
+                  {project.subtitle}
+                </p>
+                <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                  {project.description}
+                </p>
+                <p className="mt-6 text-sm font-medium text-muted-foreground/60 uppercase tracking-widest">
+                  {"Informacje wkrótce"}
+                </p>
               </div>
             </div>
-          ))}
+          )
+        )}
         </div>
       </div>
     </section>

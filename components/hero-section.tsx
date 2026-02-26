@@ -17,9 +17,6 @@ export function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
-        <p className="mb-6 text-sm font-medium uppercase tracking-[0.3em] text-primary-foreground/60">
-          VMD Development
-        </p>
         <h1 className="font-serif text-4xl font-bold leading-tight text-primary-foreground md:text-6xl lg:text-7xl text-balance whitespace-pre-line">
           {"Tworzymy przestrzenie,\nktóre inspirują"}
         </h1>

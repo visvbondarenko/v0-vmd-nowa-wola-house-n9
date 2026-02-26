@@ -27,8 +27,8 @@ export function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 lg:px-6">
+        <Link href="/" className="flex items-center gap-2 -ml-2">
           <span
             className={`font-serif text-xl font-bold tracking-wide transition-colors duration-500 ${
               scrolled ? "text-foreground" : "text-primary-foreground"

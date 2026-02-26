@@ -38,32 +38,38 @@ export function GallerySection() {
             Galeria
           </p>
           <h2 className="mt-4 font-serif text-3xl font-bold text-foreground md:text-5xl text-balance">
-            Wizualizacje architektoniczne
+            Wizualizacje
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            Każdy widok budynku oddaje charakter nowoczesnej architektury z
-            harmonijnym połączeniem cegły klinkierowej i ciemnego metalu.
+            {"Każdy detal projektu oddaje charakter nowoczesnej architektury — harmonijne połączenie cegły klinkierowej i ciemnego metalu."}
           </p>
         </div>
 
         {/* Gallery Grid */}
-        <div className="mt-16 grid gap-4 md:grid-cols-2">
+        <div className="mt-16 grid gap-6 md:grid-cols-2">
           {images.map((image, index) => (
             <button
               key={image.src}
               onClick={() => openLightbox(index)}
-              className="group relative aspect-[4/3] overflow-hidden bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className="group relative aspect-[4/3] overflow-hidden rounded-lg shadow-lg bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background"
             >
               <img
                 src={image.src}
                 alt={image.alt}
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-black/0 transition-all duration-300 group-hover:bg-black/20" />
-              <div className="absolute bottom-0 left-0 right-0 translate-y-full bg-gradient-to-t from-black/70 to-transparent p-6 transition-transform duration-300 group-hover:translate-y-0">
-                <span className="text-sm font-medium text-primary-foreground">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                <span className="inline-block px-4 py-2 bg-primary/90 backdrop-blur-sm text-sm font-semibold uppercase tracking-wider text-primary-foreground">
                   {image.label}
                 </span>
+              </div>
+              <div className="absolute top-4 right-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                  </svg>
+                </div>
               </div>
             </button>
           ))}
