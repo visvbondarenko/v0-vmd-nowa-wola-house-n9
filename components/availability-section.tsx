@@ -9,7 +9,8 @@ interface UnitInfo {
   label: string;
   area: string;
   rooms: string;
-  floors: string;
+  baths: string;
+  features: string;
   status: UnitStatus;
 }
 
@@ -17,17 +18,19 @@ const units: Record<"A" | "B", UnitInfo> = {
   A: {
     name: "A",
     label: "Segment A",
-    area: "144 m²",
+    area: "130 m²",
     rooms: "5 pokoi",
-    floors: "2 kondygnacje",
+    baths: "3 łazienki",
+    features: "Pralnia, gabinet, master bedroom, duży garaż",
     status: "available",
   },
   B: {
     name: "B",
     label: "Segment B",
-    area: "144 m²",
+    area: "130 m²",
     rooms: "5 pokoi",
-    floors: "2 kondygnacje",
+    baths: "3 łazienki",
+    features: "Pralnia, gabinet, master bedroom, duży garaż",
     status: "reserved",
   },
 };
@@ -127,7 +130,8 @@ function InfoCard({
           {[
             { label: "Powierzchnia", value: unit.area },
             { label: "Pokoje", value: unit.rooms },
-            { label: "Kondygnacje", value: unit.floors },
+            { label: "Łazienki", value: unit.baths },
+            { label: "Dodatkowo", value: unit.features },
           ].map((item) => (
             <div
               key={item.label}
@@ -208,7 +212,7 @@ export function AvailabilitySection() {
             {/* House image */}
             <img
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
-              alt="Wizualizacja architektoniczna zabudowy bli\u017aniaczej - widok z przodu"
+              alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
               className="block w-full"
               draggable={false}
             />
@@ -222,7 +226,7 @@ export function AvailabilitySection() {
               onClick={() =>
                 setActiveUnit((prev) => (prev === "A" ? null : "A"))
               }
-              aria-label="Segment A - Dost\u0119pny"
+              aria-label="Segment A - Dostępny"
             />
 
             {/* Segment B overlay - clipped to right half of house */}
@@ -290,7 +294,7 @@ export function AvailabilitySection() {
 
         <div className="mx-auto mt-10 max-w-3xl text-center">
           <p className="text-xs uppercase tracking-widest text-muted-foreground/60">
-            {"Zabudowa bli\u017aniacza \u2014 dwa niezale\u017cne segmenty"}
+            {"Zabudowa bliźniacza — dwa niezależne segmenty"}
           </p>
         </div>
       </div>

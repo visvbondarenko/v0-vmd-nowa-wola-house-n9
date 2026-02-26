@@ -57,10 +57,10 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-primary-foreground/50">
-                    Lokalizacja
+                    Adres
                   </p>
                   <p className="font-medium text-primary-foreground">
-                    Polska
+                    Nowa Wola, Warszawa
                   </p>
                 </div>
               </div>
