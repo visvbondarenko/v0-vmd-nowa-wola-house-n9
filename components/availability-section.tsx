@@ -2,6 +2,23 @@
 
 import { useState } from "react";
 
+const floorPlans = [
+  {
+    id: "parter",
+    label: "Parter",
+    description: "Garaż, gabinet, hol, łazienka, salon z aneksem kuchennym, taras",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.35-7hBaMOTt2vIZWxEZwuSsi3iNga4Rj1.png",
+    alt: "Rzut parteru — Wola House",
+  },
+  {
+    id: "pietro",
+    label: "Piętro",
+    description: "5 pokoi, 3 łazienki, pralnia, sypialnia master z garderobą, sufity 4+ m",
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.42-DzhXUCvhOF3ybmGOLKdFb1fUKBfdIg.png",
+    alt: "Rzut piętra — Wola House",
+  },
+];
+
 type UnitStatus = "available" | "reserved" | "sold";
 
 interface UnitInfo {
@@ -131,6 +148,7 @@ function InfoCard({ unit, isActive }: { unit: UnitInfo; isActive: boolean }) {
 
 export function AvailabilitySection() {
   const [activeUnit, setActiveUnit] = useState<"A" | "B" | null>(null);
+  const [activePlan, setActivePlan] = useState<"parter" | "pietro">("parter");
 
   const getHalfBg = (segment: "A" | "B"): string => {
     const unit = units[segment];
@@ -248,6 +266,62 @@ export function AvailabilitySection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground/60">
             {"Zabudowa bliźniacza — dwa niezależne segmenty"}
           </p>
+        </div>
+
+        {/* Floor Plans */}
+        <div className="mx-auto mt-24 max-w-5xl">
+          {/* Section header */}
+          <div className="text-center">
+            <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
+              Rzuty
+            </p>
+            <h3 className="mt-4 font-serif text-3xl font-bold text-foreground md:text-4xl">
+              Układ pomieszczeń
+            </h3>
+            <p className="mt-4 text-base text-muted-foreground">
+              {"Każdy segment posiada identyczny układ — parter z garażem i częścią dzienną, piętro z sypialniami i łazienkami."}
+            </p>
+          </div>
+
+          {/* Tab switcher */}
+          <div className="mt-10 flex items-center justify-center">
+            <div className="inline-flex border border-border bg-card">
+              {floorPlans.map((plan) => (
+                <button
+                  key={plan.id}
+                  onClick={() => setActivePlan(plan.id as "parter" | "pietro")}
+                  className={`px-8 py-3 text-sm font-semibold uppercase tracking-widest transition-colors duration-200 ${
+                    activePlan === plan.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {plan.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Plan image */}
+          {floorPlans.map((plan) => (
+            <div
+              key={plan.id}
+              className={`mt-8 transition-all duration-500 ${
+                activePlan === plan.id ? "opacity-100 translate-y-0" : "hidden"
+              }`}
+            >
+              <div className="overflow-hidden rounded-lg border border-border bg-white shadow-lg">
+                <img
+                  src={plan.src}
+                  alt={plan.alt}
+                  className="block w-full"
+                />
+              </div>
+              <p className="mt-4 text-center text-sm text-muted-foreground">
+                {plan.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
