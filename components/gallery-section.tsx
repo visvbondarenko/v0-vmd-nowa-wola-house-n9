@@ -58,7 +58,7 @@ export function GallerySection() {
               className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="absolute bottom-12 left-0 right-0 p-8">
               <span className="inline-block px-4 py-2 bg-primary text-xs font-bold uppercase tracking-widest text-primary-foreground rounded-sm">
                 {images[0].label}
               </span>
@@ -86,7 +86,7 @@ export function GallerySection() {
               className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8">
+            <div className="absolute bottom-12 left-0 right-0 p-8">
               <span className="inline-block px-4 py-2 bg-primary text-xs font-bold uppercase tracking-widest text-primary-foreground rounded-sm">
                 {images[1].label}
               </span>
