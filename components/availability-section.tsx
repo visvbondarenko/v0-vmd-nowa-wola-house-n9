@@ -13,7 +13,7 @@ const floorPlans = [
   {
     id: "pietro",
     label: "Piętro",
-    features: ["3 sypialnie z master bedroom", "2 łazienki", "Duży hol", "Pralnia"],
+    features: ["3 sypialnie w tym główna", "2 łazienki", "Duży hol", "Pralnia"],
     src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.42-DzhXUCvhOF3ybmGOLKdFb1fUKBfdIg.png",
     alt: "Rzut piętra — Wola House",
   },
