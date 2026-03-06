@@ -2,36 +2,63 @@
 
 import { useState } from "react";
 
+const floorPlans = [
+  {
+    id: "parter",
+    label: "Parter",
+    features: ["Garaż", "Gabinet", "Hol", "Łazienka", "Salon z aneksem kuchennym", "Taras"],
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.35-7hBaMOTt2vIZWxEZwuSsi3iNga4Rj1.png",
+    alt: "Rzut parteru — Wola House",
+  },
+  {
+    id: "pietro",
+    label: "Piętro",
+    features: ["3 sypialnie w tym główna", "2 łazienki", "Duży hol", "Pralnia"],
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.42-DzhXUCvhOF3ybmGOLKdFb1fUKBfdIg.png",
+    alt: "Rzut piętra — Wola House",
+  },
+];
+
 type UnitStatus = "available" | "reserved" | "sold";
 
 interface UnitInfo {
   name: string;
   label: string;
-  area: string;
-  rooms: string;
-  baths: string;
-  features: string;
   status: UnitStatus;
+  specs: { label: string; value: string }[];
+  features: string[];
 }
+
+const sharedSpecs = [
+  { label: "Powierzchnia", value: "130 m²" },
+  { label: "Pokoje", value: "5 pokoi" },
+  { label: "Łazienki", value: "3 łazienki" },
+  { label: "Ogród", value: "300 m²" },
+];
+
+const sharedFeatures = [
+  "Garaż",
+  "Gabinet",
+  "Pralnia",
+  "Sypialnia master z garderobą i łazienką",
+  "Sufity 4+ m na II piętrze",
+  "Prywatny ogród 300 m²",
+];
 
 const units: Record<"A" | "B", UnitInfo> = {
   A: {
     name: "A",
     label: "Segment A",
-    area: "130 m²",
-    rooms: "5 pokoi + gabinet",
-    baths: "3 pełne łazienki",
-    features: "Pralnia, sypialnia master z en-suite, przestronny garaż, sufit 4m na II p.",
     status: "available",
+    specs: sharedSpecs,
+    features: sharedFeatures,
   },
   B: {
     name: "B",
     label: "Segment B",
-    area: "130 m²",
-    rooms: "5 pokoi + gabinet",
-    baths: "3 pełne łazienki",
-    features: "Pralnia, sypialnia master z en-suite, przestronny garaż, sufit 4m na II p.",
     status: "reserved",
+    specs: sharedSpecs,
+    features: sharedFeatures,
   },
 };
 
@@ -74,105 +101,66 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
   { status: "sold", label: "Sprzedany", dotColor: "bg-red-500" },
 ];
 
-/*
- * Clip-path polygons tracing each half of the house.
- * Coordinates are % of the image container.
- * The house center seam is at ~50%.
- * Left segment (A): from left wall up to the gable peak, down to base.
- * Right segment (B): from center seam up to the right gable peak, down to right wall.
- */
 
-// Segment A (left / green outline): bottom-left wall → up left wall →
-// left gable peak → down to center seam → straight down to bottom.
-// Traced from the user-annotated screenshot.
-const clipA =
-  "polygon(3% 93%, 3% 55%, 6% 55%, 6% 37%, 24% 13%, 41% 31%, 43% 25%, 43% 93%)";
 
-// Segment B (right / red outline): center seam → up to right gable peak →
-// down right side → right wall → bottom-right.
-const clipB =
-  "polygon(43% 93%, 43% 25%, 46% 20%, 48% 27%, 69% 9%, 91% 30%, 93% 48%, 96% 48%, 96% 93%)";
-
-function InfoCard({
-  unit,
-  isActive,
-  side,
-}: {
-  unit: UnitInfo;
-  isActive: boolean;
-  side: "left" | "right";
-}) {
+function InfoCard({ unit, isActive }: { unit: UnitInfo; isActive: boolean }) {
   const config = statusConfig[unit.status];
 
   return (
     <div
       className={`transition-all duration-500 ${
-        isActive ? "translate-y-0 opacity-100" : "translate-y-2 opacity-60"
+        isActive ? "opacity-100 translate-y-0" : "opacity-50 translate-y-1"
       }`}
     >
-      <div className={`${side === "left" ? "text-left" : "text-right"}`}>
-        <div
-          className={`flex items-center gap-2.5 ${
-            side === "right" ? "justify-end" : ""
-          }`}
+      {/* Header */}
+      <div className="flex items-center gap-3 border-b border-border pb-4">
+        <h3 className="font-serif text-2xl font-bold text-foreground">
+          {unit.label}
+        </h3>
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-sm ${config.badgeBg} ${config.badgeText}`}
         >
-          <h3 className="font-serif text-2xl font-bold text-foreground md:text-3xl">
-            {unit.label}
-          </h3>
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold ${config.badgeBg} ${config.badgeText}`}
-          >
-            <span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
-            {config.label}
-          </span>
-        </div>
-        <div className="mt-4 flex flex-col gap-2">
-          {[
-            { label: "Powierzchnia", value: unit.area },
-            { label: "Układ", value: unit.rooms },
-            { label: "Łazienki", value: unit.baths },
-            { label: "Standard", value: unit.features },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className={`flex items-center gap-2 text-sm ${
-                side === "right" ? "justify-end" : ""
-              }`}
-            >
-              <span className="text-muted-foreground">{item.label}</span>
-              <span className="font-semibold text-foreground">{item.value}</span>
-            </div>
-          ))}
-        </div>
+          <span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
+          {config.label}
+        </span>
       </div>
+
+      {/* Specs */}
+      <div className="mt-4 flex flex-col gap-2">
+        {unit.specs.map((item) => (
+          <div key={item.label} className="flex items-baseline justify-between gap-4">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</span>
+            <span className="text-sm font-semibold text-foreground">{item.value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Features list */}
+      <ul className="mt-4 flex flex-col gap-1.5 border-t border-border pt-4">
+        {unit.features.map((f) => (
+          <li key={f} className="flex items-center gap-2 text-sm text-foreground">
+            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${config.dotColor}`} />
+            {f}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
 
 export function AvailabilitySection() {
   const [activeUnit, setActiveUnit] = useState<"A" | "B" | null>(null);
+  const [activePlan, setActivePlan] = useState<"parter" | "pietro">("parter");
 
-  const getOverlayStyle = (
-    segment: "A" | "B"
-  ): React.CSSProperties => {
+  const getHalfBg = (segment: "A" | "B"): string => {
     const unit = units[segment];
     const isActive = activeUnit === segment;
     const isIdle = activeUnit === null;
-    const clip = segment === "A" ? clipA : clipB;
-
-    return {
-      position: "absolute",
-      inset: 0,
-      clipPath: clip,
-      WebkitClipPath: clip,
-      backgroundColor: isActive
-        ? statusColorActive[unit.status]
-        : isIdle
-        ? statusConfig[unit.status].color
-        : "rgba(0,0,0,0.05)",
-      transition: "background-color 0.5s ease",
-      cursor: "pointer",
-    };
+    return isActive
+      ? statusColorActive[unit.status]
+      : isIdle
+      ? statusConfig[unit.status].color
+      : "rgba(0,0,0,0.05)";
   };
 
   return (
@@ -206,88 +194,72 @@ export function AvailabilitySection() {
         {/* Interactive house image - constrained width */}
         <div className="mx-auto mt-16 max-w-3xl">
           <div
-            className="relative mx-auto overflow-hidden rounded-lg"
+            className="relative mx-auto overflow-hidden rounded-lg select-none"
             onMouseLeave={() => setActiveUnit(null)}
           >
-            {/* House image */}
+            {/* House image — rendered once, overlays sit on top via mix-blend-mode */}
             <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/touse-uJsufnBlq04zxhKJHzqnFxmxC4Nrqg.png"
               alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
               className="block w-full"
               draggable={false}
             />
 
-            {/* Segment A overlay - clipped to left half of house */}
+            {/* Left half — Segment A */}
             <button
               type="button"
-              className="absolute inset-0 border-0 bg-transparent p-0 focus:outline-none"
-              style={getOverlayStyle("A")}
-              onMouseEnter={() => setActiveUnit("A")}
-              onClick={() =>
-                setActiveUnit((prev) => (prev === "A" ? null : "A"))
-              }
               aria-label="Segment A - Dostępny"
-            />
-
-            {/* Segment B overlay - clipped to right half of house */}
-            <button
-              type="button"
-              className="absolute inset-0 border-0 bg-transparent p-0 focus:outline-none"
-              style={getOverlayStyle("B")}
-              onMouseEnter={() => setActiveUnit("B")}
-              onClick={() =>
-                setActiveUnit((prev) => (prev === "B" ? null : "B"))
-              }
-              aria-label="Segment B - Zarezerwowany"
-            />
-
-            {/* Segment A label */}
-            <div
-              className={`pointer-events-none absolute left-[23%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
-                activeUnit === "A"
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90"
-              }`}
+              onMouseEnter={() => setActiveUnit("A")}
+              onClick={() => setActiveUnit((p) => (p === "A" ? null : "A"))}
+              className="absolute inset-y-0 left-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ backgroundColor: getHalfBg("A") }}
             >
-              <div className="bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded">
-                <span className="text-white text-sm font-bold tracking-widest uppercase">
+              {/* Label */}
+              <span
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                  activeUnit === "A" ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                }`}
+              >
+                <span className="block whitespace-nowrap bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded text-white text-sm font-bold tracking-widest uppercase">
                   Segment A
                 </span>
-              </div>
-            </div>
+              </span>
+            </button>
 
-            {/* Segment B label */}
-            <div
-              className={`pointer-events-none absolute left-[70%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
-                activeUnit === "B"
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90"
-              }`}
+            {/* Right half — Segment B */}
+            <button
+              type="button"
+              aria-label="Segment B - Zarezerwowany"
+              onMouseEnter={() => setActiveUnit("B")}
+              onClick={() => setActiveUnit((p) => (p === "B" ? null : "B"))}
+              className="absolute inset-y-0 right-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ backgroundColor: getHalfBg("B") }}
             >
-              <div className="bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded">
-                <span className="text-white text-sm font-bold tracking-widest uppercase">
+              {/* Label */}
+              <span
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                  activeUnit === "B" ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                }`}
+              >
+                <span className="block whitespace-nowrap bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded text-white text-sm font-bold tracking-widest uppercase">
                   Segment B
                 </span>
-              </div>
-            </div>
+              </span>
+            </button>
 
-            {/* Center divider line on the house */}
-            <div
-              className="pointer-events-none absolute top-[25%] bottom-[7%] left-[43%] w-px bg-white/50"
-            />
+            {/* Center divider */}
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-0.5 bg-white/50" />
           </div>
 
           {/* Unit info cards below the image */}
-          <div className="mt-10 grid grid-cols-2 gap-8 lg:gap-16">
+          <div className="mt-10 grid grid-cols-2 gap-8">
             <InfoCard
               unit={units.A}
               isActive={activeUnit === "A" || activeUnit === null}
-              side="left"
             />
             <InfoCard
               unit={units.B}
               isActive={activeUnit === "B" || activeUnit === null}
-              side="right"
             />
           </div>
         </div>
@@ -296,6 +268,71 @@ export function AvailabilitySection() {
           <p className="text-xs uppercase tracking-widest text-muted-foreground/60">
             {"Zabudowa bliźniacza — dwa niezależne segmenty"}
           </p>
+        </div>
+
+        {/* Floor Plans */}
+        <div className="mx-auto mt-24 max-w-5xl">
+          {/* Section header */}
+          <div className="text-center">
+            <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary">
+              Rzuty
+            </p>
+            <h3 className="mt-4 font-serif text-3xl font-bold text-foreground md:text-4xl">
+              Układ pomieszczeń
+            </h3>
+            <p className="mt-4 text-base text-muted-foreground">
+              {"Każdy segment posiada identyczny układ — parter z garażem i częścią dzienną, piętro z sypialniami i łazienkami."}
+            </p>
+          </div>
+
+          {/* Tab switcher */}
+          <div className="mt-10 flex items-center justify-center">
+            <div className="inline-flex border border-border bg-card">
+              {floorPlans.map((plan) => (
+                <button
+                  key={plan.id}
+                  onClick={() => setActivePlan(plan.id as "parter" | "pietro")}
+                  className={`px-8 py-3 text-sm font-semibold uppercase tracking-widest transition-colors duration-200 ${
+                    activePlan === plan.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {plan.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Plan image */}
+          {floorPlans.map((plan) => (
+            <div
+              key={plan.id}
+              className={`mt-8 transition-all duration-500 ${
+                activePlan === plan.id ? "opacity-100 translate-y-0" : "hidden"
+              }`}
+            >
+              <div className="overflow-hidden rounded-lg border border-border bg-white shadow-lg">
+                <img
+                  src={plan.src}
+                  alt={plan.alt}
+                  className="block w-full"
+                />
+              </div>
+              {/* Features displayed as clean badges */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                {plan.features.map((feature, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-sm text-sm font-medium text-foreground"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    {feature}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
