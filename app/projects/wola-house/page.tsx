@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer";
 export const metadata: Metadata = {
   title: "Wola House | VMD Development",
   description:
-    "Nowoczesny dom w zabudowie bli\u017aniaczej w dzielnicy Wola, Warszawa. Dwa niezale\u017cne segmenty po 144 m\u00B2. Ceg\u0142a klinkierowa i ciemna elewacja metalowa.",
+    "Nowoczesny dom w zabudowie bliźniaczej w dzielnicy Wola, Warszawa. Dwa niezależne segmenty po 130 m². Cegła klinkierowa i ciemna elewacja metalowa.",
 };
 
 export default function WolaHousePage() {
@@ -20,7 +20,7 @@ export default function WolaHousePage() {
       <Navbar />
       <ProjectHero
         title="Wola House"
-        subtitle="Nowoczesny dom w zabudowie bli\u017aniaczej"
+        subtitle="Nowoczesny dom w zabudowie bliźniaczej"
         location="Wola, Warszawa"
         image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
       />
