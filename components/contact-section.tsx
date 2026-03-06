@@ -61,9 +61,12 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-primary-foreground/50">Telefon</p>
-                  <p className="font-medium text-primary-foreground">
-                    +48 123 456 789
-                  </p>
+                  <a
+                    href="tel:+48452068785"
+                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                  >
+                    +48 452 068 785
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -72,9 +75,12 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-primary-foreground/50">E-mail</p>
-                  <p className="font-medium text-primary-foreground">
-                    kontakt@vmd-development.pl
-                  </p>
+                  <a
+                    href="mailto:vlad@qualops.io"
+                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                  >
+                    vlad@qualops.io
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -82,11 +88,9 @@ export function ContactSection() {
                   <MapPin className="h-5 w-5 text-primary-foreground/70" />
                 </div>
                 <div>
-                  <p className="text-sm text-primary-foreground/50">
-                    Adres
-                  </p>
+                  <p className="text-sm text-primary-foreground/50">Adres</p>
                   <p className="font-medium text-primary-foreground">
-                    Nowa Wola, Warszawa
+                    ul. Patriotów 110, Warszawa
                   </p>
                 </div>
               </div>

@@ -21,7 +21,7 @@ export function HeroSection() {
           {"Tworzymy przestrzenie,\nktóre inspirują"}
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-primary-foreground/80 md:text-xl text-pretty">
-          {"Nowoczesna architektura, najwyższe standardy wykonania i dbałość o każdy detal. Poznaj nasze inwestycje."}
+          {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty — połączone z nowoczesnym designem i najwyższą jakością wykonania."}
         </p>
         <a
           href="#projekty"
