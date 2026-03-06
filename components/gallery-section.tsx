@@ -5,28 +5,14 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const images = [
   {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/front2-02EJeVXI1Nm6piqkgMcOYd92tUQxW8.png",
-    alt: "Elewacja frontowa - widok symetryczny z podjazdem i garażami",
-    label: "Elewacja frontowa",
-    featured: true,
-  },
-  {
     src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/front-zff9Ux8QYmsvuaHBXQagYk8IhV47cq.jpg",
     alt: "Widok z przodu - perspektywa od ulicy z bramą",
     label: "Widok od ulicy",
-    featured: false,
-  },
-  {
-    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/back2-7sfJvET7lIeBM9XiFq2Er6LMhCsymG.png",
-    alt: "Elewacja ogrodowa - widok symetryczny z tarasem i dużymi przeszkleniami",
-    label: "Elewacja ogrodowa",
-    featured: true,
   },
   {
     src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/back-1SfmFvFNJnn6cWKYb9MltVf3bhIUGq.jpg",
     alt: "Widok z ogrodu - perspektywa z tarasu i zieleni",
     label: "Perspektywa ogrodowa",
-    featured: false,
   },
 ];
 
@@ -55,13 +41,41 @@ export function GallerySection() {
             Wizualizacje projektu
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            {"Odkryj każdy detal — od reprezentacyjnej elewacji frontowej po prywatną przestrzeń ogrodu z tarasem."}
+            {"Odkryj każdy detal projektu — widok od ulicy oraz prywatną przestrzeń ogrodu z tarasem i zielenią."}
           </p>
         </div>
 
         {/* Main Gallery - Two Large Images */}
         <div className="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Widok od ulicy - Main Left */}
+          {/* Widok od ulicy */}
+          <button
+            onClick={() => openLightbox(0)}
+            className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background shadow-xl"
+          >
+            <img
+              src={images[0].src}
+              alt={images[0].alt}
+              className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <span className="inline-block px-4 py-2 bg-primary text-xs font-bold uppercase tracking-widest text-primary-foreground rounded-sm">
+                {images[0].label}
+              </span>
+              <p className="mt-3 text-sm text-white/80 max-w-md">
+                Perspektywa od ulicy z bramą wjazdową i podjazdem
+              </p>
+            </div>
+            <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                </svg>
+              </div>
+            </div>
+          </button>
+
+          {/* Perspektywa ogrodowa */}
           <button
             onClick={() => openLightbox(1)}
             className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background shadow-xl"
@@ -77,7 +91,7 @@ export function GallerySection() {
                 {images[1].label}
               </span>
               <p className="mt-3 text-sm text-white/80 max-w-md">
-                Perspektywa od ulicy z podjazdem i bramą wjazdową
+                Prywatny ogród z drewnianym tarasem i zielenią
               </p>
             </div>
             <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -86,73 +100,6 @@ export function GallerySection() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
                 </svg>
               </div>
-            </div>
-          </button>
-
-          {/* Perspektywa ogrodowa - Main Right */}
-          <button
-            onClick={() => openLightbox(3)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background shadow-xl"
-          >
-            <img
-              src={images[3].src}
-              alt={images[3].alt}
-              className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8">
-              <span className="inline-block px-4 py-2 bg-primary text-xs font-bold uppercase tracking-widest text-primary-foreground rounded-sm">
-                {images[3].label}
-              </span>
-              <p className="mt-3 text-sm text-white/80 max-w-md">
-                Widok z ogrodu z tarasem i zielenią
-              </p>
-            </div>
-            <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
-                </svg>
-              </div>
-            </div>
-          </button>
-        </div>
-
-        {/* Secondary Row - Symmetric Views */}
-        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {/* Elewacja frontowa */}
-          <button
-            onClick={() => openLightbox(0)}
-            className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background shadow-lg"
-          >
-            <img
-              src={images[0].src}
-              alt={images[0].alt}
-              className="h-full w-full object-contain bg-[#87CEEB] transition-all duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <span className="inline-block px-3 py-1.5 bg-white/90 text-xs font-semibold uppercase tracking-wider text-foreground rounded-sm">
-                {images[0].label}
-              </span>
-            </div>
-          </button>
-
-          {/* Elewacja ogrodowa */}
-          <button
-            onClick={() => openLightbox(2)}
-            className="group relative aspect-[16/9] overflow-hidden rounded-2xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background shadow-lg"
-          >
-            <img
-              src={images[2].src}
-              alt={images[2].alt}
-              className="h-full w-full object-contain bg-[#87CEEB] transition-all duration-700 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6">
-              <span className="inline-block px-3 py-1.5 bg-white/90 text-xs font-semibold uppercase tracking-wider text-foreground rounded-sm">
-                {images[2].label}
-              </span>
             </div>
           </button>
         </div>
