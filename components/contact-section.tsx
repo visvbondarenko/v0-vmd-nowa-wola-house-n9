@@ -1,14 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { Send, Phone, Mail, MapPin } from "lucide-react";
+import { Send, Phone, Mail, MapPin, Loader2 } from "lucide-react";
 
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError(null);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("https://formspree.io/f/vlad@qualops.io", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        setError("Wystąpił błąd. Spróbuj ponownie.");
+      }
+    } catch {
+      setError("Wystąpił błąd. Spróbuj ponownie.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,9 +61,12 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-primary-foreground/50">Telefon</p>
-                  <p className="font-medium text-primary-foreground">
-                    +48 123 456 789
-                  </p>
+                  <a
+                    href="tel:+48452068785"
+                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                  >
+                    +48 452 068 785
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -46,9 +75,12 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-primary-foreground/50">E-mail</p>
-                  <p className="font-medium text-primary-foreground">
-                    kontakt@vmd-development.pl
-                  </p>
+                  <a
+                    href="mailto:vlad@qualops.io"
+                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                  >
+                    vlad@qualops.io
+                  </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -56,11 +88,9 @@ export function ContactSection() {
                   <MapPin className="h-5 w-5 text-primary-foreground/70" />
                 </div>
                 <div>
-                  <p className="text-sm text-primary-foreground/50">
-                    Adres
-                  </p>
+                  <p className="text-sm text-primary-foreground/50">Adres</p>
                   <p className="font-medium text-primary-foreground">
-                    Nowa Wola, Warszawa
+                    ul. Patriotów 110, Warszawa
                   </p>
                 </div>
               </div>
@@ -96,6 +126,7 @@ export function ContactSection() {
                     </label>
                     <input
                       id="firstName"
+                      name="firstName"
                       type="text"
                       required
                       className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none transition-colors"
@@ -111,6 +142,7 @@ export function ContactSection() {
                     </label>
                     <input
                       id="lastName"
+                      name="lastName"
                       type="text"
                       required
                       className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none transition-colors"
@@ -128,6 +160,7 @@ export function ContactSection() {
                   </label>
                   <input
                     id="email"
+                    name="email"
                     type="email"
                     required
                     className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none transition-colors"
@@ -144,6 +177,7 @@ export function ContactSection() {
                   </label>
                   <input
                     id="phone"
+                    name="phone"
                     type="tel"
                     className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none transition-colors"
                     placeholder="+48 000 000 000"
@@ -159,18 +193,33 @@ export function ContactSection() {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     rows={4}
                     className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none resize-none transition-colors"
                     placeholder="Jestem zainteresowany/a inwestycją..."
                   />
                 </div>
 
+                {error && (
+                  <p className="text-red-400 text-sm">{error}</p>
+                )}
+
                 <button
                   type="submit"
-                  className="mt-4 flex items-center justify-center gap-3 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02]"
+                  disabled={loading}
+                  className="mt-4 flex items-center justify-center gap-3 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
-                  Wyślij wiadomość
-                  <Send className="h-4 w-4" />
+                  {loading ? (
+                    <>
+                      Wysyłanie...
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Wyślij wiadomość
+                      <Send className="h-4 w-4" />
+                    </>
+                  )}
                 </button>
               </form>
             )}

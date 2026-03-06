@@ -19,18 +19,18 @@ const units: Record<"A" | "B", UnitInfo> = {
     name: "A",
     label: "Segment A",
     area: "130 m²",
-    rooms: "5 pokoi",
-    baths: "3 łazienki",
-    features: "Pralnia, gabinet, master bedroom, duży garaż",
+    rooms: "5 pokoi + gabinet",
+    baths: "3 pełne łazienki",
+    features: "Pralnia, sypialnia master z en-suite, przestronny garaż, sufit 4m na II p.",
     status: "available",
   },
   B: {
     name: "B",
     label: "Segment B",
     area: "130 m²",
-    rooms: "5 pokoi",
-    baths: "3 łazienki",
-    features: "Pralnia, gabinet, master bedroom, duży garaż",
+    rooms: "5 pokoi + gabinet",
+    baths: "3 pełne łazienki",
+    features: "Pralnia, sypialnia master z en-suite, przestronny garaż, sufit 4m na II p.",
     status: "reserved",
   },
 };
@@ -129,9 +129,9 @@ function InfoCard({
         <div className="mt-4 flex flex-col gap-2">
           {[
             { label: "Powierzchnia", value: unit.area },
-            { label: "Pokoje", value: unit.rooms },
+            { label: "Układ", value: unit.rooms },
             { label: "Łazienki", value: unit.baths },
-            { label: "Dodatkowo", value: unit.features },
+            { label: "Standard", value: unit.features },
           ].map((item) => (
             <div
               key={item.label}

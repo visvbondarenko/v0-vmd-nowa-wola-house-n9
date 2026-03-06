@@ -1,17 +1,41 @@
-import { Home, Ruler, TreePine, ShieldCheck } from "lucide-react";
+import { Home, Ruler, TreePine, ShieldCheck, School, Waves, ChevronsUp, LayoutDashboard } from "lucide-react";
 
 const features = [
   {
     icon: Home,
     title: "Nowoczesna architektura",
     description:
-      "Połączenie cegły klinkierowej z ciemną elewacją metalową tworzy unikatowy, ponadczasowy charakter budynku.",
+      "Połączenie cegły klinkierowej z ciemną elewacją metalową tworzy unikatowy, ponadczasowy charakter budynku — wyróżniający się na tle standardowych projektów.",
   },
   {
     icon: Ruler,
-    title: "Przestronne wnętrza",
+    title: "Więcej przestrzeni użytkowej",
     description:
-      "Każdy segment oferuje ponad 140 m² powierzchni użytkowej, zaprojektowanej z myślą o komforcie całej rodziny.",
+      "Każdy segment oferuje 130 m² starannie zaplanowanej powierzchni — więcej niż w typowych domach bliźniaczych tej klasy. Gabinet, pralnia i przestronny garaż w standardzie.",
+  },
+  {
+    icon: ChevronsUp,
+    title: "Loftowy design II piętra",
+    description:
+      "Wyjątkowe wnętrze drugiego piętra z sufitami o wysokości 4 metrów i otwartą przestrzenią w stylu loft — jasne, przestronne i niepowtarzalne.",
+  },
+  {
+    icon: LayoutDashboard,
+    title: "Przemyślany układ",
+    description:
+      "Osobna pralnia, gabinet do pracy zdalnej oraz sypialnia master z własną łazienką — każdy metr zaprojektowany z myślą o codziennym komforcie.",
+  },
+  {
+    icon: School,
+    title: "Doskonała lokalizacja",
+    description:
+      "W bezpośrednim sąsiedztwie szkół i przedszkoli. Spokojna, zielona okolica idealna dla rodzin z dziećmi.",
+  },
+  {
+    icon: Waves,
+    title: "Jezioro w pobliżu",
+    description:
+      "Lokalne jezioro w zasięgu spaceru — naturalne miejsce wypoczynku i aktywności na świeżym powietrzu przez cały rok.",
   },
   {
     icon: TreePine,
@@ -21,9 +45,9 @@ const features = [
   },
   {
     icon: ShieldCheck,
-    title: "Wysoki standard",
+    title: "Najwyższy standard wykonania",
     description:
-      "Najwyższej klasy materiały budowlane, energooszczędne rozwiązania i dbałość o każdy detal wykończenia.",
+      "Materiały budowlane najwyższej klasy, energooszczędne rozwiązania i rygorystyczna dbałość o każdy detal wykończenia.",
   },
 ];
 
@@ -40,14 +64,12 @@ export function AboutSection() {
             Dom, który wyznacza standardy
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            Nowoczesny dom bliźniaczy łączy w sobie elegancję współczesnej
-            architektury z funkcjonalnością i komfortem. Każdy detal został
-            zaprojektowany tak, aby stworzyć przestrzeń, w której chce się żyć.
+            {"Nowoczesny dom bliźniaczy łączy elegancję współczesnej architektury z funkcjonalnością i komfortem. Unikalny projekt oferuje więcej przestrzeni użytkowej niż standardowe domy tej klasy — każdy detal zaprojektowany tak, aby stworzyć przestrzeń, w której chce się żyć."}
           </p>
         </div>
 
         {/* Features grid */}
-        <div className="mt-20 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((feature) => (
             <div
               key={feature.title}
