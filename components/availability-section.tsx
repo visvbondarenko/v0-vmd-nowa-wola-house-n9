@@ -7,31 +7,39 @@ type UnitStatus = "available" | "reserved" | "sold";
 interface UnitInfo {
   name: string;
   label: string;
-  area: string;
-  rooms: string;
-  baths: string;
-  features: string;
   status: UnitStatus;
+  specs: { label: string; value: string }[];
+  features: string[];
 }
+
+const sharedSpecs = [
+  { label: "Powierzchnia", value: "130 m²" },
+  { label: "Pokoje", value: "5 pokoi" },
+  { label: "Łazienki", value: "3 łazienki" },
+];
+
+const sharedFeatures = [
+  "Garaż",
+  "Gabinet",
+  "Pralnia",
+  "Sypialnia master z garderobą i łazienką",
+  "Sufity 4+ m na II piętrze",
+];
 
 const units: Record<"A" | "B", UnitInfo> = {
   A: {
     name: "A",
     label: "Segment A",
-    area: "130 m²",
-    rooms: "5 pokoi + gabinet",
-    baths: "3 pełne łazienki",
-    features: "Pralnia, sypialnia master z en-suite, przestronny garaż, sufit 4m na II p.",
     status: "available",
+    specs: sharedSpecs,
+    features: sharedFeatures,
   },
   B: {
     name: "B",
     label: "Segment B",
-    area: "130 m²",
-    rooms: "5 pokoi + gabinet",
-    baths: "3 pełne łazienki",
-    features: "Pralnia, sypialnia master z en-suite, przestronny garaż, sufit 4m na II p.",
     status: "reserved",
+    specs: sharedSpecs,
+    features: sharedFeatures,
   },
 };
 
@@ -76,58 +84,47 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
 
 
 
-function InfoCard({
-  unit,
-  isActive,
-  side,
-}: {
-  unit: UnitInfo;
-  isActive: boolean;
-  side: "left" | "right";
-}) {
+function InfoCard({ unit, isActive }: { unit: UnitInfo; isActive: boolean }) {
   const config = statusConfig[unit.status];
 
   return (
     <div
       className={`transition-all duration-500 ${
-        isActive ? "translate-y-0 opacity-100" : "translate-y-2 opacity-60"
+        isActive ? "opacity-100 translate-y-0" : "opacity-50 translate-y-1"
       }`}
     >
-      <div className={`${side === "left" ? "text-left" : "text-right"}`}>
-        <div
-          className={`flex items-center gap-2.5 ${
-            side === "right" ? "justify-end" : ""
-          }`}
+      {/* Header */}
+      <div className="flex items-center gap-3 border-b border-border pb-4">
+        <h3 className="font-serif text-2xl font-bold text-foreground">
+          {unit.label}
+        </h3>
+        <span
+          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-sm ${config.badgeBg} ${config.badgeText}`}
         >
-          <h3 className="font-serif text-2xl font-bold text-foreground md:text-3xl">
-            {unit.label}
-          </h3>
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold ${config.badgeBg} ${config.badgeText}`}
-          >
-            <span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
-            {config.label}
-          </span>
-        </div>
-        <div className="mt-4 flex flex-col gap-2">
-          {[
-            { label: "Powierzchnia", value: unit.area },
-            { label: "Układ", value: unit.rooms },
-            { label: "Łazienki", value: unit.baths },
-            { label: "Standard", value: unit.features },
-          ].map((item) => (
-            <div
-              key={item.label}
-              className={`flex items-center gap-2 text-sm ${
-                side === "right" ? "justify-end" : ""
-              }`}
-            >
-              <span className="text-muted-foreground">{item.label}</span>
-              <span className="font-semibold text-foreground">{item.value}</span>
-            </div>
-          ))}
-        </div>
+          <span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
+          {config.label}
+        </span>
       </div>
+
+      {/* Specs */}
+      <div className="mt-4 flex flex-col gap-2">
+        {unit.specs.map((item) => (
+          <div key={item.label} className="flex items-baseline justify-between gap-4">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</span>
+            <span className="text-sm font-semibold text-foreground">{item.value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Features list */}
+      <ul className="mt-4 flex flex-col gap-1.5 border-t border-border pt-4">
+        {unit.features.map((f) => (
+          <li key={f} className="flex items-center gap-2 text-sm text-foreground">
+            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${config.dotColor}`} />
+            {f}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -235,16 +232,14 @@ export function AvailabilitySection() {
           </div>
 
           {/* Unit info cards below the image */}
-          <div className="mt-10 grid grid-cols-2 gap-8 lg:gap-16">
+          <div className="mt-10 grid grid-cols-2 gap-8">
             <InfoCard
               unit={units.A}
               isActive={activeUnit === "A" || activeUnit === null}
-              side="left"
             />
             <InfoCard
               unit={units.B}
               isActive={activeUnit === "B" || activeUnit === null}
-              side="right"
             />
           </div>
         </div>
