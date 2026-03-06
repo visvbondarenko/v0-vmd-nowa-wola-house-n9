@@ -58,13 +58,10 @@ export function GallerySection() {
               className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8">
-              <span className="inline-block px-4 py-2 bg-primary text-xs font-bold uppercase tracking-widest text-primary-foreground rounded-sm">
+            <div className="absolute bottom-0 left-0 p-6">
+              <span className="inline-block px-3 py-1.5 bg-primary text-xs font-semibold uppercase tracking-wider text-primary-foreground rounded-sm">
                 {images[0].label}
               </span>
-              <p className="mt-3 text-sm text-white/80 max-w-md">
-                Perspektywa od ulicy z bramą wjazdową i podjazdem
-              </p>
             </div>
             <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
@@ -86,13 +83,10 @@ export function GallerySection() {
               className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8">
-              <span className="inline-block px-4 py-2 bg-primary text-xs font-bold uppercase tracking-widest text-primary-foreground rounded-sm">
+            <div className="absolute bottom-0 left-0 p-6">
+              <span className="inline-block px-3 py-1.5 bg-primary text-xs font-semibold uppercase tracking-wider text-primary-foreground rounded-sm">
                 {images[1].label}
               </span>
-              <p className="mt-3 text-sm text-white/80 max-w-md">
-                Prywatny ogród z drewnianym tarasem i zielenią
-              </p>
             </div>
             <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
