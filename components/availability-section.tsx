@@ -82,16 +82,15 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
  * Right segment (B): from center seam up to the right gable peak, down to right wall.
  */
 
-// Segment A (left / green outline): bottom-left wall → up left wall →
-// left gable peak → down to center seam → straight down to bottom.
-// Traced from the user-annotated screenshot.
+// Segment A (green pentagon): left wall → up → gable peak (left house) → down to valley → bottom
+// Based on front2.png annotation: symmetric front view, left house peaks at ~27% from left, ~13% from top
 const clipA =
-  "polygon(3% 93%, 3% 55%, 6% 55%, 6% 37%, 24% 13%, 41% 31%, 43% 25%, 43% 93%)";
+  "polygon(4% 88%, 4% 32%, 27% 13%, 50% 32%, 50% 88%)";
 
-// Segment B (right / red outline): center seam → up to right gable peak →
-// down right side → right wall → bottom-right.
+// Segment B (yellow pentagon): center valley → up → gable peak (right house) → down → right wall → bottom
+// Right house peaks at ~73% from left, ~13% from top
 const clipB =
-  "polygon(43% 93%, 43% 25%, 46% 20%, 48% 27%, 69% 9%, 91% 30%, 93% 48%, 96% 48%, 96% 93%)";
+  "polygon(50% 88%, 50% 32%, 73% 13%, 96% 32%, 96% 88%)";
 
 function InfoCard({
   unit,
@@ -211,7 +210,7 @@ export function AvailabilitySection() {
           >
             {/* House image */}
             <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/touse-uJsufnBlq04zxhKJHzqnFxmxC4Nrqg.png"
               alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
               className="block w-full"
               draggable={false}
@@ -243,7 +242,7 @@ export function AvailabilitySection() {
 
             {/* Segment A label */}
             <div
-              className={`pointer-events-none absolute left-[23%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[25%] top-[58%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "A"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -258,7 +257,7 @@ export function AvailabilitySection() {
 
             {/* Segment B label */}
             <div
-              className={`pointer-events-none absolute left-[70%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[75%] top-[58%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "B"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -271,9 +270,9 @@ export function AvailabilitySection() {
               </div>
             </div>
 
-            {/* Center divider line on the house */}
+            {/* Center divider line — exactly at 50% matching the valley between gables */}
             <div
-              className="pointer-events-none absolute top-[25%] bottom-[7%] left-[43%] w-px bg-white/50"
+              className="pointer-events-none absolute top-[13%] bottom-[12%] left-[50%] w-px bg-white/40"
             />
           </div>
 
