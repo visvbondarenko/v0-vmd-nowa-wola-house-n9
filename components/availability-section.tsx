@@ -6,14 +6,14 @@ const floorPlans = [
   {
     id: "parter",
     label: "Parter",
-    description: "Garaż, gabinet, hol, łazienka, salon z aneksem kuchennym, taras",
+    features: ["Garaż", "Gabinet", "Hol", "Łazienka", "Salon z aneksem kuchennym", "Taras"],
     src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.35-7hBaMOTt2vIZWxEZwuSsi3iNga4Rj1.png",
     alt: "Rzut parteru — Wola House",
   },
   {
     id: "pietro",
     label: "Piętro",
-    description: "5 pokoi, 3 łazienki, pralnia, sypialnia master z garderobą, sufity 4+ m",
+    features: ["3 sypialnie z master bedroom", "2 łazienki", "Duży hol", "Pralnia"],
     src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-06%20at%2023.35.42-DzhXUCvhOF3ybmGOLKdFb1fUKBfdIg.png",
     alt: "Rzut piętra — Wola House",
   },
@@ -317,9 +317,18 @@ export function AvailabilitySection() {
                   className="block w-full"
                 />
               </div>
-              <p className="mt-4 text-center text-sm text-muted-foreground">
-                {plan.description}
-              </p>
+              {/* Features displayed as clean badges */}
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                {plan.features.map((feature, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-sm text-sm font-medium text-foreground"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                    {feature}
+                  </span>
+                ))}
+              </div>
             </div>
           ))}
         </div>
