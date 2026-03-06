@@ -39,9 +39,9 @@ const features = [
   },
   {
     icon: TreePine,
-    title: "Zielone otoczenie",
+    title: "Prywatny ogród 300 m²",
     description:
-      "Prywatny ogród, szlachetna zieleń i spokojna okolica zapewniają idealny balans między naturą a miastem.",
+      "Każdy segment posiada rozległy ogród — idealne miejsce do odpoczynku, zabawy i kultywowania zieleni. Przestrzenne tereny do zagospodarowania wg własnych potrzeb.",
   },
   {
     icon: ShieldCheck,

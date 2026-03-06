@@ -33,6 +33,7 @@ const sharedSpecs = [
   { label: "Powierzchnia", value: "130 m²" },
   { label: "Pokoje", value: "5 pokoi" },
   { label: "Łazienki", value: "3 łazienki" },
+  { label: "Ogród", value: "300 m²" },
 ];
 
 const sharedFeatures = [
@@ -41,6 +42,7 @@ const sharedFeatures = [
   "Pralnia",
   "Sypialnia master z garderobą i łazienką",
   "Sufity 4+ m na II piętrze",
+  "Prywatny ogród 300 m²",
 ];
 
 const units: Record<"A" | "B", UnitInfo> = {
