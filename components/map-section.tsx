@@ -1,4 +1,4 @@
-import { MapPin, ExternalLink } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export function MapSection() {
   return (
@@ -25,48 +25,33 @@ export function MapSection() {
               {
                 title: "Adres",
                 detail: "Nova Wola, Ignacego Krasickiego 203-189, 05-506",
-                link: "https://maps.app.goo.gl/PtgxmoUFJ86VuW9UA",
               },
               {
                 title: "Komunikacja",
                 detail: "Doskonały dostęp do drogi krajowej i komunikacji miejskiej",
-                link: null,
               },
               {
                 title: "Otoczenie",
                 detail:
                   "Spokojna okolica, tereny zielone, pełna infrastruktura",
-                link: null,
               },
             ].map((item) => (
-              <a
+              <div
                 key={item.title}
-                href={item.link || "#"}
-                target={item.link ? "_blank" : undefined}
-                rel={item.link ? "noopener noreferrer" : undefined}
-                className={`flex items-start gap-4 border border-border bg-card p-6 transition-all duration-300 ${
-                  item.link
-                    ? "hover:border-primary hover:shadow-md cursor-pointer"
-                    : "cursor-default"
-                }`}
+                className="flex items-start gap-4 border border-border bg-card p-6"
               >
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-primary/10">
                   <MapPin className="h-5 w-5 text-primary" />
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-card-foreground">
-                      {item.title}
-                    </h3>
-                    {item.link && (
-                      <ExternalLink className="h-4 w-4 text-primary/60" />
-                    )}
-                  </div>
+                <div>
+                  <h3 className="font-semibold text-card-foreground">
+                    {item.title}
+                  </h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
                     {item.detail}
                   </p>
                 </div>
-              </a>
+              </div>
             ))}
           </div>
 
