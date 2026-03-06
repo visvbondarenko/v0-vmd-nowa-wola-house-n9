@@ -82,15 +82,15 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
  * Right segment (B): from center seam up to the right gable peak, down to right wall.
  */
 
-// Segment A (green pentagon): left wall → up → gable peak (left house) → down to valley → bottom
-// Based on front2.png annotation: symmetric front view, left house peaks at ~27% from left, ~13% from top
+// Segment A (left house): Tighter polygon matching the actual house walls
+// Left wall at ~12%, roof starts at ~35%, peak at ~30%/18%, center at 50%, bottom at ~78%
 const clipA =
-  "polygon(4% 88%, 4% 32%, 27% 13%, 50% 32%, 50% 88%)";
+  "polygon(12% 78%, 12% 35%, 30% 18%, 50% 35%, 50% 78%)";
 
-// Segment B (yellow pentagon): center valley → up → gable peak (right house) → down → right wall → bottom
-// Right house peaks at ~73% from left, ~13% from top
+// Segment B (right house): Mirror of segment A
+// Center at 50%, peak at ~70%/18%, right wall at ~88%, bottom at ~78%
 const clipB =
-  "polygon(50% 88%, 50% 32%, 73% 13%, 96% 32%, 96% 88%)";
+  "polygon(50% 78%, 50% 35%, 70% 18%, 88% 35%, 88% 78%)";
 
 function InfoCard({
   unit,
@@ -272,7 +272,7 @@ export function AvailabilitySection() {
 
             {/* Center divider line — exactly at 50% matching the valley between gables */}
             <div
-              className="pointer-events-none absolute top-[13%] bottom-[12%] left-[50%] w-px bg-white/40"
+              className="pointer-events-none absolute top-[18%] bottom-[22%] left-[50%] w-px bg-white/40"
             />
           </div>
 
