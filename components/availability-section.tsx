@@ -82,15 +82,15 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
  * Right segment (B): from center seam up to the right gable peak, down to right wall.
  */
 
-// Segment A (left house): Tighter polygon matching the actual house walls
-// Left wall at ~12%, roof starts at ~35%, peak at ~30%/18%, center at 50%, bottom at ~78%
+// Segment A (left house): Precise polygon matching actual house walls in touse.png
+// Left wall at 14%, roof eave at 38%, peak at 32%/21%, center at 50%, bottom at 76%
 const clipA =
-  "polygon(12% 78%, 12% 35%, 30% 18%, 50% 35%, 50% 78%)";
+  "polygon(14% 76%, 14% 38%, 32% 21%, 50% 38%, 50% 76%)";
 
 // Segment B (right house): Mirror of segment A
-// Center at 50%, peak at ~70%/18%, right wall at ~88%, bottom at ~78%
+// Center at 50%, peak at 68%/21%, right wall at 86%, bottom at 76%
 const clipB =
-  "polygon(50% 78%, 50% 35%, 70% 18%, 88% 35%, 88% 78%)";
+  "polygon(50% 76%, 50% 38%, 68% 21%, 86% 38%, 86% 76%)";
 
 function InfoCard({
   unit,
@@ -242,7 +242,7 @@ export function AvailabilitySection() {
 
             {/* Segment A label */}
             <div
-              className={`pointer-events-none absolute left-[25%] top-[58%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[32%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "A"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -257,7 +257,7 @@ export function AvailabilitySection() {
 
             {/* Segment B label */}
             <div
-              className={`pointer-events-none absolute left-[75%] top-[58%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
+              className={`pointer-events-none absolute left-[68%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
                 activeUnit === "B"
                   ? "opacity-100 scale-100"
                   : "opacity-0 scale-90"
@@ -272,7 +272,7 @@ export function AvailabilitySection() {
 
             {/* Center divider line — exactly at 50% matching the valley between gables */}
             <div
-              className="pointer-events-none absolute top-[18%] bottom-[22%] left-[50%] w-px bg-white/40"
+              className="pointer-events-none absolute top-[21%] bottom-[24%] left-[50%] w-px bg-white/40"
             />
           </div>
 
