@@ -74,23 +74,7 @@ const legendItems: { status: UnitStatus; label: string; dotColor: string }[] = [
   { status: "sold", label: "Sprzedany", dotColor: "bg-red-500" },
 ];
 
-/*
- * Clip-path polygons tracing each half of the house.
- * Coordinates are % of the image container.
- * The house center seam is at ~50%.
- * Left segment (A): from left wall up to the gable peak, down to base.
- * Right segment (B): from center seam up to the right gable peak, down to right wall.
- */
 
-// Segment A (left house): Precise polygon matching actual house walls in touse.png
-// Left wall at 14%, roof eave at 38%, peak at 32%/21%, center at 50%, bottom at 76%
-const clipA =
-  "polygon(14% 76%, 14% 38%, 32% 21%, 50% 38%, 50% 76%)";
-
-// Segment B (right house): Mirror of segment A
-// Center at 50%, peak at 68%/21%, right wall at 86%, bottom at 76%
-const clipB =
-  "polygon(50% 76%, 50% 38%, 68% 21%, 86% 38%, 86% 76%)";
 
 function InfoCard({
   unit,
@@ -151,27 +135,15 @@ function InfoCard({
 export function AvailabilitySection() {
   const [activeUnit, setActiveUnit] = useState<"A" | "B" | null>(null);
 
-  const getOverlayStyle = (
-    segment: "A" | "B"
-  ): React.CSSProperties => {
+  const getHalfBg = (segment: "A" | "B"): string => {
     const unit = units[segment];
     const isActive = activeUnit === segment;
     const isIdle = activeUnit === null;
-    const clip = segment === "A" ? clipA : clipB;
-
-    return {
-      position: "absolute",
-      inset: 0,
-      clipPath: clip,
-      WebkitClipPath: clip,
-      backgroundColor: isActive
-        ? statusColorActive[unit.status]
-        : isIdle
-        ? statusConfig[unit.status].color
-        : "rgba(0,0,0,0.05)",
-      transition: "background-color 0.5s ease",
-      cursor: "pointer",
-    };
+    return isActive
+      ? statusColorActive[unit.status]
+      : isIdle
+      ? statusConfig[unit.status].color
+      : "rgba(0,0,0,0.05)";
   };
 
   return (
@@ -205,10 +177,10 @@ export function AvailabilitySection() {
         {/* Interactive house image - constrained width */}
         <div className="mx-auto mt-16 max-w-3xl">
           <div
-            className="relative mx-auto overflow-hidden rounded-lg"
+            className="relative mx-auto overflow-hidden rounded-lg select-none"
             onMouseLeave={() => setActiveUnit(null)}
           >
-            {/* House image */}
+            {/* House image — rendered once, overlays sit on top via mix-blend-mode */}
             <img
               src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/touse-uJsufnBlq04zxhKJHzqnFxmxC4Nrqg.png"
               alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
@@ -216,64 +188,50 @@ export function AvailabilitySection() {
               draggable={false}
             />
 
-            {/* Segment A overlay - clipped to left half of house */}
+            {/* Left half — Segment A */}
             <button
               type="button"
-              className="absolute inset-0 border-0 bg-transparent p-0 focus:outline-none"
-              style={getOverlayStyle("A")}
-              onMouseEnter={() => setActiveUnit("A")}
-              onClick={() =>
-                setActiveUnit((prev) => (prev === "A" ? null : "A"))
-              }
               aria-label="Segment A - Dostępny"
-            />
-
-            {/* Segment B overlay - clipped to right half of house */}
-            <button
-              type="button"
-              className="absolute inset-0 border-0 bg-transparent p-0 focus:outline-none"
-              style={getOverlayStyle("B")}
-              onMouseEnter={() => setActiveUnit("B")}
-              onClick={() =>
-                setActiveUnit((prev) => (prev === "B" ? null : "B"))
-              }
-              aria-label="Segment B - Zarezerwowany"
-            />
-
-            {/* Segment A label */}
-            <div
-              className={`pointer-events-none absolute left-[32%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
-                activeUnit === "A"
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90"
-              }`}
+              onMouseEnter={() => setActiveUnit("A")}
+              onClick={() => setActiveUnit((p) => (p === "A" ? null : "A"))}
+              className="absolute inset-y-0 left-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ backgroundColor: getHalfBg("A") }}
             >
-              <div className="bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded">
-                <span className="text-white text-sm font-bold tracking-widest uppercase">
+              {/* Label */}
+              <span
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                  activeUnit === "A" ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                }`}
+              >
+                <span className="block whitespace-nowrap bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded text-white text-sm font-bold tracking-widest uppercase">
                   Segment A
                 </span>
-              </div>
-            </div>
+              </span>
+            </button>
 
-            {/* Segment B label */}
-            <div
-              className={`pointer-events-none absolute left-[68%] top-[55%] -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ${
-                activeUnit === "B"
-                  ? "opacity-100 scale-100"
-                  : "opacity-0 scale-90"
-              }`}
+            {/* Right half — Segment B */}
+            <button
+              type="button"
+              aria-label="Segment B - Zarezerwowany"
+              onMouseEnter={() => setActiveUnit("B")}
+              onClick={() => setActiveUnit((p) => (p === "B" ? null : "B"))}
+              className="absolute inset-y-0 right-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ backgroundColor: getHalfBg("B") }}
             >
-              <div className="bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded">
-                <span className="text-white text-sm font-bold tracking-widest uppercase">
+              {/* Label */}
+              <span
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+                  activeUnit === "B" ? "opacity-100 scale-100" : "opacity-0 scale-90"
+                }`}
+              >
+                <span className="block whitespace-nowrap bg-black/70 backdrop-blur-sm px-5 py-2.5 rounded text-white text-sm font-bold tracking-widest uppercase">
                   Segment B
                 </span>
-              </div>
-            </div>
+              </span>
+            </button>
 
-            {/* Center divider line — exactly at 50% matching the valley between gables */}
-            <div
-              className="pointer-events-none absolute top-[21%] bottom-[24%] left-[50%] w-px bg-white/40"
-            />
+            {/* Center divider */}
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-0.5 bg-white/50" />
           </div>
 
           {/* Unit info cards below the image */}
