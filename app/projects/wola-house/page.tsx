@@ -22,7 +22,7 @@ export default function WolaHousePage() {
         title="Wola House"
         subtitle="Nowoczesny dom w zabudowie bliźniaczej"
         location="Wola, Warszawa"
-        image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
+        image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/generate_new_render_another_vi_Nano_Banana_Pro_49228-nQrBnyrpTy4QEGHVF70e823mUX2brZ.jpg"
       />
       <AboutSection />
       <GallerySection />
