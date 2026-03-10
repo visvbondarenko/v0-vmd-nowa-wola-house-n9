@@ -10,7 +10,7 @@ export function HeroSection() {
         <img
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/make_view_from_another_angle_i_Nano_Banana_Pro_76680-zOVtr1QoOyEdW5AUA8GE8kamthrQz4.jpg"
           alt="VMD Development - wizualizacja architektoniczna"
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover brightness-110"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
       </div>
