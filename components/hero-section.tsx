@@ -16,16 +16,16 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-5xl px-6 text-center">
-        <h1 className="font-serif text-4xl font-bold leading-tight text-primary-foreground md:text-6xl lg:text-7xl text-balance whitespace-pre-line">
+      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+        <h1 className="font-serif text-3xl font-bold leading-tight text-primary-foreground md:text-4xl lg:text-5xl text-balance whitespace-pre-line">
           {"Tworzymy przestrzenie,\nktóre inspirują"}
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-primary-foreground/80 md:text-xl text-pretty">
-          {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty — połączone z nowoczesnym designem i najwyższą jakością wykonania."}
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80 md:text-lg text-pretty">
+          {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
         </p>
         <a
           href="#projekty"
-          className="mt-10 inline-flex items-center gap-2 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
+          className="mt-20 inline-flex items-center gap-2 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
         >
           Zobacz projekty
         </a>
