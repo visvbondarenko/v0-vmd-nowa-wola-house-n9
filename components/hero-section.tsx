@@ -23,17 +23,21 @@ export function HeroSection() {
         <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80 md:text-lg text-pretty">
           {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
         </p>
+      </div>
+
+      {/* Button pinned to bottom */}
+      <div className="absolute bottom-16 left-1/2 z-10 -translate-x-1/2">
         <a
           href="#projekty"
-          className="mt-32 inline-flex items-center gap-2 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
+          className="inline-flex items-center gap-2 bg-primary px-6 py-3 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
         >
           Zobacz projekty
         </a>
       </div>
 
       {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <ChevronDown className="h-6 w-6 text-primary-foreground/50" />
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+        <ChevronDown className="h-5 w-5 text-primary-foreground/50" />
       </div>
     </section>
   );
