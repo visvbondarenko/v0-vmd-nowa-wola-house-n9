@@ -10,7 +10,7 @@ const projects = [
     status: "W sprzedaży",
     statusColor: "bg-green-600",
     image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/I_need_realistic_renders_for_m_Nano_Banana_Pro_26318-ShJALlqmncXEn3bM37Uy5YIBtbCJoI.jpg",
     description:
       "Wyjątkowy projekt oferujący więcej przestrzeni użytkowej niż standardowe domy bliźniacze. Nowoczesna architektura z cegłą klinkierową i ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 130 m² z prywatnym ogrodem 300 m².",
     available: true,
