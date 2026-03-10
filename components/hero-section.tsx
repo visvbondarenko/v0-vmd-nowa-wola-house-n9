@@ -25,7 +25,7 @@ export function HeroSection() {
         </p>
         <a
           href="#projekty"
-          className="mt-20 inline-flex items-center gap-2 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
+          className="mt-32 inline-flex items-center gap-2 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-105"
         >
           Zobacz projekty
         </a>
