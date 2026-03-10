@@ -8,7 +8,7 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/now_get_back_lower_part_a_a_br_Nano_Banana_Pro_67357-CH4slykgCukLyUn9JsGHpDNNIzrRc5.jpg"
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/make_view_from_another_angle_i_Nano_Banana_Pro_76680-zOVtr1QoOyEdW5AUA8GE8kamthrQz4.jpg"
           alt="VMD Development - wizualizacja architektoniczna"
           className="h-full w-full object-cover"
         />
