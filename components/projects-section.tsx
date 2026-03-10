@@ -23,7 +23,7 @@ const projects = [
     status: "Wkrótce",
     statusColor: "bg-muted-foreground",
     image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-02-25%20at%2017.31.26-dUOOVqlr5rlGEsbSrCK7Wx8RYIzTzh.png",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-xa3DocGaCiWnb6dS8v76n5TKcWJP8E.jpg",
     description:
       "Kolejna inwestycja VMD Development jest w fazie planowania. Śledź nasze aktualności, aby nie przegapić premiery.",
     available: false,
