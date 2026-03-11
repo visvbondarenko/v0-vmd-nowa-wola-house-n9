@@ -21,7 +21,7 @@ export function HeroSection() {
           {"Przestrzenie,\nktóre inspirują"}
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-slate-300 md:text-lg text-pretty">
-          {"Wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
+          {"Wyjątkowe domy z większą przestrzenią użytkową niż standardowe projekty."}
         </p>
       </div>
 
