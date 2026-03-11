@@ -199,7 +199,7 @@ export function AvailabilitySection() {
           >
             {/* House image — rendered once, overlays sit on top via mix-blend-mode */}
             <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/touse-uJsufnBlq04zxhKJHzqnFxmxC4Nrqg.png"
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/make_strict_front_view__Nano_Banana_Pro_96468-o9OqL5Y5CrWOABWDU9HN71q4PSvGCo.jpg"
               alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
               className="block w-full"
               draggable={false}
