@@ -12,19 +12,17 @@ export function HeroSection() {
           alt="VMD Development - wizualizacja architektoniczna"
           className="h-full w-full object-cover brightness-125"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/10 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/24 via-black/16 to-black/28" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
-        <div className="inline-block rounded-sm bg-black/30 backdrop-blur-[2px] px-8 py-6">
-          <h1 className="font-serif text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl text-balance whitespace-pre-line drop-shadow-lg">
-            {"Tworzymy przestrzenie,\nktóre inspirują"}
-          </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/90 md:text-lg text-pretty drop-shadow">
-            {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
-          </p>
-        </div>
+        <h1 className="font-serif text-3xl font-bold leading-tight text-primary-foreground md:text-4xl lg:text-5xl text-balance whitespace-pre-line">
+          {"Tworzymy przestrzenie,\nktóre inspirują"}
+        </h1>
+        <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80 md:text-lg text-pretty">
+          {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
+        </p>
       </div>
 
       {/* Button pinned to bottom */}
