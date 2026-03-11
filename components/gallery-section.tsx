@@ -5,6 +5,11 @@ import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const images = [
   {
+    src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-l31zHBLh87KwmbY0jPVotqtJYY3xdH.jpg",
+    alt: "Widok z ogrodu - taras drewniany i zieleń przy domu",
+    label: "Ogród i taras",
+  },
+  {
     src: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/generate_new_render_another_vi_Nano_Banana_Pro_49228-ws0SHRBuZw2BlQ8wPvSZicLGGEaElF.jpg",
     alt: "Widok z góry - perspektywa lotnicza całego projektu",
     label: "Perspektywa lotnicza",
@@ -56,7 +61,7 @@ export function GallerySection() {
             Wizualizacje projektu
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-muted-foreground text-pretty">
-            {"Pięć unikalnych perspektyw projektu — od widoku lotniczego, przez elewację frontową, po intymne ujęcia tarasu i ogrodu."}
+            {"Sześć unikalnych perspektyw projektu — od widoku ogrodowego i lotniczego, przez elewację frontową, po ujęcia podjazdu i tarasu."}
           </p>
         </div>
 
@@ -176,6 +181,31 @@ export function GallerySection() {
             <div className="absolute bottom-0 left-0 p-6">
               <span className="inline-block px-3 py-1.5 bg-primary text-xs font-semibold uppercase tracking-wider text-primary-foreground rounded-sm">
                 {images[4].label}
+              </span>
+            </div>
+            <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+                <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                </svg>
+              </div>
+            </div>
+          </button>
+
+          {/* Image 6 - Widok boczny */}
+          <button
+            onClick={() => openLightbox(5)}
+            className="group relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-4 focus:ring-offset-background shadow-xl"
+          >
+            <img
+              src={images[5].src}
+              alt={images[5].alt}
+              className="h-full w-full object-cover transition-all duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-6">
+              <span className="inline-block px-3 py-1.5 bg-primary text-xs font-semibold uppercase tracking-wider text-primary-foreground rounded-sm">
+                {images[5].label}
               </span>
             </div>
             <div className="absolute top-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
