@@ -202,7 +202,7 @@ export function AvailabilitySection() {
             {/* Wrapper that shifts the image up to crop the top 12%, and right to crop left side */}
             <div className="relative w-full" style={{ marginTop: "-12%", marginBottom: "-12%" }}>
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-11%20at%2001.13.07-xikOgRIDq5S6LP0n4btdyLtdhyLo9W.png"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-11%20at%2001.17.08-bWZAbOkUHSu3gQpF1zEWMCiz5AY28C.png"
                 alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
                 className="block w-full object-cover"
                 style={{ objectPosition: "50% 50%" }}
