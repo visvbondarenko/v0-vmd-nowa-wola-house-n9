@@ -94,9 +94,11 @@ export function ProjectsSection() {
                   {project.description}
                 </p>
 
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary transition-all duration-300 group-hover:gap-3">
-                  {"Dowiedz się więcej"}
-                  <ArrowRight className="h-4 w-4" />
+                <div className="mt-6">
+                  <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
+                    {"Dowiedz się więcej"}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
                 </div>
               </div>
             </Link>
