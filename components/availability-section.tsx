@@ -202,10 +202,10 @@ export function AvailabilitySection() {
             {/* Wrapper that shifts the image up to crop the top 12%, and right to crop left side */}
             <div className="relative w-full" style={{ marginTop: "-12%", marginBottom: "-12%" }}>
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/make_strict_front_view__Nano_Banana_Pro_96468-o9OqL5Y5CrWOABWDU9HN71q4PSvGCo.jpg"
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-11%20at%2001.13.07-xikOgRIDq5S6LP0n4btdyLtdhyLo9W.png"
                 alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
                 className="block w-full object-cover"
-                style={{ objectPosition: "30% 50%" }}
+                style={{ objectPosition: "50% 50%" }}
                 draggable={false}
               />
             </div>
