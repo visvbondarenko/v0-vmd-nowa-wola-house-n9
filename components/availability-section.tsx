@@ -113,33 +113,33 @@ function InfoCard({ unit, isActive }: { unit: UnitInfo; isActive: boolean }) {
       }`}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-border pb-4">
-        <h3 className="font-serif text-2xl font-bold text-foreground">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-2.5">
+        <h3 className="font-serif text-base font-bold text-foreground md:text-lg">
           {unit.label}
         </h3>
         <span
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-sm ${config.badgeBg} ${config.badgeText}`}
+          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-sm ${config.badgeBg} ${config.badgeText}`}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
+          <span className={`h-1 w-1 rounded-full ${config.dotColor}`} />
           {config.label}
         </span>
       </div>
 
       {/* Specs */}
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="mt-2.5 flex flex-col gap-1.5">
         {unit.specs.map((item) => (
-          <div key={item.label} className="flex items-baseline justify-between gap-4">
-            <span className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</span>
-            <span className="text-sm font-semibold text-foreground">{item.value}</span>
+          <div key={item.label} className="flex items-baseline justify-between gap-2">
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{item.label}</span>
+            <span className="text-xs font-semibold text-foreground">{item.value}</span>
           </div>
         ))}
       </div>
 
       {/* Features list */}
-      <ul className="mt-4 flex flex-col gap-1.5 border-t border-border pt-4">
+      <ul className="mt-2.5 flex flex-col gap-1 border-t border-border pt-2.5">
         {unit.features.map((f) => (
-          <li key={f} className="flex items-center gap-2 text-sm text-foreground">
-            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${config.dotColor}`} />
+          <li key={f} className="flex items-start gap-1.5 text-xs text-foreground leading-snug">
+            <span className={`mt-1 h-1 w-1 shrink-0 rounded-full ${config.dotColor}`} />
             {f}
           </li>
         ))}
@@ -254,7 +254,7 @@ export function AvailabilitySection() {
           </div>
 
           {/* Unit info cards below the image */}
-          <div className="mt-10 grid grid-cols-2 gap-8">
+          <div className="mt-6 grid grid-cols-2 gap-4 md:gap-8">
             <InfoCard
               unit={units.A}
               isActive={activeUnit === "A" || activeUnit === null}
