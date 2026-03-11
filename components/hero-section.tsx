@@ -21,7 +21,7 @@ export function HeroSection() {
           {"Tworzymy przestrzenie,\nktóre inspirują"}
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-primary-foreground/80 md:text-lg text-pretty">
-          {"Tworzymy wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
+          {"Wyjątkowe domy, które oferują więcej przestrzeni użytkowej niż standardowe projekty."}
         </p>
       </div>
 
