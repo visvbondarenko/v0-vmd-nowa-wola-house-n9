@@ -199,24 +199,25 @@ export function AvailabilitySection() {
             style={{ height: "calc(76% * var(--img-h, 1))" }}
             onMouseLeave={() => setActiveUnit(null)}
           >
-            {/* Wrapper that shifts the image up to crop the top 12% */}
+            {/* Wrapper that shifts the image up to crop the top 12%, and right to crop left side */}
             <div className="relative w-full" style={{ marginTop: "-12%", marginBottom: "-12%" }}>
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/make_strict_front_view__Nano_Banana_Pro_96468-o9OqL5Y5CrWOABWDU9HN71q4PSvGCo.jpg"
                 alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
-                className="block w-full"
+                className="block w-full object-cover"
+                style={{ objectPosition: "35% 50%" }}
                 draggable={false}
               />
             </div>
 
-            {/* Left half — Segment A (covers left 53% matching the left house) */}
+            {/* Left half — Segment A (50% width) */}
             <button
               type="button"
               aria-label="Segment A - Dostępny"
               onMouseEnter={() => setActiveUnit("A")}
               onClick={() => setActiveUnit((p) => (p === "A" ? null : "A"))}
-              className="absolute inset-y-0 left-0 border-0 p-0 focus:outline-none transition-colors duration-300"
-              style={{ width: "53%", backgroundColor: getHalfBg("A") }}
+              className="absolute inset-y-0 left-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ backgroundColor: getHalfBg("A") }}
             >
               <span
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
@@ -229,14 +230,14 @@ export function AvailabilitySection() {
               </span>
             </button>
 
-            {/* Right half — Segment B (covers right 47%) */}
+            {/* Right half — Segment B (50% width) */}
             <button
               type="button"
               aria-label="Segment B - Zarezerwowany"
               onMouseEnter={() => setActiveUnit("B")}
               onClick={() => setActiveUnit((p) => (p === "B" ? null : "B"))}
-              className="absolute inset-y-0 right-0 border-0 p-0 focus:outline-none transition-colors duration-300"
-              style={{ width: "47%", backgroundColor: getHalfBg("B") }}
+              className="absolute inset-y-0 right-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ backgroundColor: getHalfBg("B") }}
             >
               <span
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
@@ -249,8 +250,8 @@ export function AvailabilitySection() {
               </span>
             </button>
 
-            {/* Divider — at 53% matching the gap between the two houses */}
-            <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white/60" style={{ left: "53%" }} />
+            {/* Divider — at center (50%) */}
+            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-0.5 bg-white/60" />
           </div>
 
           {/* Unit info cards below the image */}
