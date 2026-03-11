@@ -10,7 +10,7 @@ const projects = [
     status: "W sprzedaży",
     statusColor: "bg-green-600",
     image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/I_need_realistic_renders_for_m_Nano_Banana_Pro_26318-ShJALlqmncXEn3bM37Uy5YIBtbCJoI.jpg",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-xa3DocGaCiWnb6dS8v76n5TKcWJP8E.jpg",
     description:
       "Wyjątkowy projekt oferujący więcej przestrzeni użytkowej niż standardowe domy bliźniacze. Nowoczesna architektura z cegłą klinkierową i ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 130 m² z prywatnym ogrodem 300 m².",
     available: true,
@@ -23,7 +23,7 @@ const projects = [
     status: "Wkrótce",
     statusColor: "bg-muted-foreground",
     image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-xa3DocGaCiWnb6dS8v76n5TKcWJP8E.jpg",
+      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/I_need_realistic_renders_for_m_Nano_Banana_Pro_26318-ShJALlqmncXEn3bM37Uy5YIBtbCJoI.jpg",
     description:
       "Kolejna inwestycja VMD Development jest w fazie planowania. Śledź nasze aktualności, aby nie przegapić premiery.",
     available: false,
