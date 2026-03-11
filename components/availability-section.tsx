@@ -113,33 +113,33 @@ function InfoCard({ unit, isActive }: { unit: UnitInfo; isActive: boolean }) {
       }`}
     >
       {/* Header */}
-      <div className="flex items-center gap-3 border-b border-border pb-4">
-        <h3 className="font-serif text-2xl font-bold text-foreground">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-2.5">
+        <h3 className="font-serif text-base font-bold text-foreground md:text-lg">
           {unit.label}
         </h3>
         <span
-          className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-sm ${config.badgeBg} ${config.badgeText}`}
+          className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-sm ${config.badgeBg} ${config.badgeText}`}
         >
-          <span className={`h-1.5 w-1.5 rounded-full ${config.dotColor}`} />
+          <span className={`h-1 w-1 rounded-full ${config.dotColor}`} />
           {config.label}
         </span>
       </div>
 
       {/* Specs */}
-      <div className="mt-4 flex flex-col gap-2">
+      <div className="mt-2.5 flex flex-col gap-1.5">
         {unit.specs.map((item) => (
-          <div key={item.label} className="flex items-baseline justify-between gap-4">
-            <span className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</span>
-            <span className="text-sm font-semibold text-foreground">{item.value}</span>
+          <div key={item.label} className="flex items-baseline justify-between gap-2">
+            <span className="text-xs text-muted-foreground whitespace-nowrap">{item.label}</span>
+            <span className="text-xs font-semibold text-foreground">{item.value}</span>
           </div>
         ))}
       </div>
 
       {/* Features list */}
-      <ul className="mt-4 flex flex-col gap-1.5 border-t border-border pt-4">
+      <ul className="mt-2.5 flex flex-col gap-1 border-t border-border pt-2.5">
         {unit.features.map((f) => (
-          <li key={f} className="flex items-center gap-2 text-sm text-foreground">
-            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${config.dotColor}`} />
+          <li key={f} className="flex items-start gap-1.5 text-xs text-foreground leading-snug">
+            <span className={`mt-1 h-1 w-1 shrink-0 rounded-full ${config.dotColor}`} />
             {f}
           </li>
         ))}
@@ -193,28 +193,32 @@ export function AvailabilitySection() {
 
         {/* Interactive house image - constrained width */}
         <div className="mx-auto mt-16 max-w-3xl">
+          {/* Cropped container: clip 12% from top and bottom via negative margins + overflow hidden */}
           <div
-            className="relative mx-auto overflow-hidden rounded-lg select-none"
+            className="relative mx-auto select-none overflow-hidden rounded-lg"
+            style={{ height: "calc(76% * var(--img-h, 1))" }}
             onMouseLeave={() => setActiveUnit(null)}
           >
-            {/* House image — rendered once, overlays sit on top via mix-blend-mode */}
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/touse-uJsufnBlq04zxhKJHzqnFxmxC4Nrqg.png"
-              alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
-              className="block w-full"
-              draggable={false}
-            />
+            {/* Wrapper that shifts the image up to crop the top 12%, and right to crop left side */}
+            <div className="relative w-full" style={{ marginTop: "-12%", marginBottom: "-12%" }}>
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202026-03-11%20at%2001.17.08-bWZAbOkUHSu3gQpF1zEWMCiz5AY28C.png"
+                alt="Wizualizacja architektoniczna zabudowy bliźniaczej - widok z przodu"
+                className="block w-full object-cover"
+                style={{ objectPosition: "50% 50%" }}
+                draggable={false}
+              />
+            </div>
 
-            {/* Left half — Segment A */}
+            {/* Left half — Segment A (51.5% width) */}
             <button
               type="button"
               aria-label="Segment A - Dostępny"
               onMouseEnter={() => setActiveUnit("A")}
               onClick={() => setActiveUnit((p) => (p === "A" ? null : "A"))}
-              className="absolute inset-y-0 left-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
-              style={{ backgroundColor: getHalfBg("A") }}
+              className="absolute inset-y-0 left-0 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ width: "51.5%", backgroundColor: getHalfBg("A") }}
             >
-              {/* Label */}
               <span
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
                   activeUnit === "A" ? "opacity-100 scale-100" : "opacity-0 scale-90"
@@ -226,16 +230,15 @@ export function AvailabilitySection() {
               </span>
             </button>
 
-            {/* Right half — Segment B */}
+            {/* Right half — Segment B (48.5% width) */}
             <button
               type="button"
               aria-label="Segment B - Zarezerwowany"
               onMouseEnter={() => setActiveUnit("B")}
               onClick={() => setActiveUnit((p) => (p === "B" ? null : "B"))}
-              className="absolute inset-y-0 right-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
-              style={{ backgroundColor: getHalfBg("B") }}
+              className="absolute inset-y-0 right-0 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ width: "48.5%", backgroundColor: getHalfBg("B") }}
             >
-              {/* Label */}
               <span
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
                   activeUnit === "B" ? "opacity-100 scale-100" : "opacity-0 scale-90"
@@ -247,12 +250,12 @@ export function AvailabilitySection() {
               </span>
             </button>
 
-            {/* Center divider */}
-            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-0.5 bg-white/50" />
+            {/* Divider — at 51.5% to align with gap between houses */}
+            <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white/60" style={{ left: "51.5%" }} />
           </div>
 
           {/* Unit info cards below the image */}
-          <div className="mt-10 grid grid-cols-2 gap-8">
+          <div className="mt-6 grid grid-cols-2 gap-4 md:gap-8">
             <InfoCard
               unit={units.A}
               isActive={activeUnit === "A" || activeUnit === null}
