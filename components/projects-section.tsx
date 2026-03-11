@@ -84,24 +84,22 @@ export function ProjectsSection() {
                 <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
                   {project.location}
                 </p>
-              {/* Header with title and button */}
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="font-serif text-2xl font-bold text-card-foreground md:text-3xl">
-                    {project.title}
-                  </h3>
-                  <p className="mt-1 text-sm font-medium text-primary">
-                    {project.subtitle}
-                  </p>
-                </div>
-                <span className="inline-flex items-center gap-2 bg-primary px-4 py-2 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3 shrink-0 mt-0.5">
-                  {"Więcej"}
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </div>
-              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
+                  {project.title}
+                </h3>
+                <p className="mt-1 text-sm font-medium text-primary">
+                  {project.subtitle}
+                </p>
+                <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
                   {project.description}
                 </p>
+
+                <div className="mt-6">
+                  <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
+                    {"Dowiedz się więcej"}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
               </div>
             </Link>
           ) : (
