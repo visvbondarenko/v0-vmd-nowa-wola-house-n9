@@ -21,7 +21,7 @@ export default function WolaHousePage() {
       <ProjectHero
         title="Wola House"
         subtitle="Nowoczesny dom w zabudowie bliźniaczej"
-        location="Wola, Warszawa"
+        location="Nowa Wola, Warszawa"
         image="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/generate_new_render_another_vi_Nano_Banana_Pro_49228-nQrBnyrpTy4QEGHVF70e823mUX2brZ.jpg"
       />
       <AboutSection />
