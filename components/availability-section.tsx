@@ -210,14 +210,14 @@ export function AvailabilitySection() {
               />
             </div>
 
-            {/* Left half — Segment A (50% width) */}
+            {/* Left half — Segment A (51.5% width) */}
             <button
               type="button"
               aria-label="Segment A - Dostępny"
               onMouseEnter={() => setActiveUnit("A")}
               onClick={() => setActiveUnit((p) => (p === "A" ? null : "A"))}
-              className="absolute inset-y-0 left-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
-              style={{ backgroundColor: getHalfBg("A") }}
+              className="absolute inset-y-0 left-0 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ width: "51.5%", backgroundColor: getHalfBg("A") }}
             >
               <span
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
@@ -230,14 +230,14 @@ export function AvailabilitySection() {
               </span>
             </button>
 
-            {/* Right half — Segment B (50% width) */}
+            {/* Right half — Segment B (48.5% width) */}
             <button
               type="button"
               aria-label="Segment B - Zarezerwowany"
               onMouseEnter={() => setActiveUnit("B")}
               onClick={() => setActiveUnit((p) => (p === "B" ? null : "B"))}
-              className="absolute inset-y-0 right-0 w-1/2 border-0 p-0 focus:outline-none transition-colors duration-300"
-              style={{ backgroundColor: getHalfBg("B") }}
+              className="absolute inset-y-0 right-0 border-0 p-0 focus:outline-none transition-colors duration-300"
+              style={{ width: "48.5%", backgroundColor: getHalfBg("B") }}
             >
               <span
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
@@ -250,8 +250,8 @@ export function AvailabilitySection() {
               </span>
             </button>
 
-            {/* Divider — at center (50%) */}
-            <div className="pointer-events-none absolute inset-y-0 left-1/2 w-0.5 bg-white/60" />
+            {/* Divider — at 51.5% to align with gap between houses */}
+            <div className="pointer-events-none absolute inset-y-0 w-0.5 bg-white/60" style={{ left: "51.5%" }} />
           </div>
 
           {/* Unit info cards below the image */}
