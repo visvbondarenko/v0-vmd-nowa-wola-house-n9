@@ -10,8 +10,8 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const { id } = await params
-  const project = await prisma.project.findUnique({
-    where: { id },
+  const project = await prisma.project.findFirst({
+    where: { OR: [{ id }, { slug: id }] },
     include: {
       units: { orderBy: { label: 'asc' } },
       houseTypes: {
