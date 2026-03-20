@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Project {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  location    String
+  description String?     @db.Text
+  svgContent   String?     @db.Text
+  imageUrl     String?
+  planImageUrl String?
+  status       String      @default("active")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  units       Unit[]
+  houseTypes  HouseType[]
+  planViews   PlanView[]
+}
+
+model PlanView {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name       String
+  imageUrl   String?
+  svgContent String?  @db.Text
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Unit {
+  id           String     @id @default(cuid())
+  projectId    String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  houseTypeId  String?
+  houseType    HouseType? @relation(fields: [houseTypeId], references: [id], onDelete: SetNull)
+  svgElementId String
+  label        String
+  status       String     @default("available")
+  stage        String?
+  area         Float?
+  gardenArea   Float?
+  floor         String?
+  rooms         Int?
+  floors        Int?
+  buildingLabel String?
+  price         Int?
+  description   String?    @db.Text
+  updatedAt     DateTime   @updatedAt
+
+  @@unique([projectId, svgElementId])
+}
+
+model HouseType {
+  id         String      @id @default(cuid())
+  projectId  String
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name       String
+  totalArea  Float?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  floorPlans FloorPlan[]
+  units      Unit[]
+}
+
+model FloorPlan {
+  id          String    @id @default(cuid())
+  houseTypeId String
+  houseType   HouseType @relation(fields: [houseTypeId], references: [id], onDelete: Cascade)
+  name        String
+  area        Float?
+  image3dUrl  String?
+  image2dUrl  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  rooms       Room[]
+}
+
+model Room {
+  id          String    @id @default(cuid())
+  floorPlanId String
+  floorPlan   FloorPlan @relation(fields: [floorPlanId], references: [id], onDelete: Cascade)
+  number      Int?
+  name        String
+  area        Float?
+  createdAt   DateTime  @default(now())
+}
