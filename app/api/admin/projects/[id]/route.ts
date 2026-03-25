@@ -23,6 +23,8 @@ export async function GET(
         },
         orderBy: { createdAt: 'asc' },
       },
+      aboutFeatures: { orderBy: { order: 'asc' } },
+      galleryImages: { orderBy: { order: 'asc' } },
     },
   })
   if (!project) return NextResponse.json({ error: 'Not found' }, { status: 404 })

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -11,11 +11,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ArrowLeft, Save, Trash2, Plus, ExternalLink, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Plus, ExternalLink, RotateCcw, Upload, Loader2, GripVertical } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { HouseTypesManager } from '@/components/admin/house-types-manager'
 import AdminPlanEditor from '@/components/admin/admin-plan-editor'
 import { AdminPlanViewEditor } from '@/components/admin/admin-plan-view-editor'
+
+const AVAILABLE_ICONS = [
+  'Home', 'Ruler', 'TreePine', 'ShieldCheck', 'School', 'Waves',
+  'ChevronsUp', 'LayoutDashboard', 'Building', 'Car', 'MapPin', 'Sun',
+  'Star', 'Heart', 'Zap', 'Leaf', 'Bed', 'Bath', 'Trees',
+]
 
 type Unit = {
   id: string
@@ -34,6 +40,22 @@ type Unit = {
   houseTypeId: string | null
 }
 
+type AboutFeature = {
+  id: string
+  icon: string
+  title: string
+  description: string
+  order: number
+}
+
+type GalleryImage = {
+  id: string
+  src: string
+  alt: string
+  label: string
+  order: number
+}
+
 type Project = {
   id: string
   name: string
@@ -44,6 +66,16 @@ type Project = {
   imageUrl: string | null
   planImageUrl: string | null
   status: string
+  heroSubtitle: string | null
+  aboutHeading: string | null
+  aboutText: string | null
+  mapEmbedUrl: string | null
+  locationAddress: string | null
+  locationTransport: string | null
+  locationSurroundings: string | null
+  contactPhone: string | null
+  contactEmail: string | null
+  contactAddress: string | null
   units: Unit[]
   houseTypes: Array<{
     id: string
@@ -58,6 +90,16 @@ type Project = {
       rooms: Array<{ id: string; name: string; area: number | null; number: number | null }>
     }>
   }>
+  aboutFeatures: AboutFeature[]
+  galleryImages: GalleryImage[]
+}
+
+async function uploadImage(file: File): Promise<string> {
+  const form = new FormData()
+  form.append('file', file)
+  const res = await fetch('/api/admin/upload', { method: 'POST', body: form })
+  const data = await res.json()
+  return data.url
 }
 
 export default function EditProjectPage() {
@@ -77,6 +119,10 @@ export default function EditProjectPage() {
     stage: '', gardenArea: '', floor: '', houseTypeId: ''
   })
   const [addingUnit, setAddingUnit] = useState(false)
+
+  // Gallery upload state
+  const [uploadingGallery, setUploadingGallery] = useState<string | null>(null)
+  const galleryFileRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
   const fetchProject = useCallback(async () => {
     const res = await fetch(`/api/admin/projects/${id}`)
@@ -103,6 +149,16 @@ export default function EditProjectPage() {
         description: project.description,
         status: project.status,
         imageUrl: project.imageUrl,
+        heroSubtitle: project.heroSubtitle,
+        aboutHeading: project.aboutHeading,
+        aboutText: project.aboutText,
+        mapEmbedUrl: project.mapEmbedUrl,
+        locationAddress: project.locationAddress,
+        locationTransport: project.locationTransport,
+        locationSurroundings: project.locationSurroundings,
+        contactPhone: project.contactPhone,
+        contactEmail: project.contactEmail,
+        contactAddress: project.contactAddress,
       }),
     })
     if (res.ok) {
@@ -178,6 +234,96 @@ export default function EditProjectPage() {
     })
   }
 
+  // ── About Features ────────────────────────────────────────────────────────────
+
+  const handleAddFeature = async () => {
+    const res = await fetch('/api/admin/about-features', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectId: id,
+        icon: 'Home',
+        title: 'Nowa cecha',
+        description: 'Opis cechy',
+        order: (project?.aboutFeatures.length ?? 0),
+      }),
+    })
+    if (res.ok) {
+      const feature = await res.json()
+      setProject((p) => p ? { ...p, aboutFeatures: [...p.aboutFeatures, feature] } : p)
+    }
+  }
+
+  const handleUpdateFeature = async (featureId: string, data: Partial<AboutFeature>) => {
+    await fetch(`/api/admin/about-features/${featureId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    setProject((p) =>
+      p ? { ...p, aboutFeatures: p.aboutFeatures.map((f) => f.id === featureId ? { ...f, ...data } : f) } : p
+    )
+  }
+
+  const handleDeleteFeature = async (featureId: string) => {
+    if (!confirm('Usuń tę cechę?')) return
+    await fetch(`/api/admin/about-features/${featureId}`, { method: 'DELETE' })
+    setProject((p) =>
+      p ? { ...p, aboutFeatures: p.aboutFeatures.filter((f) => f.id !== featureId) } : p
+    )
+  }
+
+  // ── Gallery Images ────────────────────────────────────────────────────────────
+
+  const handleAddGalleryImage = async () => {
+    const res = await fetch('/api/admin/gallery-images', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        projectId: id,
+        src: '',
+        alt: '',
+        label: '',
+        order: (project?.galleryImages.length ?? 0),
+      }),
+    })
+    if (res.ok) {
+      const image = await res.json()
+      setProject((p) => p ? { ...p, galleryImages: [...p.galleryImages, image] } : p)
+    }
+  }
+
+  const handleUpdateGalleryImage = async (imageId: string, data: Partial<GalleryImage>) => {
+    await fetch(`/api/admin/gallery-images/${imageId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+    setProject((p) =>
+      p ? { ...p, galleryImages: p.galleryImages.map((img) => img.id === imageId ? { ...img, ...data } : img) } : p
+    )
+  }
+
+  const handleDeleteGalleryImage = async (imageId: string) => {
+    if (!confirm('Usuń to zdjęcie?')) return
+    await fetch(`/api/admin/gallery-images/${imageId}`, { method: 'DELETE' })
+    setProject((p) =>
+      p ? { ...p, galleryImages: p.galleryImages.filter((img) => img.id !== imageId) } : p
+    )
+  }
+
+  const handleGalleryImageUpload = async (imageId: string, file: File) => {
+    setUploadingGallery(imageId)
+    try {
+      const url = await uploadImage(file)
+      await handleUpdateGalleryImage(imageId, { src: url })
+    } catch {
+      alert('Błąd uploadu')
+    } finally {
+      setUploadingGallery(null)
+    }
+  }
+
   if (loading) return <div className="flex items-center justify-center py-20 text-muted-foreground">Ładowanie...</div>
   if (!project) return <div className="text-center py-20 text-muted-foreground">Nie znaleziono projektu</div>
 
@@ -219,6 +365,7 @@ export default function EditProjectPage() {
         </div>
       )}
 
+      {/* ── Informacje podstawowe + Hero ─────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2">
           <Card>
@@ -250,14 +397,23 @@ export default function EditProjectPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>URL zdjęcia</Label>
+                <Label>URL zdjęcia hero</Label>
                 <Input
                   value={project.imageUrl || ''}
                   onChange={(e) => setProject((p) => p ? { ...p, imageUrl: e.target.value } : p)}
+                  placeholder="https://..."
                 />
               </div>
               <div className="space-y-2">
-                <Label>Opis</Label>
+                <Label>Podtytuł hero</Label>
+                <Input
+                  value={project.heroSubtitle || ''}
+                  onChange={(e) => setProject((p) => p ? { ...p, heroSubtitle: e.target.value } : p)}
+                  placeholder="Nowoczesny dom w zabudowie bliźniaczej"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Opis (meta)</Label>
                 <Textarea
                   value={project.description || ''}
                   onChange={(e) => setProject((p) => p ? { ...p, description: e.target.value } : p)}
@@ -324,7 +480,339 @@ export default function EditProjectPage() {
         </div>
       </div>
 
-      {/* Interactive Plan Editor */}
+      {/* ── O inwestycji ──────────────────────────────────────────────────────── */}
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>O inwestycji</CardTitle>
+            <Button size="sm" onClick={handleSaveDetails} disabled={saving}>
+              <Save className="h-3.5 w-3.5 mr-1.5" />
+              Zapisz
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Nagłówek sekcji</Label>
+            <Input
+              value={project.aboutHeading || ''}
+              onChange={(e) => setProject((p) => p ? { ...p, aboutHeading: e.target.value } : p)}
+              placeholder="Dom, który wyznacza standardy"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Tekst główny</Label>
+            <Textarea
+              value={project.aboutText || ''}
+              onChange={(e) => setProject((p) => p ? { ...p, aboutText: e.target.value } : p)}
+              rows={4}
+              placeholder="Opis inwestycji..."
+            />
+          </div>
+
+          {/* Features / Plates */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <Label>Cechy inwestycji ({project.aboutFeatures.length})</Label>
+              <Button size="sm" variant="outline" onClick={handleAddFeature}>
+                <Plus className="h-3.5 w-3.5 mr-1.5" />
+                Dodaj cechę
+              </Button>
+            </div>
+            {project.aboutFeatures.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-4 text-center border border-dashed rounded-lg">
+                Brak cech. Kliknij &quot;Dodaj cechę&quot; aby dodać pierwszą.
+              </p>
+            ) : (
+              <div className="grid gap-3">
+                {project.aboutFeatures.map((feature) => (
+                  <div key={feature.id} className="border border-border rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <GripVertical className="h-4 w-4 mt-2 text-muted-foreground shrink-0" />
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Ikona</Label>
+                          <Select
+                            value={feature.icon}
+                            onValueChange={(v) => handleUpdateFeature(feature.id, { icon: v })}
+                          >
+                            <SelectTrigger className="h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {AVAILABLE_ICONS.map((icon) => (
+                                <SelectItem key={icon} value={icon}>{icon}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Tytuł</Label>
+                          <Input
+                            className="h-8"
+                            value={feature.title}
+                            onChange={(e) => setProject((p) =>
+                              p ? { ...p, aboutFeatures: p.aboutFeatures.map((f) => f.id === feature.id ? { ...f, title: e.target.value } : f) } : p
+                            )}
+                            onBlur={(e) => handleUpdateFeature(feature.id, { title: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Kolejność</Label>
+                          <Input
+                            className="h-8"
+                            type="number"
+                            value={feature.order}
+                            onChange={(e) => setProject((p) =>
+                              p ? { ...p, aboutFeatures: p.aboutFeatures.map((f) => f.id === feature.id ? { ...f, order: parseInt(e.target.value) || 0 } : f) } : p
+                            )}
+                            onBlur={(e) => handleUpdateFeature(feature.id, { order: parseInt(e.target.value) || 0 })}
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
+                        onClick={() => handleDeleteFeature(feature.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="ml-7 space-y-1">
+                      <Label className="text-xs">Opis</Label>
+                      <Textarea
+                        className="text-sm"
+                        value={feature.description}
+                        rows={2}
+                        onChange={(e) => setProject((p) =>
+                          p ? { ...p, aboutFeatures: p.aboutFeatures.map((f) => f.id === feature.id ? { ...f, description: e.target.value } : f) } : p
+                        )}
+                        onBlur={(e) => handleUpdateFeature(feature.id, { description: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Galeria ────────────────────────────────────────────────────────────── */}
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Galeria ({project.galleryImages.length})</CardTitle>
+            <Button size="sm" onClick={handleAddGalleryImage}>
+              <Plus className="h-3.5 w-3.5 mr-1.5" />
+              Dodaj zdjęcie
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {project.galleryImages.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-4 text-center border border-dashed rounded-lg">
+              Brak zdjęć. Kliknij &quot;Dodaj zdjęcie&quot; aby dodać pierwsze.
+            </p>
+          ) : (
+            <div className="grid gap-4">
+              {project.galleryImages.map((image) => (
+                <div key={image.id} className="border border-border rounded-lg p-4">
+                  <div className="flex items-start gap-4">
+                    {/* Thumbnail */}
+                    <div className="w-20 h-16 rounded-lg overflow-hidden bg-muted shrink-0 flex items-center justify-center">
+                      {image.src ? (
+                        <img src={image.src} alt={image.alt || 'gallery'} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Brak</span>
+                      )}
+                    </div>
+
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {/* Src + upload */}
+                      <div className="sm:col-span-3 space-y-1">
+                        <Label className="text-xs">URL zdjęcia</Label>
+                        <div className="flex gap-2">
+                          <Input
+                            className="h-8 text-sm flex-1"
+                            value={image.src}
+                            placeholder="https://..."
+                            onChange={(e) => setProject((p) =>
+                              p ? { ...p, galleryImages: p.galleryImages.map((img) => img.id === image.id ? { ...img, src: e.target.value } : img) } : p
+                            )}
+                            onBlur={(e) => handleUpdateGalleryImage(image.id, { src: e.target.value })}
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            ref={(el) => { galleryFileRefs.current[image.id] = el }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0]
+                              if (file) handleGalleryImageUpload(image.id, file)
+                            }}
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-8 shrink-0"
+                            disabled={uploadingGallery === image.id}
+                            onClick={() => galleryFileRefs.current[image.id]?.click()}
+                          >
+                            {uploadingGallery === image.id
+                              ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              : <Upload className="h-3.5 w-3.5" />
+                            }
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Alt (opis dla SEO)</Label>
+                        <Input
+                          className="h-8 text-sm"
+                          value={image.alt}
+                          onChange={(e) => setProject((p) =>
+                            p ? { ...p, galleryImages: p.galleryImages.map((img) => img.id === image.id ? { ...img, alt: e.target.value } : img) } : p
+                          )}
+                          onBlur={(e) => handleUpdateGalleryImage(image.id, { alt: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Etykieta (label)</Label>
+                        <Input
+                          className="h-8 text-sm"
+                          value={image.label}
+                          onChange={(e) => setProject((p) =>
+                            p ? { ...p, galleryImages: p.galleryImages.map((img) => img.id === image.id ? { ...img, label: e.target.value } : img) } : p
+                          )}
+                          onBlur={(e) => handleUpdateGalleryImage(image.id, { label: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">Kolejność</Label>
+                        <Input
+                          className="h-8 text-sm"
+                          type="number"
+                          value={image.order}
+                          onChange={(e) => setProject((p) =>
+                            p ? { ...p, galleryImages: p.galleryImages.map((img) => img.id === image.id ? { ...img, order: parseInt(e.target.value) || 0 } : img) } : p
+                          )}
+                          onBlur={(e) => handleUpdateGalleryImage(image.id, { order: parseInt(e.target.value) || 0 })}
+                        />
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
+                      onClick={() => handleDeleteGalleryImage(image.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Lokalizacja ───────────────────────────────────────────────────────── */}
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Lokalizacja</CardTitle>
+            <Button size="sm" onClick={handleSaveDetails} disabled={saving}>
+              <Save className="h-3.5 w-3.5 mr-1.5" />
+              Zapisz
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>URL osadzonej mapy Google (iframe src)</Label>
+            <Input
+              value={project.mapEmbedUrl || ''}
+              onChange={(e) => setProject((p) => p ? { ...p, mapEmbedUrl: e.target.value } : p)}
+              placeholder="https://www.google.com/maps/embed?pb=..."
+            />
+            <p className="text-xs text-muted-foreground">
+              W Google Maps kliknij Udostępnij → Osadź mapę → skopiuj wartość src=""
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label>Adres</Label>
+              <Input
+                value={project.locationAddress || ''}
+                onChange={(e) => setProject((p) => p ? { ...p, locationAddress: e.target.value } : p)}
+                placeholder="ul. Krasickiego 187, Nowa Wola"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Komunikacja</Label>
+              <Input
+                value={project.locationTransport || ''}
+                onChange={(e) => setProject((p) => p ? { ...p, locationTransport: e.target.value } : p)}
+                placeholder="Dostęp do drogi krajowej..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Otoczenie</Label>
+              <Input
+                value={project.locationSurroundings || ''}
+                onChange={(e) => setProject((p) => p ? { ...p, locationSurroundings: e.target.value } : p)}
+                placeholder="Spokojna okolica, tereny zielone..."
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Kontakt ───────────────────────────────────────────────────────────── */}
+      <Card className="mb-6">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Kontakt</CardTitle>
+            <Button size="sm" onClick={handleSaveDetails} disabled={saving}>
+              <Save className="h-3.5 w-3.5 mr-1.5" />
+              Zapisz
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label>Telefon</Label>
+              <Input
+                value={project.contactPhone || ''}
+                onChange={(e) => setProject((p) => p ? { ...p, contactPhone: e.target.value } : p)}
+                placeholder="+48 452 068 785"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>E-mail</Label>
+              <Input
+                value={project.contactEmail || ''}
+                onChange={(e) => setProject((p) => p ? { ...p, contactEmail: e.target.value } : p)}
+                placeholder="kontakt@example.com"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Adres biura</Label>
+              <Input
+                value={project.contactAddress || ''}
+                onChange={(e) => setProject((p) => p ? { ...p, contactAddress: e.target.value } : p)}
+                placeholder="ul. Patriotów 110, Warszawa"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ── Interactive Plan Editor ─────────────────────────────────────────── */}
       <div className="mb-6">
         <AdminPlanEditor
           projectId={id}
@@ -336,7 +824,7 @@ export default function EditProjectPage() {
         />
       </div>
 
-      {/* Plan View Editor */}
+      {/* ── Plan View Editor ───────────────────────────────────────────────── */}
       <div className="mb-6">
         <AdminPlanViewEditor
           projectId={id}
@@ -344,7 +832,7 @@ export default function EditProjectPage() {
         />
       </div>
 
-      {/* Units Table */}
+      {/* ── Units Table ─────────────────────────────────────────────────────── */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -489,14 +977,14 @@ export default function EditProjectPage() {
         </CardContent>
       </Card>
 
-      {/* House Types Manager */}
+      {/* ── House Types Manager ─────────────────────────────────────────────── */}
       {project.houseTypes !== undefined && (
         <div className="mt-6">
           <HouseTypesManager projectId={id} initialHouseTypes={project.houseTypes} />
         </div>
       )}
 
-      {/* Add Unit Dialog */}
+      {/* ── Add Unit Dialog ─────────────────────────────────────────────────── */}
       <Dialog open={showAddUnit} onOpenChange={setShowAddUnit}>
         <DialogContent>
           <DialogHeader>
