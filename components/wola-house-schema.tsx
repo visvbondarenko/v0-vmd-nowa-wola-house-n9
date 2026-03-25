@@ -144,7 +144,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
 
     return svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${styles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%">`)
+      .replace(/<svg([^>]*)>/, `<svg$1>`)
   }, [svgContent, planImageUrl, units, filteredUnits, hoveredUnit, selectedUnit])
 
   const coloredViewSvg = useCallback((pv: PlanViewItem): string => {
@@ -164,7 +164,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
     }).join('\n')
     return pv.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${baseStyle}\n${unitStyles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%">`)
+      .replace(/<svg([^>]*)>/, `<svg$1>`)
   }, [units, selectedUnit])
 
   const activeView = planViews.find(v => v.id === activeViewId) ?? null
@@ -334,7 +334,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
             <div className="relative">
               {activeView ? (
                 <div
-                  className={`aspect-[4/3] border border-border/60 rounded-2xl overflow-hidden bg-card shadow-sm transition-all duration-300 ease-out ${
+                  className={`aspect-[4/3] flex items-center justify-center rounded-2xl overflow-hidden bg-muted shadow-xl transition-all duration-300 ease-out [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto ${
                     isAnimating
                       ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                       : 'opacity-100 translate-x-0'
@@ -346,7 +346,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                 <>
                   <div
                     ref={svgRef}
-                    className={`aspect-[4/3] border border-border/60 rounded-2xl overflow-hidden bg-card shadow-sm transition-all duration-300 ease-out ${
+                    className={`aspect-[4/3] flex items-center justify-center rounded-2xl overflow-hidden bg-muted shadow-xl transition-all duration-300 ease-out [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto ${
                       isAnimating
                         ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                         : 'opacity-100 translate-x-0'
@@ -375,7 +375,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                   )}
                 </>
               ) : (
-                <div className="border border-border/60 rounded-2xl p-16 text-center bg-secondary/30">
+                <div className="aspect-[4/3] flex items-center justify-center rounded-2xl bg-muted shadow-xl">
                   <p className="text-base text-muted-foreground">Plan zagospodarowania nie jest jeszcze dostępny.</p>
                 </div>
               )}
