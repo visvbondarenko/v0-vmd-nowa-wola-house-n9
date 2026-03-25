@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
 const images = [
@@ -41,14 +41,38 @@ export function GallerySection() {
 
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
-  const prevImage = () =>
+  const prevImage = useCallback(() =>
     setLightboxIndex((prev) =>
       prev !== null ? (prev - 1 + images.length) % images.length : null
-    );
-  const nextImage = () =>
+    ), []);
+  const nextImage = useCallback(() =>
     setLightboxIndex((prev) =>
       prev !== null ? (prev + 1) % images.length : null
-    );
+    ), []);
+
+  // Keyboard and scroll navigation in lightbox
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') prevImage();
+      else if (e.key === 'ArrowRight') nextImage();
+      else if (e.key === 'Escape') closeLightbox();
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (e.deltaY > 0 || e.deltaX > 0) nextImage();
+      else if (e.deltaY < 0 || e.deltaX < 0) prevImage();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [lightboxIndex, prevImage, nextImage]);
 
   return (
     <section id="galeria" className="bg-secondary/30 py-24 lg:py-32">
@@ -183,6 +207,19 @@ export function GallerySection() {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
           onClick={closeLightbox}
+          onTouchStart={(e) => {
+            const touch = e.touches[0];
+            (e.currentTarget as HTMLElement).dataset.touchX = String(touch.clientX);
+          }}
+          onTouchEnd={(e) => {
+            const startX = Number((e.currentTarget as HTMLElement).dataset.touchX);
+            const endX = e.changedTouches[0].clientX;
+            const diff = startX - endX;
+            if (Math.abs(diff) > 50) {
+              if (diff > 0) nextImage();
+              else prevImage();
+            }
+          }}
           role="dialog"
           aria-label="Powiekszone zdjecie"
         >

@@ -37,9 +37,9 @@ export type WolaHouseSchemaProps = {
 }
 
 const STATUS_CONFIG = {
-  available: { label: 'Dostępna', fill: '#22c55e', stroke: '#16a34a', badgeBg: 'bg-green-600', dotColor: 'bg-green-400' },
-  reserved: { label: 'Zarezerwowana', fill: '#f59e0b', stroke: '#ca8a04', badgeBg: 'bg-amber-500', dotColor: 'bg-amber-400' },
-  sold: { label: 'Sprzedana', fill: '#ef4444', stroke: '#dc2626', badgeBg: 'bg-red-600', dotColor: 'bg-red-400' },
+  available: { label: 'Dostępny', fill: '#22c55e', stroke: '#16a34a', badgeBg: 'bg-green-600', dotColor: 'bg-green-400' },
+  reserved: { label: 'Zarezerwowany', fill: '#f59e0b', stroke: '#ca8a04', badgeBg: 'bg-amber-500', dotColor: 'bg-amber-400' },
+  sold: { label: 'Sprzedany', fill: '#ef4444', stroke: '#dc2626', badgeBg: 'bg-red-600', dotColor: 'bg-red-400' },
 }
 type StatusKey = keyof typeof STATUS_CONFIG
 
@@ -144,7 +144,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
 
     return svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${styles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:auto">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%">`)
   }, [svgContent, planImageUrl, units, filteredUnits, hoveredUnit, selectedUnit])
 
   const coloredViewSvg = useCallback((pv: PlanViewItem): string => {
@@ -164,7 +164,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
     }).join('\n')
     return pv.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${baseStyle}\n${unitStyles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:auto">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%">`)
   }, [units, selectedUnit])
 
   const activeView = planViews.find(v => v.id === activeViewId) ?? null
@@ -329,12 +329,12 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
             </div>
           )}
 
-          {/* MAP VIEW - 50% smaller, centered */}
+          {/* MAP VIEW */}
           <div className="space-y-5">
-            <div className="relative mx-auto max-w-xl">
+            <div className="relative">
               {activeView ? (
                 <div
-                  className={`border border-border/60 rounded-2xl overflow-hidden bg-card shadow-sm transition-all duration-300 ease-out ${
+                  className={`aspect-[4/3] border border-border/60 rounded-2xl overflow-hidden bg-card shadow-sm transition-all duration-300 ease-out ${
                     isAnimating
                       ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                       : 'opacity-100 translate-x-0'
@@ -346,7 +346,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                 <>
                   <div
                     ref={svgRef}
-                    className={`border border-border/60 rounded-2xl overflow-hidden bg-card shadow-sm transition-all duration-300 ease-out ${
+                    className={`aspect-[4/3] border border-border/60 rounded-2xl overflow-hidden bg-card shadow-sm transition-all duration-300 ease-out ${
                       isAnimating
                         ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                         : 'opacity-100 translate-x-0'
