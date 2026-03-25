@@ -1,36 +1,29 @@
 import { ArrowRight, Clock } from "lucide-react";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
-const projects = [
-  {
-    slug: "wola-house",
-    title: "Wola House",
-    subtitle: "Zabudowa bliźniacza",
-    location: "Nowa Wola, Warszawa",
-    status: "W sprzedaży",
-    statusColor: "bg-green-600",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-xa3DocGaCiWnb6dS8v76n5TKcWJP8E.jpg",
-    description:
-      "Wyjątkowy projekt oferujący więcej przestrzeni użytkowej niż standardowe domy bliźniacze. Nowoczesna architektura z cegłą klinkierową i ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 130 m² z prywatnym ogrodem 300 m².",
-    available: true,
-  },
-  {
-    slug: null,
-    title: "Nowy projekt",
-    subtitle: "Wkrótce",
-    location: "Lokalizacja w przygotowaniu",
-    status: "Wkrótce",
-    statusColor: "bg-muted-foreground",
-    image:
-      "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/I_need_realistic_renders_for_m_Nano_Banana_Pro_26318-ShJALlqmncXEn3bM37Uy5YIBtbCJoI.jpg",
-    description:
-      "Kolejna inwestycja VMD Development jest w fazie planowania. Śledź nasze aktualności, aby nie przegapić premiery.",
-    available: false,
-  },
-];
+const STATUS_MAP: Record<string, { label: string; color: string }> = {
+  active:    { label: "W sprzedaży",  color: "bg-green-600" },
+  planned:   { label: "Wkrótce",      color: "bg-muted-foreground" },
+  completed: { label: "Zakończona",   color: "bg-gray-600" },
+};
 
-export function ProjectsSection() {
+export async function ProjectsSection() {
+  const dbProjects = await prisma.project.findMany({
+    where: { published: true },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      location: true,
+      description: true,
+      imageUrl: true,
+      heroSubtitle: true,
+      status: true,
+    },
+  });
+
   return (
     <section id="projekty" className="py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -49,108 +42,132 @@ export function ProjectsSection() {
 
         {/* Projects grid */}
         <div className="mt-16 grid gap-8 md:grid-cols-2">
-          {projects.map((project) =>
-            project.available && project.slug ? (
+          {/* Hardcoded wola-house card (always shown) */}
+          <Link
+            href="/projects/wola-house"
+            className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-xl"
+          >
+            <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-xa3DocGaCiWnb6dS8v76n5TKcWJP8E.jpg"
+                alt="Wola House"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute top-4 left-4">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white bg-green-600">
+                  W sprzedaży
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-1 flex-col p-8">
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Nowa Wola, Warszawa
+              </p>
+              <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
+                Wola House
+              </h3>
+              <p className="mt-1 text-sm font-medium text-primary">
+                Zabudowa bliźniacza
+              </p>
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                Wyjątkowy projekt oferujący więcej przestrzeni użytkowej niż standardowe domy bliźniacze. Nowoczesna architektura z cegłą klinkierową i ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 130 m² z prywatnym ogrodem 300 m².
+              </p>
+              <div className="mt-6">
+                <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
+                  Dowiedz się więcej
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Published DB projects */}
+          {dbProjects.map((project) => {
+            const st = STATUS_MAP[project.status] ?? STATUS_MAP.active
+            return (
               <Link
-                key={project.title}
+                key={project.id}
                 href={`/projects/${project.slug}`}
                 className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-xl"
               >
-              {/* Image */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-                {project.image ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-secondary">
-                    <Clock className="h-12 w-12 text-muted-foreground/40" />
+                <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                  {project.imageUrl ? (
+                    <img
+                      src={project.imageUrl}
+                      alt={project.name}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-secondary">
+                      <Clock className="h-12 w-12 text-muted-foreground/40" />
+                    </div>
+                  )}
+                  <div className="absolute top-4 left-4">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white ${st.color}`}>
+                      {st.label}
+                    </span>
                   </div>
-                )}
-                {/* Status badge */}
-                <div className="absolute top-4 left-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white ${project.statusColor}`}
-                  >
-                    {project.status}
-                  </span>
                 </div>
-              </div>
-
-              {/* Content */}
-              <div className="flex flex-1 flex-col p-8">
-                <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                  {project.location}
-                </p>
-                <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
-                  {project.title}
-                </h3>
-                <p className="mt-1 text-sm font-medium text-primary">
-                  {project.subtitle}
-                </p>
-                <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {project.description}
-                </p>
-
-                <div className="mt-6">
-                  <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
-                    {"Dowiedz się więcej"}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ) : (
-            <div
-              key={project.title}
-              className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 opacity-70"
-            >
-              {/* Image */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-                {project.image ? (
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-secondary">
-                    <Clock className="h-12 w-12 text-muted-foreground/40" />
+                <div className="flex flex-1 flex-col p-8">
+                  <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                    {project.location}
+                  </p>
+                  <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
+                    {project.name}
+                  </h3>
+                  {project.heroSubtitle && (
+                    <p className="mt-1 text-sm font-medium text-primary">
+                      {project.heroSubtitle}
+                    </p>
+                  )}
+                  {project.description && (
+                    <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                      {project.description}
+                    </p>
+                  )}
+                  <div className="mt-6">
+                    <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
+                      Dowiedz się więcej
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
                   </div>
-                )}
-                {/* Status badge */}
-                <div className="absolute top-4 left-4">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white ${project.statusColor}`}
-                  >
-                    {project.status}
-                  </span>
                 </div>
-              </div>
+              </Link>
+            )
+          })}
 
-              {/* Content */}
-              <div className="flex flex-1 flex-col p-8">
-                <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                  {project.location}
-                </p>
-                <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
-                  {project.title}
-                </h3>
-                <p className="mt-1 text-sm font-medium text-primary">
-                  {project.subtitle}
-                </p>
-                <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                  {project.description}
-                </p>
-                <p className="mt-6 text-sm font-medium text-muted-foreground/60 uppercase tracking-widest">
-                  {"Informacje wkrótce"}
-                </p>
+          {/* "Coming soon" placeholder */}
+          <div className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 opacity-70">
+            <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/I_need_realistic_renders_for_m_Nano_Banana_Pro_26318-ShJALlqmncXEn3bM37Uy5YIBtbCJoI.jpg"
+                alt="Nowy projekt"
+                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute top-4 left-4">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white bg-muted-foreground">
+                  Wkrótce
+                </span>
               </div>
             </div>
-          )
-        )}
+            <div className="flex flex-1 flex-col p-8">
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Lokalizacja w przygotowaniu
+              </p>
+              <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
+                Nowy projekt
+              </h3>
+              <p className="mt-1 text-sm font-medium text-primary">
+                Wkrótce
+              </p>
+              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
+                Kolejna inwestycja VMD Development jest w fazie planowania. Śledź nasze aktualności, aby nie przegapić premiery.
+              </p>
+              <p className="mt-6 text-sm font-medium text-muted-foreground/60 uppercase tracking-widest">
+                Informacje wkrótce
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ArrowLeft, Save, Trash2, Plus, ExternalLink, RotateCcw, Upload, Loader2, GripVertical } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, Plus, ExternalLink, RotateCcw, Upload, Loader2, GripVertical, Globe } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { HouseTypesManager } from '@/components/admin/house-types-manager'
 import AdminPlanEditor from '@/components/admin/admin-plan-editor'
@@ -66,6 +66,7 @@ type Project = {
   imageUrl: string | null
   planImageUrl: string | null
   status: string
+  published: boolean
   heroSubtitle: string | null
   aboutHeading: string | null
   aboutText: string | null
@@ -148,6 +149,7 @@ export default function EditProjectPage() {
         location: project.location,
         description: project.description,
         status: project.status,
+        published: project.published,
         imageUrl: project.imageUrl,
         heroSubtitle: project.heroSubtitle,
         aboutHeading: project.aboutHeading,
@@ -427,7 +429,7 @@ export default function EditProjectPage() {
         <div className="space-y-4">
           <Card>
             <CardHeader><CardTitle>Status</CardTitle></CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               <Select
                 value={project.status}
                 onValueChange={(v) => setProject((p) => p ? { ...p, status: v } : p)}
@@ -441,6 +443,35 @@ export default function EditProjectPage() {
                   <SelectItem value="completed">Zakończona</SelectItem>
                 </SelectContent>
               </Select>
+
+              {/* Publish toggle */}
+              <button
+                type="button"
+                onClick={() => setProject((p) => p ? { ...p, published: !p.published } : p)}
+                className={`w-full flex items-center gap-3 rounded-lg border-2 px-4 py-3 text-sm font-medium transition-all ${
+                  project.published
+                    ? 'border-green-500 bg-green-50 text-green-700'
+                    : 'border-border bg-background text-muted-foreground hover:border-primary/40'
+                }`}
+              >
+                <Globe className={`h-4 w-4 shrink-0 ${project.published ? 'text-green-600' : ''}`} />
+                <div className="flex-1 text-left">
+                  <div className="font-semibold leading-none">
+                    {project.published ? 'Opublikowano' : 'Opublikuj na stronie'}
+                  </div>
+                  <div className="mt-0.5 text-xs opacity-70">
+                    {project.published
+                      ? 'Widoczne w Nasze inwestycje'
+                      : 'Dodaj do listy Nasze inwestycje'}
+                  </div>
+                </div>
+                <div className={`h-4 w-8 rounded-full transition-colors ${project.published ? 'bg-green-500' : 'bg-muted'}`}>
+                  <div className={`h-4 w-4 rounded-full bg-white shadow transition-transform ${project.published ? 'translate-x-4' : ''}`} />
+                </div>
+              </button>
+              <p className="text-xs text-muted-foreground -mt-1">
+                Pamiętaj aby kliknąć &quot;Zapisz zmiany&quot; po zmianie.
+              </p>
             </CardContent>
           </Card>
 
