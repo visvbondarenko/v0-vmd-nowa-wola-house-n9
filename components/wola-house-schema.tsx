@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -53,6 +53,7 @@ type SortDir = 'asc' | 'desc'
 
 export function WolaHouseSchema({ projectName, description, svgContent, planImageUrl, units, houseTypes, planViews }: WolaHouseSchemaProps) {
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null)
+  const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; unit: Unit } | null>(null)
   const [activeViewId, setActiveViewId] = useState<string | null>(null)
@@ -60,7 +61,6 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
   const [activeHouseTypeIndex, setActiveHouseTypeIndex] = useState(0)
   const [activeFloor, setActiveFloor] = useState(0)
   const svgRef = useRef<HTMLDivElement>(null)
-  const houseTypesSectionRef = useRef<HTMLDivElement>(null)
 
   // Filters
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -128,9 +128,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       let fill: string, fillOpacity: string, stroke: string, sw: string
       if (isFiltered) {
         fill = 'transparent'; fillOpacity = '0'; stroke = 'transparent'; sw = '0'
-      } else if (isSelected) {
-        fill = cfg.fill; fillOpacity = '0.85'; stroke = cfg.stroke; sw = '3'
-      } else if (isHovered) {
+      } else if (isSelected || isHovered) {
         fill = cfg.fill; fillOpacity = '0.65'; stroke = cfg.stroke; sw = '2.5'
       } else {
         fill = 'transparent'; fillOpacity = '0'; stroke = 'rgba(0,0,0,0.18)'; sw = '1.5'
@@ -161,7 +159,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
       const eid = CSS.escape(unit.id)
       if (selectedUnit?.id === unit.id) {
-        return `polygon[data-unit-id="${eid}"] { fill: ${cfg.fill}; fill-opacity: 0.85; stroke: ${cfg.stroke}; stroke-width: 3px; }`
+        return `polygon[data-unit-id="${eid}"] { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: ${cfg.stroke}; stroke-width: 2px; }`
       }
       return `polygon[data-unit-id="${eid}"]:hover { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: ${cfg.stroke}; stroke-width: 2px; }`
     }).join('\n')
@@ -450,50 +448,57 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                     {sortedUnits.map((unit) => {
                       const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
                       return (
-                        <tr
-                          key={unit.id}
-                          className={`hover:bg-secondary/30 transition-colors cursor-pointer ${selectedUnit?.id === unit.id ? 'bg-secondary/50' : ''}`}
-                          onClick={() => {
-                            setSelectedUnit((p) => p?.id === unit.id ? null : unit)
-                            if (unit.houseType) {
-                              const idx = houseTypes.findIndex((ht) => ht.id === unit.houseType!.id)
-                              if (idx !== -1) {
-                                setActiveHouseTypeIndex(idx)
-                                setActiveFloor(0)
-                                setFloorView('3d')
-                                setTimeout(() => houseTypesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
-                              }
-                            }
-                          }}
-                        >
-                          <td className="px-5 py-4 font-semibold text-foreground">{unit.label}</td>
-                          <td className="px-5 py-4 text-muted-foreground">{unit.area ? `${unit.area}` : '—'}</td>
-                          <td className="px-5 py-4 text-muted-foreground">{unit.gardenArea ? `${unit.gardenArea}` : '—'}</td>
-                          <td className="px-5 py-4 text-muted-foreground">{unit.rooms ?? '—'}</td>
-                          <td className="px-5 py-4 font-semibold text-primary">
-                            {unit.price ? fmt(unit.price) : '—'}
-                          </td>
-                          <td className="px-5 py-4">
-                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-sm text-white ${cfg.badgeBg}`}>
-                              <span className={`h-1 w-1 rounded-full ${cfg.dotColor}`} />
-                              {cfg.label}
-                            </span>
-                          </td>
-                          <td className="px-5 py-4 text-sm text-primary">{unit.houseType?.name ?? '—'}</td>
-                          <td className="px-5 py-4">
-                            {unit.status === 'available' && (
-                              <a
-                                href={`mailto:vlad@qualops.io?subject=Zapytanie o ${unit.label}`}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Button size="sm" className="h-8 text-xs whitespace-nowrap font-medium rounded-lg">
-                                  <Mail className="h-3.5 w-3.5 mr-1.5" />
-                                  Zapytaj
-                                </Button>
-                              </a>
-                            )}
-                          </td>
-                        </tr>
+                        <Fragment key={unit.id}>
+                          <tr
+                            className={`hover:bg-secondary/30 transition-colors cursor-pointer ${selectedUnit?.id === unit.id ? 'bg-secondary/50' : ''}`}
+                            onClick={() => {
+                              setSelectedUnit((p) => p?.id === unit.id ? null : unit)
+                              setExpandedUnitId((p) => p === unit.id ? null : unit.id)
+                            }}
+                          >
+                            <td className="px-5 py-4 font-semibold text-foreground">{unit.label}</td>
+                            <td className="px-5 py-4 text-muted-foreground">{unit.area ? `${unit.area}` : '—'}</td>
+                            <td className="px-5 py-4 text-muted-foreground">{unit.gardenArea ? `${unit.gardenArea}` : '—'}</td>
+                            <td className="px-5 py-4 text-muted-foreground">{unit.rooms ?? '—'}</td>
+                            <td className="px-5 py-4 font-semibold text-primary">
+                              {unit.price ? fmt(unit.price) : '—'}
+                            </td>
+                            <td className="px-5 py-4">
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-sm text-white ${cfg.badgeBg}`}>
+                                <span className={`h-1 w-1 rounded-full ${cfg.dotColor}`} />
+                                {cfg.label}
+                              </span>
+                            </td>
+                            <td className="px-5 py-4 text-sm text-primary">
+                              {unit.houseType ? (
+                                <span className="inline-flex items-center gap-1">
+                                  {unit.houseType.name}
+                                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${expandedUnitId === unit.id ? 'rotate-180' : ''}`} />
+                                </span>
+                              ) : '—'}
+                            </td>
+                            <td className="px-5 py-4">
+                              {unit.status === 'available' && (
+                                <a
+                                  href={`mailto:vlad@qualops.io?subject=Zapytanie o ${unit.label}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button size="sm" className="h-8 text-xs whitespace-nowrap font-medium rounded-lg">
+                                    <Mail className="h-3.5 w-3.5 mr-1.5" />
+                                    Zapytaj
+                                  </Button>
+                                </a>
+                              )}
+                            </td>
+                          </tr>
+                          {expandedUnitId === unit.id && unit.houseType && (
+                            <tr>
+                              <td colSpan={8} className="p-0">
+                                <HouseTypeInlinePanel houseType={unit.houseType} />
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
                       )
                     })}
                     {sortedUnits.length === 0 && (
@@ -519,7 +524,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
             const currentType = houseTypes[activeHouseTypeIndex]
             const currentFloor = currentType?.floorPlans[activeFloor]
             return (
-              <div ref={houseTypesSectionRef} className="space-y-5 pt-4">
+              <div className="space-y-5 pt-4">
                 <div className="text-center mb-8">
                   <h3 className="font-serif text-2xl lg:text-3xl font-semibold mb-2 text-foreground">
                     Typy domów
@@ -668,6 +673,112 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
         </div>
       </div>
     </section>
+  )
+}
+
+function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
+  const [activeFloor, setActiveFloor] = useState(0)
+  const [floorView, setFloorView] = useState<'3d' | '2d'>('3d')
+  const currentFloor = houseType.floorPlans[activeFloor]
+
+  return (
+    <div className="bg-secondary/10 border-t border-primary/20 border-b border-border/40">
+      <div className="flex items-center justify-between px-6 py-3 bg-primary/90">
+        <h4 className="font-serif text-lg font-semibold text-primary-foreground">{houseType.name}</h4>
+        {houseType.totalArea && (
+          <span className="text-lg font-semibold text-primary-foreground">{houseType.totalArea} m²</span>
+        )}
+      </div>
+
+      {houseType.floorPlans.length > 0 ? (
+        <div className="flex flex-col lg:flex-row">
+          <div className="lg:flex-[2] p-6">
+            {houseType.floorPlans.length > 1 && (
+              <div className="flex gap-6 mb-6">
+                {houseType.floorPlans.map((floor, index) => (
+                  <button
+                    key={floor.id}
+                    onClick={() => { setActiveFloor(index); setFloorView('3d') }}
+                    className={`text-left pb-1 transition-all ${activeFloor === index ? 'border-b-2 border-primary' : ''}`}
+                  >
+                    <p className={`font-medium ${activeFloor === index ? 'text-foreground' : 'text-muted-foreground'}`}>{floor.name}</p>
+                    {floor.area && <p className={`text-sm ${activeFloor === index ? 'text-primary' : 'text-muted-foreground/50'}`}>{floor.area} m²</p>}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {currentFloor && (currentFloor.image3dUrl || currentFloor.image2dUrl) && (
+              <>
+                <div className="relative aspect-[4/3] bg-secondary rounded-lg overflow-hidden">
+                  <img
+                    src={floorView === '3d'
+                      ? (currentFloor.image3dUrl ?? currentFloor.image2dUrl ?? '')
+                      : (currentFloor.image2dUrl ?? currentFloor.image3dUrl ?? '')}
+                    alt={`${houseType.name} - ${currentFloor.name}`}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex mt-4">
+                  {currentFloor.image3dUrl && (
+                    <button
+                      onClick={() => setFloorView('3d')}
+                      className={`px-4 py-2 text-sm font-medium transition-all ${!currentFloor.image2dUrl ? 'rounded-sm' : 'rounded-l-sm'} ${
+                        floorView === '3d' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'
+                      }`}
+                    >
+                      Rzut 3D
+                    </button>
+                  )}
+                  {currentFloor.image2dUrl && (
+                    <button
+                      onClick={() => setFloorView('2d')}
+                      className={`px-4 py-2 text-sm font-medium transition-all ${!currentFloor.image3dUrl ? 'rounded-sm' : 'rounded-r-sm'} ${
+                        floorView === '2d' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'
+                      }`}
+                    >
+                      Rzut 2D
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {currentFloor && currentFloor.rooms.length > 0 && (
+            <div className="lg:flex-[1] p-6 lg:border-l border-border">
+              <div className="flex justify-between mb-3 text-sm font-medium text-foreground">
+                <span>Pomieszczenie</span>
+                <span>Powierzchnia</span>
+              </div>
+              <div className="space-y-2">
+                {currentFloor.rooms.map((room, index) => (
+                  <div key={room.id} className="flex justify-between py-1">
+                    <span className="text-sm text-muted-foreground">
+                      <span className="inline-block w-5">{index + 1}</span>
+                      {room.name}
+                    </span>
+                    <span className="text-sm text-foreground">
+                      {room.area ? `${room.area} m²` : '—'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {currentFloor.area && (
+                <div className="flex justify-between mt-4 pt-3 border-t border-border">
+                  <span className="text-sm font-semibold text-foreground">Razem</span>
+                  <span className="text-sm font-semibold text-primary">{currentFloor.area} m²</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="p-8 text-center text-muted-foreground text-sm">
+          Brak planów kondygnacji dla tego typu domu.
+        </div>
+      )}
+    </div>
   )
 }
 
