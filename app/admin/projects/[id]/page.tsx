@@ -121,6 +121,10 @@ export default function EditProjectPage() {
   })
   const [addingUnit, setAddingUnit] = useState(false)
 
+  // Hero image upload state
+  const [uploadingHero, setUploadingHero] = useState(false)
+  const heroFileRef = useRef<HTMLInputElement | null>(null)
+
   // Gallery upload state
   const [uploadingGallery, setUploadingGallery] = useState<string | null>(null)
   const galleryFileRefs = useRef<Record<string, HTMLInputElement | null>>({})
@@ -399,12 +403,50 @@ export default function EditProjectPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label>URL zdjęcia hero</Label>
-                <Input
-                  value={project.imageUrl || ''}
-                  onChange={(e) => setProject((p) => p ? { ...p, imageUrl: e.target.value } : p)}
-                  placeholder="https://..."
-                />
+                <Label>Zdjęcie hero</Label>
+                {project.imageUrl && (
+                  <div className="relative h-32 w-full overflow-hidden rounded-lg bg-muted">
+                    <img src={project.imageUrl} alt="hero preview" className="h-full w-full object-cover" />
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <Input
+                    value={project.imageUrl || ''}
+                    onChange={(e) => setProject((p) => p ? { ...p, imageUrl: e.target.value } : p)}
+                    placeholder="https://..."
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={heroFileRef}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+                      setUploadingHero(true)
+                      try {
+                        const url = await uploadImage(file)
+                        setProject((p) => p ? { ...p, imageUrl: url } : p)
+                      } catch {
+                        alert('Błąd uploadu')
+                      } finally {
+                        setUploadingHero(false)
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="shrink-0"
+                    disabled={uploadingHero}
+                    onClick={() => heroFileRef.current?.click()}
+                  >
+                    {uploadingHero
+                      ? <Loader2 className="h-4 w-4 animate-spin" />
+                      : <Upload className="h-4 w-4" />
+                    }
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label>Podtytuł hero</Label>
