@@ -60,6 +60,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
   const [activeHouseTypeIndex, setActiveHouseTypeIndex] = useState(0)
   const [activeFloor, setActiveFloor] = useState(0)
   const svgRef = useRef<HTMLDivElement>(null)
+  const houseTypesSectionRef = useRef<HTMLDivElement>(null)
 
   // Filters
   const [filterStatus, setFilterStatus] = useState<string>('all')
@@ -452,7 +453,18 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                         <tr
                           key={unit.id}
                           className={`hover:bg-secondary/30 transition-colors cursor-pointer ${selectedUnit?.id === unit.id ? 'bg-secondary/50' : ''}`}
-                          onClick={() => setSelectedUnit((p) => p?.id === unit.id ? null : unit)}
+                          onClick={() => {
+                            setSelectedUnit((p) => p?.id === unit.id ? null : unit)
+                            if (unit.houseType) {
+                              const idx = houseTypes.findIndex((ht) => ht.id === unit.houseType!.id)
+                              if (idx !== -1) {
+                                setActiveHouseTypeIndex(idx)
+                                setActiveFloor(0)
+                                setFloorView('3d')
+                                setTimeout(() => houseTypesSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+                              }
+                            }
+                          }}
                         >
                           <td className="px-5 py-4 font-semibold text-foreground">{unit.label}</td>
                           <td className="px-5 py-4 text-muted-foreground">{unit.area ? `${unit.area}` : '—'}</td>
@@ -507,7 +519,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
             const currentType = houseTypes[activeHouseTypeIndex]
             const currentFloor = currentType?.floorPlans[activeFloor]
             return (
-              <div className="space-y-5 pt-4">
+              <div ref={houseTypesSectionRef} className="space-y-5 pt-4">
                 <div className="text-center mb-8">
                   <h3 className="font-serif text-2xl lg:text-3xl font-semibold mb-2 text-foreground">
                     Typy domów
