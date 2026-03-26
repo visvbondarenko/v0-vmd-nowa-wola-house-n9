@@ -497,7 +497,7 @@ export default function AdminPlanEditor({
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col border border-border rounded-xl overflow-hidden shadow-sm" style={{ height: 'calc(100vh - 320px)', minHeight: 560 }}>
+    <div className="flex flex-col border border-border rounded-xl overflow-hidden shadow-sm" style={{ height: 'calc(100vh - 107px)', minHeight: 840 }}>
 
       {/* ── Toolbar ── */}
       <div className="flex items-center gap-1.5 px-3 py-2 bg-card border-b border-border flex-shrink-0 flex-wrap gap-y-1.5">

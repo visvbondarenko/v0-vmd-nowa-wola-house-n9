@@ -129,7 +129,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       if (isFiltered) {
         fill = 'transparent'; fillOpacity = '0'; stroke = 'transparent'; sw = '0'
       } else if (isSelected || isHovered) {
-        fill = cfg.fill; fillOpacity = '0.65'; stroke = 'transparent'; sw = '0'
+        fill = cfg.fill; fillOpacity = '0.46'; stroke = 'transparent'; sw = '0'
       } else {
         fill = 'transparent'; fillOpacity = '0'; stroke = 'transparent'; sw = '0'
       }
@@ -159,9 +159,9 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
       const eid = CSS.escape(unit.id)
       if (selectedUnit?.id === unit.id) {
-        return `polygon[data-unit-id="${eid}"] { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: none; }`
+        return `polygon[data-unit-id="${eid}"] { fill: ${cfg.fill}; fill-opacity: 0.32; stroke: none; }`
       }
-      return `polygon[data-unit-id="${eid}"]:hover { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: none; }`
+      return `polygon[data-unit-id="${eid}"]:hover { fill: ${cfg.fill}; fill-opacity: 0.32; stroke: none; }`
     }).join('\n')
     return pv.svgContent
       .replace(/<svg([^>]*)>/, (_, attrs) => {
