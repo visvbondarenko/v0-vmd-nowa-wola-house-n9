@@ -139,19 +139,21 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
 
     const vbMatch = svgContent.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)
     const imgTag = planImageUrl && vbMatch
-      ? `<image href="${planImageUrl}" x="0" y="0" width="${vbMatch[1]}" height="${vbMatch[2]}" preserveAspectRatio="xMidYMid meet"/>`
+      ? `<image href="${planImageUrl}" x="0" y="0" width="${vbMatch[1]}" height="${vbMatch[2]}" preserveAspectRatio="xMidYMid slice"/>`
       : ''
 
     return svgContent
-      .replace(/(<svg[^>]*>)/, `$1<style>${styles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1>`)
+      .replace(/<svg([^>]*)>/, (_, attrs) => {
+        const cleaned = attrs.replace(/\s*preserveAspectRatio="[^"]*"/, '')
+        return `<svg${cleaned} preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block"><style>${styles}</style>${imgTag}`
+      })
   }, [svgContent, planImageUrl, units, filteredUnits, hoveredUnit, selectedUnit])
 
   const coloredViewSvg = useCallback((pv: PlanViewItem): string => {
     if (!pv.svgContent) return ''
     const vbMatch = pv.svgContent.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)
     const imgTag = pv.imageUrl && vbMatch
-      ? `<image href="${pv.imageUrl}" x="0" y="0" width="${vbMatch[1]}" height="${vbMatch[2]}" preserveAspectRatio="xMidYMid meet"/>`
+      ? `<image href="${pv.imageUrl}" x="0" y="0" width="${vbMatch[1]}" height="${vbMatch[2]}" preserveAspectRatio="xMidYMid slice"/>`
       : ''
     const baseStyle = `polygon { fill: transparent; fill-opacity: 0; stroke: transparent; cursor: pointer; transition: fill 0.15s, fill-opacity 0.15s; }`
     const unitStyles = units.map(unit => {
@@ -163,8 +165,10 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       return `polygon[data-unit-id="${eid}"]:hover { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: ${cfg.stroke}; stroke-width: 2px; }`
     }).join('\n')
     return pv.svgContent
-      .replace(/(<svg[^>]*>)/, `$1<style>${baseStyle}\n${unitStyles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1>`)
+      .replace(/<svg([^>]*)>/, (_, attrs) => {
+        const cleaned = attrs.replace(/\s*preserveAspectRatio="[^"]*"/, '')
+        return `<svg${cleaned} preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block"><style>${baseStyle}\n${unitStyles}</style>${imgTag}`
+      })
   }, [units, selectedUnit])
 
   const activeView = planViews.find(v => v.id === activeViewId) ?? null
@@ -334,7 +338,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
             <div className="relative">
               {activeView ? (
                 <div
-                  className={`aspect-[4/3] flex items-center justify-center rounded-2xl overflow-hidden bg-muted shadow-xl transition-all duration-300 ease-out [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto ${
+                  className={`aspect-[4/3] rounded-2xl overflow-hidden shadow-xl transition-all duration-300 ease-out [&_svg]:w-full [&_svg]:h-full [&_svg]:block ${
                     isAnimating
                       ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                       : 'opacity-100 translate-x-0'
@@ -346,7 +350,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                 <>
                   <div
                     ref={svgRef}
-                    className={`aspect-[4/3] flex items-center justify-center rounded-2xl overflow-hidden bg-muted shadow-xl transition-all duration-300 ease-out [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto ${
+                    className={`aspect-[4/3] rounded-2xl overflow-hidden shadow-xl transition-all duration-300 ease-out [&_svg]:w-full [&_svg]:h-full [&_svg]:block ${
                       isAnimating
                         ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                         : 'opacity-100 translate-x-0'
@@ -375,7 +379,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                   )}
                 </>
               ) : (
-                <div className="aspect-[4/3] flex items-center justify-center rounded-2xl bg-muted shadow-xl">
+                <div className="aspect-[4/3] flex items-center justify-center rounded-2xl overflow-hidden shadow-xl bg-secondary/50">
                   <p className="text-base text-muted-foreground">Plan zagospodarowania nie jest jeszcze dostępny.</p>
                 </div>
               )}
