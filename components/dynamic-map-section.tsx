@@ -1,5 +1,15 @@
 import { MapPin } from 'lucide-react'
 
+function toEmbedUrl(raw: string): string {
+  if (raw.includes('output=embed') || raw.includes('/maps/embed')) return raw
+  const match = raw.match(/@(-?\d+\.\d+),(-?\d+\.\d+),(\d+)z/)
+  if (match) {
+    const [, lat, lng, zoom] = match
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`
+  }
+  return raw
+}
+
 type Props = {
   mapEmbedUrl: string
   address?: string | null
@@ -7,7 +17,8 @@ type Props = {
   surroundings?: string | null
 }
 
-export function DynamicMapSection({ mapEmbedUrl, address, transport, surroundings }: Props) {
+export function DynamicMapSection({ mapEmbedUrl: rawUrl, address, transport, surroundings }: Props) {
+  const mapEmbedUrl = toEmbedUrl(rawUrl)
   const infoCards = [
     address ? { title: 'Adres', detail: address } : null,
     transport ? { title: 'Komunikacja', detail: transport } : null,
