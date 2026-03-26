@@ -266,24 +266,22 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
         </div>
 
         <div className="space-y-6">
-          {/* Stat plates */}
-          <div className="flex flex-wrap gap-2">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-700">
-              <span className="font-bold">{counts.available}</span>
-              <span className="text-green-700/70">Dostępnych</span>
+          {/* Stats + Filtry on one line */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-700">
+                <span className="font-bold">{counts.available}</span>
+                <span className="text-green-700/70">Dostępnych</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
+                <span className="font-bold">{counts.reserved}</span>
+                <span className="text-amber-700/70">Zarezerwowanych</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-700">
+                <span className="font-bold">{counts.sold}</span>
+                <span className="text-red-700/70">Sprzedanych</span>
+              </div>
             </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
-              <span className="font-bold">{counts.reserved}</span>
-              <span className="text-amber-700/70">Zarezerwowanych</span>
-            </div>
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-700">
-              <span className="font-bold">{counts.sold}</span>
-              <span className="text-red-700/70">Sprzedanych</span>
-            </div>
-          </div>
-
-          {/* Filter button row */}
-          <div className="flex flex-wrap items-center justify-end gap-3">
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-primary/10 text-primary"
