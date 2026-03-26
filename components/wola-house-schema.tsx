@@ -343,6 +343,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
 
           {/* MAP VIEW */}
           <div className="space-y-5">
+            <div className="mx-auto w-full max-w-[66.667%]">
             <div className="relative">
               {activeView ? (
                 <div
@@ -418,6 +419,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                 </>
               )}
             </div>
+            </div>{/* end 66% wrapper */}
 
             {/* Sortable table below map */}
             <div className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm">
