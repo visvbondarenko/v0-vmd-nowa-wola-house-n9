@@ -809,11 +809,26 @@ export default function EditProjectPage() {
             <Input
               value={project.mapEmbedUrl || ''}
               onChange={(e) => setProject((p) => p ? { ...p, mapEmbedUrl: e.target.value } : p)}
-              placeholder="https://www.google.com/maps/embed?pb=..."
+              placeholder="https://maps.google.com/maps?q=52.093,20.965&z=15&output=embed"
             />
             <p className="text-xs text-muted-foreground">
-              W Google Maps kliknij Udostępnij → Osadź mapę → skopiuj wartość src=""
+              Opcja 1: <strong>Google Maps → Udostępnij → Osadź mapę</strong> → skopiuj wartość <code>src=&quot;&quot;</code><br />
+              Opcja 2: Użyj formatu z koordynatami: <code>https://maps.google.com/maps?q=LAT,LNG&z=15&output=embed</code>
             </p>
+            {project.mapEmbedUrl && (
+              <div className="mt-3 overflow-hidden rounded-lg border border-border">
+                <iframe
+                  key={project.mapEmbedUrl}
+                  src={project.mapEmbedUrl}
+                  width="100%"
+                  height="220"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  title="Podgląd mapy"
+                  className="w-full"
+                />
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="space-y-2">

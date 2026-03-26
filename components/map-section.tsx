@@ -58,7 +58,7 @@ export function MapSection() {
           {/* Map embed */}
           <div className="overflow-hidden border border-border lg:col-span-2">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2500.5!2d20.96487!3d52.0931!2m3!1f0!2f0!3f270!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471ecc5f5f5f5f5f%3A0x1234567890abcdef!2sIgnacego%20Krasickiego%20187%2C%2005-500%20Nowa%20Wola!5e0!3m2!1sen!2spl!4v1700000000000&t=k"
+              src="https://maps.google.com/maps?q=52.09303,20.96491&z=15&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: "400px" }}
