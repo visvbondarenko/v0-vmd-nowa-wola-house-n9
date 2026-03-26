@@ -266,16 +266,24 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
         </div>
 
         <div className="space-y-6">
-          {/* Status legend and Filter button */}
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-3">
-              {(Object.entries(STATUS_CONFIG) as [StatusKey, typeof STATUS_CONFIG[StatusKey]][]).map(([s, cfg]) => (
-                <span key={s} className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-sm text-white ${cfg.badgeBg}`}>
-                  <span className={`h-1 w-1 rounded-full ${cfg.dotColor}`} />
-                  {cfg.label}: {counts[s as keyof typeof counts]}
-                </span>
-              ))}
+          {/* Stat plates */}
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
+            <div className="rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-5 text-center">
+              <div className="text-3xl font-bold text-green-600">{counts.available}</div>
+              <div className="mt-1 text-xs font-medium text-green-700/70 uppercase tracking-widest">Dostępnych</div>
             </div>
+            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/10 px-4 py-5 text-center">
+              <div className="text-3xl font-bold text-amber-600">{counts.reserved}</div>
+              <div className="mt-1 text-xs font-medium text-amber-700/70 uppercase tracking-widest">Zarezerwowanych</div>
+            </div>
+            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-5 text-center">
+              <div className="text-3xl font-bold text-red-600">{counts.sold}</div>
+              <div className="mt-1 text-xs font-medium text-red-700/70 uppercase tracking-widest">Sprzedanych</div>
+            </div>
+          </div>
+
+          {/* Filter button row */}
+          <div className="flex flex-wrap items-center justify-end gap-3">
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-primary/10 text-primary"
