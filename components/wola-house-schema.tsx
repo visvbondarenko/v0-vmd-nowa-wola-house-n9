@@ -129,9 +129,9 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       if (isFiltered) {
         fill = 'transparent'; fillOpacity = '0'; stroke = 'transparent'; sw = '0'
       } else if (isSelected || isHovered) {
-        fill = cfg.fill; fillOpacity = '0.65'; stroke = cfg.stroke; sw = '2.5'
+        fill = cfg.fill; fillOpacity = '0.65'; stroke = 'transparent'; sw = '0'
       } else {
-        fill = 'transparent'; fillOpacity = '0'; stroke = 'rgba(0,0,0,0.18)'; sw = '1.5'
+        fill = 'transparent'; fillOpacity = '0'; stroke = 'transparent'; sw = '0'
       }
       return `#${CSS.escape(unit.svgElementId)} { fill: ${fill}; fill-opacity: ${fillOpacity}; stroke: ${stroke}; stroke-width: ${sw}px; cursor: pointer; transition: fill 0.15s, fill-opacity 0.15s; }`
     }).join('\n')
@@ -159,9 +159,9 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
       const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
       const eid = CSS.escape(unit.id)
       if (selectedUnit?.id === unit.id) {
-        return `polygon[data-unit-id="${eid}"] { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: ${cfg.stroke}; stroke-width: 2px; }`
+        return `polygon[data-unit-id="${eid}"] { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: none; }`
       }
-      return `polygon[data-unit-id="${eid}"]:hover { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: ${cfg.stroke}; stroke-width: 2px; }`
+      return `polygon[data-unit-id="${eid}"]:hover { fill: ${cfg.fill}; fill-opacity: 0.45; stroke: none; }`
     }).join('\n')
     return pv.svgContent
       .replace(/<svg([^>]*)>/, (_, attrs) => {
