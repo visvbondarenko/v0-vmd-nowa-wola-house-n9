@@ -95,6 +95,18 @@ type Project = {
   galleryImages: GalleryImage[]
 }
 
+function toMapEmbedUrl(raw: string): string {
+  // Already an embed URL — return as-is
+  if (raw.includes('output=embed') || raw.includes('/maps/embed')) return raw
+  // Extract @lat,lng,Xz from a regular Google Maps URL
+  const match = raw.match(/@(-?\d+\.\d+),(-?\d+\.\d+),(\d+)z/)
+  if (match) {
+    const [, lat, lng, zoom] = match
+    return `https://maps.google.com/maps?q=${lat},${lng}&z=${zoom}&output=embed`
+  }
+  return raw
+}
+
 async function uploadImage(file: File): Promise<string> {
   const form = new FormData()
   form.append('file', file)
@@ -808,7 +820,7 @@ export default function EditProjectPage() {
             <Label>URL osadzonej mapy Google (iframe src)</Label>
             <Input
               value={project.mapEmbedUrl || ''}
-              onChange={(e) => setProject((p) => p ? { ...p, mapEmbedUrl: e.target.value } : p)}
+              onChange={(e) => setProject((p) => p ? { ...p, mapEmbedUrl: toMapEmbedUrl(e.target.value) } : p)}
               placeholder="https://maps.google.com/maps?q=52.093,20.965&z=15&output=embed"
             />
             <p className="text-xs text-muted-foreground">
