@@ -423,7 +423,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border/30">
+                    <tr className="border-b border-border/50">
                       {([
                         ['label', 'Nr domu'],
                         ['area', 'Pow. m²'],
@@ -444,7 +444,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                       <th className="px-5 py-3" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/20">
+                  <tbody className="divide-y divide-border/40">
                     {sortedUnits.map((unit) => {
                       const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
                       return (
@@ -554,7 +554,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                   )}
 
                   <div className="rounded-2xl overflow-hidden">
-                    <div className="flex items-center justify-between px-5 py-3 border-b border-border/20">
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
                       <h4 className="font-serif text-lg font-semibold text-foreground">
                         {currentType.name}
                       </h4>
@@ -616,14 +616,14 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                           )}
                         </div>
 
-                        <div className="lg:flex-[1] p-6 lg:border-l border-border/20">
+                        <div className="lg:flex-[1] p-6 lg:border-l border-border/40">
                           {currentFloor && currentFloor.rooms.length > 0 && (
                             <div>
                               <div className="flex justify-between mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 <span>Pomieszczenie</span>
                                 <span>Powierzchnia</span>
                               </div>
-                              <div className="divide-y divide-border/20">
+                              <div className="divide-y divide-border/40">
                                 {currentFloor.rooms.map((room, index) => (
                                   <div key={room.id} className="flex justify-between py-2">
                                     <span className="text-sm text-muted-foreground">
@@ -637,7 +637,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                                 ))}
                               </div>
                               {currentFloor.area && (
-                                <div className="flex justify-between mt-3 pt-3 border-t border-border/30">
+                                <div className="flex justify-between mt-3 pt-3 border-t border-border/50">
                                   <span className="text-sm font-medium text-foreground">Razem</span>
                                   <span className="text-sm font-medium text-primary">{currentFloor.area} m²</span>
                                 </div>
@@ -685,27 +685,27 @@ function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
   const currentFloor = houseType.floorPlans[activeFloor]
 
   return (
-    <div className="bg-secondary/10 border-t border-primary/20 border-b border-border/40">
-      <div className="flex items-center justify-between px-6 py-3 bg-primary/90">
-        <h4 className="font-serif text-lg font-semibold text-primary-foreground">{houseType.name}</h4>
+    <div className="border-t border-border/40">
+      <div className="flex items-center justify-between px-5 py-2.5 border-b border-border/40">
+        <h4 className="text-sm font-semibold text-foreground">{houseType.name}</h4>
         {houseType.totalArea && (
-          <span className="text-lg font-semibold text-primary-foreground">{houseType.totalArea} m²</span>
+          <span className="text-xs font-medium text-muted-foreground">{houseType.totalArea} m²</span>
         )}
       </div>
 
       {houseType.floorPlans.length > 0 ? (
         <div className="flex flex-col lg:flex-row">
-          <div className="lg:flex-[2] p-6">
+          <div className="lg:flex-[2] p-4">
             {houseType.floorPlans.length > 1 && (
-              <div className="flex gap-6 mb-6">
+              <div className="flex gap-4 mb-4">
                 {houseType.floorPlans.map((floor, index) => (
                   <button
                     key={floor.id}
                     onClick={() => { setActiveFloor(index); setFloorView('3d') }}
                     className={`text-left pb-1 transition-all ${activeFloor === index ? 'border-b-2 border-primary' : ''}`}
                   >
-                    <p className={`font-medium ${activeFloor === index ? 'text-foreground' : 'text-muted-foreground'}`}>{floor.name}</p>
-                    {floor.area && <p className={`text-sm ${activeFloor === index ? 'text-primary' : 'text-muted-foreground/50'}`}>{floor.area} m²</p>}
+                    <p className={`text-xs font-medium ${activeFloor === index ? 'text-foreground' : 'text-muted-foreground'}`}>{floor.name}</p>
+                    {floor.area && <p className={`text-[11px] ${activeFloor === index ? 'text-primary' : 'text-muted-foreground/50'}`}>{floor.area} m²</p>}
                   </button>
                 ))}
               </div>
@@ -713,7 +713,7 @@ function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
 
             {currentFloor && (currentFloor.image3dUrl || currentFloor.image2dUrl) && (
               <>
-                <div className="relative aspect-[4/3] bg-secondary rounded-lg overflow-hidden">
+                <div className="relative aspect-[4/3] rounded-lg overflow-hidden max-w-md">
                   <img
                     src={floorView === '3d'
                       ? (currentFloor.image3dUrl ?? currentFloor.image2dUrl ?? '')
@@ -722,12 +722,12 @@ function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
                     className="w-full h-full object-contain"
                   />
                 </div>
-                <div className="flex mt-4">
+                <div className="flex gap-1 mt-2">
                   {currentFloor.image3dUrl && (
                     <button
                       onClick={() => setFloorView('3d')}
-                      className={`px-4 py-2 text-sm font-medium transition-all ${!currentFloor.image2dUrl ? 'rounded-sm' : 'rounded-l-sm'} ${
-                        floorView === '3d' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'
+                      className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                        floorView === '3d' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       Rzut 3D
@@ -736,8 +736,8 @@ function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
                   {currentFloor.image2dUrl && (
                     <button
                       onClick={() => setFloorView('2d')}
-                      className={`px-4 py-2 text-sm font-medium transition-all ${!currentFloor.image3dUrl ? 'rounded-sm' : 'rounded-r-sm'} ${
-                        floorView === '2d' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'
+                      className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                        floorView === '2d' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
                       Rzut 2D
@@ -749,35 +749,35 @@ function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
           </div>
 
           {currentFloor && currentFloor.rooms.length > 0 && (
-            <div className="lg:flex-[1] p-6 lg:border-l border-border">
-              <div className="flex justify-between mb-3 text-sm font-medium text-foreground">
+            <div className="lg:flex-[1] p-4 lg:border-l border-border/40">
+              <div className="flex justify-between mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 <span>Pomieszczenie</span>
                 <span>Powierzchnia</span>
               </div>
-              <div className="space-y-2">
+              <div className="divide-y divide-border/40">
                 {currentFloor.rooms.map((room, index) => (
-                  <div key={room.id} className="flex justify-between py-1">
-                    <span className="text-sm text-muted-foreground">
-                      <span className="inline-block w-5">{index + 1}</span>
+                  <div key={room.id} className="flex justify-between py-1.5">
+                    <span className="text-xs text-muted-foreground">
+                      <span className="inline-block w-4 text-muted-foreground/50">{index + 1}</span>
                       {room.name}
                     </span>
-                    <span className="text-sm text-foreground">
+                    <span className="text-xs text-foreground">
                       {room.area ? `${room.area} m²` : '—'}
                     </span>
                   </div>
                 ))}
               </div>
               {currentFloor.area && (
-                <div className="flex justify-between mt-4 pt-3 border-t border-border">
-                  <span className="text-sm font-semibold text-foreground">Razem</span>
-                  <span className="text-sm font-semibold text-primary">{currentFloor.area} m²</span>
+                <div className="flex justify-between mt-2 pt-2 border-t border-border/50">
+                  <span className="text-xs font-medium text-foreground">Razem</span>
+                  <span className="text-xs font-medium text-primary">{currentFloor.area} m²</span>
                 </div>
               )}
             </div>
           )}
         </div>
       ) : (
-        <div className="p-8 text-center text-muted-foreground text-sm">
+        <div className="p-6 text-center text-muted-foreground text-xs">
           Brak planów kondygnacji dla tego typu domu.
         </div>
       )}
