@@ -42,45 +42,6 @@ export async function ProjectsSection() {
 
         {/* Projects grid */}
         <div className="mt-16 grid gap-8 md:grid-cols-2">
-          {/* Hardcoded wola-house card (always shown) */}
-          <Link
-            href="/projects/wola-house"
-            className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-xl"
-          >
-            <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/remove_front_fence_prolong_tre_Nano_Banana_Pro_72356-xa3DocGaCiWnb6dS8v76n5TKcWJP8E.jpg"
-                alt="Wola House"
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute top-4 left-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white bg-green-600">
-                  W sprzedaży
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-1 flex-col p-8">
-              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                Nowa Wola, Warszawa
-              </p>
-              <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
-                Wola House
-              </h3>
-              <p className="mt-1 text-sm font-medium text-primary">
-                Zabudowa bliźniacza
-              </p>
-              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                Wyjątkowy projekt oferujący więcej przestrzeni użytkowej niż standardowe domy bliźniacze. Nowoczesna architektura z cegłą klinkierową i ciemną elewacją metalową. Dwa niezależne segmenty, każdy po 130 m² z prywatnym ogrodem 300 m².
-              </p>
-              <div className="mt-6">
-                <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
-                  Dowiedz się więcej
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </span>
-              </div>
-            </div>
-          </Link>
-
           {/* Published DB projects */}
           {dbProjects.map((project) => {
             const st = STATUS_MAP[project.status] ?? STATUS_MAP.active

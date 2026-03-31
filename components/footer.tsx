@@ -21,13 +21,7 @@ export function Footer() {
             >
               Projekty
             </Link>
-            <Link
-              href="/projects/wola-house"
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Wola House
-            </Link>
-            <Link
+<Link
               href="/#kontakt"
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
