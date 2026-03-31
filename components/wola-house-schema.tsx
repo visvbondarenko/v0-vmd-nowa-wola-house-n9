@@ -512,10 +512,6 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
               </div>
             </div>
 
-            {/* Selected unit detail */}
-            {selectedUnit && (
-              <UnitDetailCard unit={selectedUnit} onClose={() => setSelectedUnit(null)} onInquiry={() => setContactUnit(selectedUnit)} />
-            )}
           </div>
 
           {/* House Types Section - Carousel Style */}
