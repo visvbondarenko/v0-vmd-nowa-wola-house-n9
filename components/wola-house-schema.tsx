@@ -541,27 +541,27 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                     <>
                       <button
                         onClick={() => { setActiveHouseTypeIndex((prev) => (prev === 0 ? houseTypes.length - 1 : prev - 1)); setActiveFloor(0); setFloorView('3d'); }}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 z-10 w-10 h-10 flex items-center justify-center rounded-sm transition-all hover:opacity-80 bg-primary/70"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-all hover:opacity-80 bg-primary/10 text-primary"
                         aria-label="Poprzedni typ"
                       >
-                        <ChevronLeft className="w-5 h-5 text-primary-foreground" />
+                        <ChevronLeft className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => { setActiveHouseTypeIndex((prev) => (prev === houseTypes.length - 1 ? 0 : prev + 1)); setActiveFloor(0); setFloorView('3d'); }}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 z-10 w-10 h-10 flex items-center justify-center rounded-sm transition-all hover:opacity-80 bg-primary"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 z-10 w-8 h-8 flex items-center justify-center rounded-full transition-all hover:opacity-80 bg-primary/10 text-primary"
                         aria-label="Następny typ"
                       >
-                        <ChevronRight className="w-5 h-5 text-primary-foreground" />
+                        <ChevronRight className="w-4 h-4" />
                       </button>
                     </>
                   )}
 
-                  <div className="bg-card rounded-lg overflow-hidden shadow-lg border border-border/60">
-                    <div className="flex items-center justify-between px-6 py-4 bg-primary">
-                      <h4 className="font-serif text-xl lg:text-2xl font-semibold text-primary-foreground">
+                  <div className="rounded-2xl overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-border/20">
+                      <h4 className="font-serif text-lg font-semibold text-foreground">
                         {currentType.name}
                       </h4>
-                      <span className="text-xl lg:text-2xl font-semibold text-primary-foreground">
+                      <span className="text-sm font-medium text-muted-foreground">
                         {currentType.totalArea ? `${currentType.totalArea} m²` : ''}
                       </span>
                     </div>
@@ -576,15 +576,15 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                                 onClick={() => { setActiveFloor(index); setFloorView('3d'); }}
                                 className={`text-left pb-1 transition-all ${activeFloor === index ? 'border-b-2 border-primary' : ''}`}
                               >
-                                <p className={`font-medium ${activeFloor === index ? 'text-foreground' : 'text-muted-foreground'}`}>{floor.name}</p>
-                                {floor.area && <p className={`text-sm ${activeFloor === index ? 'text-primary' : 'text-muted-foreground/50'}`}>{floor.area} m²</p>}
+                                <p className={`text-sm font-medium ${activeFloor === index ? 'text-foreground' : 'text-muted-foreground'}`}>{floor.name}</p>
+                                {floor.area && <p className={`text-xs ${activeFloor === index ? 'text-primary' : 'text-muted-foreground/50'}`}>{floor.area} m²</p>}
                               </button>
                             ))}
                           </div>
 
                           {currentFloor && (currentFloor.image3dUrl || currentFloor.image2dUrl) && (
                             <>
-                              <div className="relative aspect-[4/3] bg-secondary rounded-lg overflow-hidden">
+                              <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
                                 <img
                                   src={floorView === '3d'
                                     ? (currentFloor.image3dUrl ?? currentFloor.image2dUrl ?? '')
@@ -593,12 +593,12 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                                   className="w-full h-full object-contain"
                                 />
                               </div>
-                              <div className="flex mt-4">
+                              <div className="flex gap-1 mt-3">
                                 {currentFloor.image3dUrl && (
                                   <button
                                     onClick={() => setFloorView('3d')}
-                                    className={`px-4 py-2 text-sm font-medium transition-all ${!currentFloor.image2dUrl ? 'rounded-sm' : 'rounded-l-sm'} ${
-                                      floorView === '3d' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
+                                      floorView === '3d' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                   >
                                     Rzut 3D
@@ -607,8 +607,8 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                                 {currentFloor.image2dUrl && (
                                   <button
                                     onClick={() => setFloorView('2d')}
-                                    className={`px-4 py-2 text-sm font-medium transition-all ${!currentFloor.image3dUrl ? 'rounded-sm' : 'rounded-r-sm'} ${
-                                      floorView === '2d' ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border'
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-full transition-all ${
+                                      floorView === '2d' ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:text-foreground'
                                     }`}
                                   >
                                     Rzut 2D
@@ -619,18 +619,18 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                           )}
                         </div>
 
-                        <div className="lg:flex-[1] p-6 lg:border-l border-border">
+                        <div className="lg:flex-[1] p-6 lg:border-l border-border/20">
                           {currentFloor && currentFloor.rooms.length > 0 && (
                             <div>
-                              <div className="flex justify-between mb-3 text-sm font-medium text-foreground">
+                              <div className="flex justify-between mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                                 <span>Pomieszczenie</span>
                                 <span>Powierzchnia</span>
                               </div>
-                              <div className="space-y-2">
+                              <div className="divide-y divide-border/20">
                                 {currentFloor.rooms.map((room, index) => (
-                                  <div key={room.id} className="flex justify-between py-1">
+                                  <div key={room.id} className="flex justify-between py-2">
                                     <span className="text-sm text-muted-foreground">
-                                      <span className="inline-block w-5">{index + 1}</span>
+                                      <span className="inline-block w-5 text-muted-foreground/50">{index + 1}</span>
                                       {room.name}
                                     </span>
                                     <span className="text-sm text-foreground">
@@ -640,9 +640,9 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                                 ))}
                               </div>
                               {currentFloor.area && (
-                                <div className="flex justify-between mt-4 pt-3 border-t border-border">
-                                  <span className="text-sm font-semibold text-foreground">Razem</span>
-                                  <span className="text-sm font-semibold text-primary">{currentFloor.area} m²</span>
+                                <div className="flex justify-between mt-3 pt-3 border-t border-border/30">
+                                  <span className="text-sm font-medium text-foreground">Razem</span>
+                                  <span className="text-sm font-medium text-primary">{currentFloor.area} m²</span>
                                 </div>
                               )}
                             </div>
@@ -650,7 +650,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                         </div>
                       </div>
                     ) : (
-                      <div className="p-8 text-center text-muted-foreground">
+                      <div className="p-8 text-center text-muted-foreground text-sm">
                         Brak planów kondygnacji dla tego typu domu.
                       </div>
                     )}
@@ -662,7 +662,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                         <button
                           key={index}
                           onClick={() => { setActiveHouseTypeIndex(index); setActiveFloor(0); setFloorView('3d'); }}
-                          className={`w-2.5 h-2.5 rounded-full transition-all bg-primary ${activeHouseTypeIndex === index ? '' : 'opacity-40'}`}
+                          className={`w-2 h-2 rounded-full transition-all ${activeHouseTypeIndex === index ? 'bg-primary' : 'bg-border'}`}
                           aria-label={`Typ domu ${index + 1}`}
                         />
                       ))}
