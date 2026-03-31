@@ -4,7 +4,7 @@ import { useState, useRef, useCallback, useMemo, Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Mail, ArrowUpDown, ArrowUp, ArrowDown, X, SlidersHorizontal, ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react'
+import { Mail, ArrowUpDown, ArrowUp, ArrowDown, X, SlidersHorizontal, ChevronLeft, ChevronRight, ChevronDown, Loader2, Send } from 'lucide-react'
 
 type Room = { id: string; name: string; area: number | null }
 type FloorPlan = {
@@ -54,6 +54,7 @@ type SortDir = 'asc' | 'desc'
 export function WolaHouseSchema({ projectName, description, svgContent, planImageUrl, units, houseTypes, planViews }: WolaHouseSchemaProps) {
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null)
   const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
+  const [contactUnit, setContactUnit] = useState<Unit | null>(null)
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; unit: Unit } | null>(null)
   const [activeViewId, setActiveViewId] = useState<string | null>(null)
@@ -481,15 +482,11 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                             </td>
                             <td className="px-5 py-4">
                               {unit.status === 'available' && (
-                                <a
-                                  href={`mailto:vlad@qualops.io?subject=Zapytanie o ${unit.label}`}
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  <Button size="sm" className="h-8 text-xs whitespace-nowrap font-medium rounded-lg">
-                                    <Mail className="h-3.5 w-3.5 mr-1.5" />
-                                    Zapytaj
-                                  </Button>
-                                </a>
+                                <Button size="sm" className="h-8 text-xs whitespace-nowrap font-medium rounded-lg"
+                                  onClick={(e) => { e.stopPropagation(); setContactUnit(unit) }}>
+                                  <Mail className="h-3.5 w-3.5 mr-1.5" />
+                                  Zapytaj
+                                </Button>
                               )}
                             </td>
                           </tr>
@@ -517,7 +514,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
 
             {/* Selected unit detail */}
             {selectedUnit && (
-              <UnitDetailCard unit={selectedUnit} onClose={() => setSelectedUnit(null)} />
+              <UnitDetailCard unit={selectedUnit} onClose={() => setSelectedUnit(null)} onInquiry={() => setContactUnit(selectedUnit)} />
             )}
           </div>
 
@@ -674,6 +671,10 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
           })()}
         </div>
       </div>
+
+      {contactUnit && (
+        <InquiryModal unit={contactUnit} onClose={() => setContactUnit(null)} />
+      )}
     </section>
   )
 }
@@ -784,7 +785,86 @@ function HouseTypeInlinePanel({ houseType }: { houseType: HouseType }) {
   )
 }
 
-function UnitDetailCard({ unit, onClose }: { unit: Unit; onClose: () => void }) {
+function InquiryModal({ unit, onClose }: { unit: Unit; onClose: () => void }) {
+  const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+    const formData = new FormData(e.currentTarget)
+    try {
+      const res = await fetch('https://formspree.io/f/mykbjvap', {
+        method: 'POST', body: formData, headers: { Accept: 'application/json' },
+      })
+      if (res.ok) setSubmitted(true)
+    } catch { /* ignore */ } finally { setLoading(false) }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div className="bg-card rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border/20">
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-foreground">Zapytaj o {unit.label}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {unit.area && `${unit.area} m²`}{unit.rooms ? ` · ${unit.rooms} pok.` : ''}{unit.houseType ? ` · ${unit.houseType.name}` : ''}
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="p-8 text-center">
+            <Send className="h-8 w-8 text-primary mx-auto mb-3" />
+            <p className="font-serif text-lg font-semibold text-foreground">Dziękujemy!</p>
+            <p className="text-sm text-muted-foreground mt-1">Odpowiemy najszybciej jak to możliwe.</p>
+            <Button className="mt-4" onClick={onClose}>Zamknij</Button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
+            <input type="hidden" name="unit" value={`${unit.label}${unit.houseType ? ` (${unit.houseType.name})` : ''} – ${unit.area ?? '?'} m²`} />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Imię</label>
+                <input name="firstName" required placeholder="Jan"
+                  className="w-full h-9 px-3 text-sm rounded-lg border border-border/30 bg-background text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors" />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Nazwisko</label>
+                <input name="lastName" required placeholder="Kowalski"
+                  className="w-full h-9 px-3 text-sm rounded-lg border border-border/30 bg-background text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors" />
+              </div>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">E-mail</label>
+              <input name="email" type="email" required placeholder="jan@example.com"
+                className="w-full h-9 px-3 text-sm rounded-lg border border-border/30 bg-background text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Telefon</label>
+              <input name="phone" type="tel" placeholder="+48 000 000 000"
+                className="w-full h-9 px-3 text-sm rounded-lg border border-border/30 bg-background text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Wiadomość</label>
+              <textarea name="message" rows={3} placeholder="Chciałbym dowiedzieć się więcej..."
+                className="w-full px-3 py-2 text-sm rounded-lg border border-border/30 bg-background text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary/50 transition-colors resize-none" />
+            </div>
+            <Button type="submit" disabled={loading} className="w-full h-10 text-sm font-medium rounded-lg mt-1">
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+              {loading ? 'Wysyłanie...' : 'Wyślij zapytanie'}
+            </Button>
+          </form>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function UnitDetailCard({ unit, onClose, onInquiry }: { unit: Unit; onClose: () => void; onInquiry: () => void }) {
   const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
   return (
     <div className="border-2 border-primary rounded-2xl overflow-hidden bg-card shadow-sm">
@@ -813,12 +893,10 @@ function UnitDetailCard({ unit, onClose }: { unit: Unit; onClose: () => void }) 
         </dl>
         {unit.description && <p className="text-sm mb-5 text-muted-foreground">{unit.description}</p>}
         {unit.status === 'available' && (
-          <a href={`mailto:vlad@qualops.io?subject=Zapytanie o ${unit.label}`}>
-            <Button className="w-full h-11 text-sm font-medium rounded-xl">
-              <Mail className="h-4 w-4 mr-2" />
-              Zapytaj o tę nieruchomość
-            </Button>
-          </a>
+          <Button className="w-full h-11 text-sm font-medium rounded-xl" onClick={onInquiry}>
+            <Mail className="h-4 w-4 mr-2" />
+            Zapytaj o tę nieruchomość
+          </Button>
         )}
       </div>
     </div>

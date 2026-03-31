@@ -21,7 +21,7 @@ export function DynamicContactSection({ phone, email, address }: Props) {
     const form = e.currentTarget
     const formData = new FormData(form)
     try {
-      const response = await fetch('https://formspree.io/f/vlad@qualops.io', {
+      const response = await fetch('https://formspree.io/f/mykbjvap', {
         method: 'POST',
         body: formData,
         headers: { Accept: 'application/json' },
