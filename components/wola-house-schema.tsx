@@ -418,11 +418,11 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
             </div>{/* end 66% wrapper */}
 
             {/* Sortable table below map */}
-            <div className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm">
+            <div className="rounded-2xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-border/60 bg-secondary/50">
+                    <tr className="border-b border-border/30">
                       {([
                         ['label', 'Nr domu'],
                         ['area', 'Pow. m²'],
@@ -433,23 +433,23 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                       ] as [SortKey, string][]).map(([key, label]) => (
                         <th
                           key={key}
-                          className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide cursor-pointer select-none transition-colors text-foreground hover:opacity-80"
+                          className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide cursor-pointer select-none transition-colors text-muted-foreground hover:text-foreground"
                           onClick={() => handleSort(key)}
                         >
                           <span className="flex items-center">{label}<SortIcon k={key} /></span>
                         </th>
                       ))}
-                      <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-foreground">Typ</th>
-                      <th className="px-5 py-4" />
+                      <th className="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">Typ</th>
+                      <th className="px-5 py-3" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/40">
+                  <tbody className="divide-y divide-border/20">
                     {sortedUnits.map((unit) => {
                       const cfg = STATUS_CONFIG[unit.status as StatusKey] || STATUS_CONFIG.available
                       return (
                         <Fragment key={unit.id}>
                           <tr
-                            className={`hover:bg-secondary/30 transition-colors cursor-pointer ${selectedUnit?.id === unit.id ? 'bg-secondary/50' : ''}`}
+                            className={`hover:bg-secondary/20 transition-colors cursor-pointer ${selectedUnit?.id === unit.id ? 'bg-primary/5' : ''}`}
                             onClick={() => {
                               setSelectedUnit((p) => p?.id === unit.id ? null : unit)
                               setExpandedUnitId((p) => p === unit.id ? null : unit.id)
@@ -463,8 +463,11 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                               {unit.price ? fmt(unit.price) : '—'}
                             </td>
                             <td className="px-5 py-4">
-                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold rounded-sm text-white ${cfg.badgeBg}`}>
-                                <span className={`h-1 w-1 rounded-full ${cfg.dotColor}`} />
+                              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium rounded-full ${
+                                unit.status === 'available' ? 'bg-green-500/10 text-green-700 border border-green-500/20' :
+                                unit.status === 'reserved' ? 'bg-amber-500/10 text-amber-700 border border-amber-500/20' :
+                                'bg-red-500/10 text-red-700 border border-red-500/20'
+                              }`}>
                                 {cfg.label}
                               </span>
                             </td>
