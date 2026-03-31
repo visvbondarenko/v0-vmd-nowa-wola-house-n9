@@ -136,38 +136,7 @@ export async function ProjectsSection() {
             )
           })}
 
-          {/* "Coming soon" placeholder */}
-          <div className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 opacity-70">
-            <div className="relative aspect-[16/10] overflow-hidden bg-muted">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/I_need_realistic_renders_for_m_Nano_Banana_Pro_26318-ShJALlqmncXEn3bM37Uy5YIBtbCJoI.jpg"
-                alt="Nowy projekt"
-                className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute top-4 left-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-white bg-muted-foreground">
-                  Wkrótce
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-1 flex-col p-8">
-              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
-                Lokalizacja w przygotowaniu
-              </p>
-              <h3 className="mt-2 font-serif text-2xl font-bold text-card-foreground md:text-3xl">
-                Nowy projekt
-              </h3>
-              <p className="mt-1 text-sm font-medium text-primary">
-                Wkrótce
-              </p>
-              <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">
-                Kolejna inwestycja VMD Development jest w fazie planowania. Śledź nasze aktualności, aby nie przegapić premiery.
-              </p>
-              <p className="mt-6 text-sm font-medium text-muted-foreground/60 uppercase tracking-widest">
-                Informacje wkrótce
-              </p>
-            </div>
-          </div>
+
         </div>
       </div>
     </section>

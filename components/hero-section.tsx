@@ -8,9 +8,9 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/make_view_from_another_angle_i_Nano_Banana_Pro_76680-zOVtr1QoOyEdW5AUA8GE8kamthrQz4.jpg"
+          src="/images/web_house_2.jpg"
           alt="VMD Development - wizualizacja architektoniczna"
-          className="h-full w-full object-cover brightness-125"
+          className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/24 via-black/16 to-black/28" />
       </div>
