@@ -40,7 +40,7 @@ export function ContactSection() {
   return (
     <section id="kontakt" className="bg-foreground py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid gap-16 lg:grid-cols-2">
+        <div className="grid gap-16 lg:grid-cols-2 mb-16">
           {/* Left - Info */}
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary-foreground/50">
@@ -89,9 +89,14 @@ export function ContactSection() {
                 </div>
                 <div>
                   <p className="text-sm text-primary-foreground/50">Adres</p>
-                  <p className="font-medium text-primary-foreground">
-                    ul. Patriotów 110, Warszawa
-                  </p>
+                  <a
+                    href="https://maps.app.goo.gl/J8jcxErCpiE74cCv8"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                  >
+                    Ignacego Krasickiego 187, 05-500 Nowa Wola
+                  </a>
                 </div>
               </div>
             </div>
@@ -224,6 +229,20 @@ export function ContactSection() {
               </form>
             )}
           </div>
+        </div>
+
+        {/* Map */}
+        <div className="overflow-hidden rounded-sm">
+          <iframe
+            src="https://maps.google.com/maps?q=Ignacego+Krasickiego+187,+05-500+Nowa+Wola&z=16&output=embed"
+            width="100%"
+            height="400"
+            style={{ border: 0, display: 'block' }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Lokalizacja - mapa"
+          />
         </div>
       </div>
     </section>
