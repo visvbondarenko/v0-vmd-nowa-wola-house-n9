@@ -6,10 +6,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Save, Upload } from 'lucide-react'
+import { ArrowLeft, Plus, Loader2 } from 'lucide-react'
 import { slugify } from '@/lib/slugify'
 
 export default function NewProjectPage() {
@@ -20,10 +18,6 @@ export default function NewProjectPage() {
     name: '',
     slug: '',
     location: '',
-    description: '',
-    status: 'active',
-    imageUrl: '',
-    svgContent: '',
   })
 
   const handleNameChange = (name: string) => {
@@ -34,16 +28,6 @@ export default function NewProjectPage() {
     }))
   }
 
-  const handleSvgFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      setForm((prev) => ({ ...prev, svgContent: ev.target?.result as string }))
-    }
-    reader.readAsText(file)
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
@@ -52,7 +36,7 @@ export default function NewProjectPage() {
     const res = await fetch('/api/admin/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, status: 'active', description: '', imageUrl: '', svgContent: '' }),
     })
 
     if (res.ok) {
@@ -66,7 +50,7 @@ export default function NewProjectPage() {
   }
 
   return (
-    <div>
+    <div className="max-w-lg mx-auto">
       <div className="flex items-center gap-4 mb-8">
         <Link href="/admin">
           <Button variant="ghost" size="sm">
@@ -77,151 +61,58 @@ export default function NewProjectPage() {
         <h1 className="text-3xl font-serif font-bold text-foreground">Nowa inwestycja</h1>
       </div>
 
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Informacje podstawowe</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Nazwa inwestycji *</Label>
-                  <Input
-                    id="name"
-                    value={form.name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    placeholder="np. Wola House"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="slug">Slug URL *</Label>
-                  <Input
-                    id="slug"
-                    value={form.slug}
-                    onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
-                    placeholder="np. wola-house"
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">URL: /projects/{form.slug || 'slug'}</p>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Lokalizacja *</Label>
-                  <Input
-                    id="location"
-                    value={form.location}
-                    onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
-                    placeholder="np. Nowa Wola, Warszawa"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Opis</Label>
-                  <Textarea
-                    id="description"
-                    value={form.description}
-                    onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-                    placeholder="Opis inwestycji..."
-                    rows={4}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="imageUrl">URL zdjęcia głównego</Label>
-                  <Input
-                    id="imageUrl"
-                    value={form.imageUrl}
-                    onChange={(e) => setForm((p) => ({ ...p, imageUrl: e.target.value }))}
-                    placeholder="https://..."
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Plan zagospodarowania (SVG)</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="svgFile">Wgraj plik SVG</Label>
-                  <div className="flex items-center gap-3">
-                    <Input
-                      id="svgFile"
-                      type="file"
-                      accept=".svg,image/svg+xml"
-                      onChange={handleSvgFile}
-                      className="cursor-pointer"
-                    />
-                    <Upload className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="svgContent">lub wklej kod SVG</Label>
-                  <Textarea
-                    id="svgContent"
-                    value={form.svgContent}
-                    onChange={(e) => setForm((p) => ({ ...p, svgContent: e.target.value }))}
-                    placeholder="<svg>...</svg>"
-                    rows={8}
-                    className="font-mono text-xs"
-                  />
-                </div>
-                {form.svgContent && (
-                  <div className="border rounded-lg p-4 bg-muted/30">
-                    <p className="text-xs text-muted-foreground mb-2">Podgląd SVG:</p>
-                    <div
-                      className="max-h-64 overflow-auto"
-                      dangerouslySetInnerHTML={{ __html: form.svgContent }}
-                    />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Ustawienia</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Status</Label>
-                  <Select
-                    value={form.status}
-                    onValueChange={(v) => setForm((p) => ({ ...p, status: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="active">Aktywna</SelectItem>
-                      <SelectItem value="planned">Planowana</SelectItem>
-                      <SelectItem value="completed">Zakończona</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Utwórz projekt</CardTitle>
+          <p className="text-sm text-muted-foreground">Podaj podstawowe dane — resztę skonfigurujesz na następnej stronie.</p>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Nazwa inwestycji *</Label>
+              <Input
+                id="name"
+                value={form.name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="np. Wola House"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="slug">Slug URL *</Label>
+              <Input
+                id="slug"
+                value={form.slug}
+                onChange={(e) => setForm((p) => ({ ...p, slug: e.target.value }))}
+                placeholder="np. wola-house"
+                required
+              />
+              <p className="text-xs text-muted-foreground">URL: /projects/{form.slug || 'slug'}</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Lokalizacja *</Label>
+              <Input
+                id="location"
+                value={form.location}
+                onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
+                placeholder="np. Nowa Wola, Warszawa"
+                required
+              />
+            </div>
 
             {error && (
-              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3">
                 <p className="text-sm text-destructive">{error}</p>
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {loading ? 'Zapisywanie...' : 'Utwórz inwestycję'}
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
+              {loading ? 'Tworzenie...' : 'Utwórz i konfiguruj'}
             </Button>
-          </div>
-        </div>
-      </form>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
