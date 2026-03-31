@@ -300,10 +300,10 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
 
               {/* Filters panel */}
               {filtersOpen && (
-                <div className="mb-3 bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm p-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="mb-3 rounded-2xl overflow-hidden py-3">
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                     <Select value={filterStatus} onValueChange={setFilterStatus}>
-                      <SelectTrigger className="h-7 text-xs border-border/60 bg-background"><SelectValue placeholder="Status" /></SelectTrigger>
+                      <SelectTrigger className="h-8 text-xs border-border/20 bg-transparent"><SelectValue placeholder="Status" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all" className="text-xs">Wszystkie</SelectItem>
                         <SelectItem value="available" className="text-xs">Dostępna</SelectItem>
@@ -313,7 +313,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                     </Select>
                     {roomOptions.length > 0 && (
                       <Select value={filterRooms} onValueChange={setFilterRooms}>
-                        <SelectTrigger className="h-7 text-xs border-border/60 bg-background"><SelectValue placeholder="Pokoje" /></SelectTrigger>
+                        <SelectTrigger className="h-8 text-xs border-border/20 bg-transparent"><SelectValue placeholder="Pokoje" /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all" className="text-xs">Wszystkie</SelectItem>
                           {roomOptions.map((r) => (
@@ -322,13 +322,13 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                         </SelectContent>
                       </Select>
                     )}
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Pow. min m²" value={filterAreaMin} onChange={(e) => setFilterAreaMin(e.target.value)} type="number" />
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Pow. max m²" value={filterAreaMax} onChange={(e) => setFilterAreaMax(e.target.value)} type="number" />
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Ogród min m²" value={filterGardenMin} onChange={(e) => setFilterGardenMin(e.target.value)} type="number" />
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Ogród max m²" value={filterGardenMax} onChange={(e) => setFilterGardenMax(e.target.value)} type="number" />
+                    <Input className="h-8 text-xs border-border/20 bg-transparent" placeholder="Pow. min m²" value={filterAreaMin} onChange={(e) => setFilterAreaMin(e.target.value)} type="number" />
+                    <Input className="h-8 text-xs border-border/20 bg-transparent" placeholder="Pow. max m²" value={filterAreaMax} onChange={(e) => setFilterAreaMax(e.target.value)} type="number" />
+                    <Input className="h-8 text-xs border-border/20 bg-transparent" placeholder="Ogród min m²" value={filterGardenMin} onChange={(e) => setFilterGardenMin(e.target.value)} type="number" />
+                    <Input className="h-8 text-xs border-border/20 bg-transparent" placeholder="Ogród max m²" value={filterGardenMax} onChange={(e) => setFilterGardenMax(e.target.value)} type="number" />
                   </div>
                   {hasFilters && (
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/60">
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/20">
                       <p className="text-xs text-muted-foreground">
                         Pokazuje {filteredUnits.length} z {units.length} nieruchomości
                       </p>

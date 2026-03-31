@@ -40,7 +40,7 @@ export function ContactSection() {
   return (
     <section id="kontakt" className="bg-foreground py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid gap-12 lg:grid-cols-3">
+        <div className="grid gap-16 lg:grid-cols-2">
           {/* Left - Info */}
           <div>
             <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary-foreground/50">
@@ -229,20 +229,21 @@ export function ContactSection() {
               </form>
             )}
           </div>
-          {/* Right - Map */}
-          <div className="overflow-hidden rounded-sm h-full min-h-[400px]">
-            <iframe
-              src="https://maps.google.com/maps?q=Patriot%C3%B3w+110,+04-846+Warszawa&z=16&output=embed"
-              width="100%"
-              height="100%"
-              style={{ border: 0, display: 'block', minHeight: '100%' }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Lokalizacja - mapa"
-            />
-          </div>
         </div>
+      </div>
+
+      {/* Full-width map strip */}
+      <div className="mt-24 w-full overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+        <iframe
+          src="https://maps.google.com/maps?q=Patriot%C3%B3w+110,+04-846+Warszawa&z=15&output=embed"
+          width="100%"
+          height="220"
+          style={{ border: 0, display: 'block' }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Lokalizacja - mapa"
+        />
       </div>
     </section>
   );
