@@ -58,7 +58,7 @@ export function MapSection() {
           {/* Map embed */}
           <div className="overflow-hidden border border-border lg:col-span-2">
             <iframe
-              src="https://maps.google.com/maps?q=52.093261,20.967812&z=17&output=embed"
+              src="https://maps.google.com/maps?q=Ignacego+Krasickiego+187,+05-500+Nowa+Wola&z=16&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: "400px" }}

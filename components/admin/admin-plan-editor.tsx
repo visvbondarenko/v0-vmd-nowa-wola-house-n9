@@ -64,6 +64,11 @@ const STATUS_COLOR: Record<Status, string> = {
 const STATUS_LABEL: Record<Status, string> = {
   available: 'Dostępne', reserved: 'Zarezerwowane', sold: 'Sprzedane',
 }
+const STATUS_BADGE: Record<Status, string> = {
+  available: 'bg-green-500/10 text-green-700 border border-green-500/20',
+  reserved:  'bg-amber-500/10 text-amber-700 border border-amber-500/20',
+  sold:      'bg-red-500/10 text-red-700 border border-red-500/20',
+}
 const SNAP_PX = 10
 const PRIMARY_COLOR = '#2d5a3d'
 const EMPTY_FORM: EditForm = {
@@ -497,7 +502,7 @@ export default function AdminPlanEditor({
 
   // ─── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="flex flex-col border border-border rounded-xl overflow-hidden shadow-sm" style={{ height: 'calc(100vh - 107px)', minHeight: 840 }}>
+    <div className="flex flex-col border border-border rounded-xl overflow-hidden shadow-sm" style={{ height: 585, minHeight: 585 }}>
 
       {/* ── Toolbar ── */}
       <div className="flex items-center gap-1.5 px-3 py-2 bg-card border-b border-border flex-shrink-0 flex-wrap gap-y-1.5">
@@ -754,8 +759,8 @@ export default function AdminPlanEditor({
 
           {/* Unit list */}
           <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="px-4 py-2 border-b border-border flex items-center justify-between flex-shrink-0">
-              <h3 className="font-semibold text-sm text-foreground">Działki ({drawUnits.length})</h3>
+            <div className="px-4 py-2 border-b border-border/50 flex items-center justify-between flex-shrink-0">
+              <h3 className="font-semibold text-sm text-foreground">Działki <span className="text-muted-foreground font-normal">({drawUnits.length})</span></h3>
             </div>
             <div className="flex-1 overflow-y-auto">
               {drawUnits.length === 0 ? (
@@ -763,17 +768,18 @@ export default function AdminPlanEditor({
                   <p>Brak działek</p><p className="text-xs">Narysuj polygony na planie</p>
                 </div>
               ) : (
-                <div className="divide-y divide-border">
+                <div className="divide-y divide-border/30">
                   {drawUnits.map(unit => (
                     <div key={unit.id}
-                      className={`flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-muted/50 text-sm ${unit.id === selectedId ? 'bg-primary/10' : ''}`}
+                      className={`flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-secondary/30 text-sm ${unit.id === selectedId ? 'bg-primary/5' : ''}`}
                       onClick={() => { setSelectedId(unit.id); setTool('select'); setEditForm(unitToForm(unit)) }}>
-                      <div className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: STATUS_COLOR[unit.status] }} />
-                      <span className="font-medium flex-1 truncate">{unit.label}</span>
-                      <span className="text-xs text-muted-foreground flex-shrink-0">{unit.area ? `${unit.area}m²` : ''}</span>
+                      <span className="font-medium text-foreground flex-1 truncate">{unit.label}</span>
+                      {unit.area && <span className="text-xs text-muted-foreground flex-shrink-0">{unit.area} m²</span>}
                       <Select value={unit.status} onValueChange={v => updateStatus(unit.id, v as Status)}>
-                        <SelectTrigger className="h-6 text-xs border-0 shadow-none p-0 pr-5 focus:ring-0 w-auto" onClick={e => e.stopPropagation()}>
-                          <SelectValue />
+                        <SelectTrigger className="h-auto border-0 shadow-none p-0 focus:ring-0 w-auto gap-1" onClick={e => e.stopPropagation()}>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${STATUS_BADGE[unit.status]}`}>
+                            {STATUS_LABEL[unit.status]}
+                          </span>
                         </SelectTrigger>
                         <SelectContent>
                           {(['available', 'reserved', 'sold'] as Status[]).map(s => (
@@ -781,7 +787,7 @@ export default function AdminPlanEditor({
                           ))}
                         </SelectContent>
                       </Select>
-                      <button className="text-muted-foreground/50 hover:text-destructive p-0.5 transition-colors"
+                      <button className="text-muted-foreground/40 hover:text-destructive p-0.5 transition-colors flex-shrink-0"
                         onClick={e => { e.stopPropagation(); handleDeleteUnit(unit.id) }}>
                         <X className="h-3.5 w-3.5" />
                       </button>

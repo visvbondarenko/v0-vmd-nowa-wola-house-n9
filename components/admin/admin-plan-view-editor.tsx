@@ -344,7 +344,7 @@ function ViewCanvas({
         <div
           ref={containerRef}
           className="relative bg-muted rounded-xl overflow-hidden select-none"
-          style={{ height: 450, cursor: spaceDown || isPanning.current ? 'grabbing' : tool === 'draw' ? 'crosshair' : 'default' }}
+          style={{ height: 585, cursor: spaceDown || isPanning.current ? 'grabbing' : tool === 'draw' ? 'crosshair' : 'default' }}
           onWheel={onWheel}
           onMouseDown={onMouseDown}
           onMouseMove={onMouseMove}

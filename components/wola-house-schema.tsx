@@ -231,8 +231,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
     const unit = getUnit(id)
     if (unit) {
       setHoveredUnit(unit.svgElementId)
-      const rect = svgRef.current?.getBoundingClientRect()
-      if (rect) setTooltip({ x: e.clientX - rect.left + 12, y: e.clientY - rect.top - 8, unit })
+      setTooltip({ x: 0, y: 0, unit })
     } else { setHoveredUnit(null); setTooltip(null) }
   }, [getUnit])
 
@@ -268,6 +267,79 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
           {/* MAP VIEW */}
           <div className="space-y-5">
             <div className="mx-auto w-full max-w-[66.667%]">
+              {/* Stats + Filtry above image */}
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-700">
+                    <span className="font-bold">{counts.available}</span>
+                    <span className="text-green-700/70">Dostępnych</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
+                    <span className="font-bold">{counts.reserved}</span>
+                    <span className="text-amber-700/70">Zarezerwowanych</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-700">
+                    <span className="font-bold">{counts.sold}</span>
+                    <span className="text-red-700/70">Sprzedanych</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setFiltersOpen(!filtersOpen)}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-primary/10 text-primary"
+                >
+                  <SlidersHorizontal className="h-3 w-3" />
+                  <span>Filtry</span>
+                  {hasFilters && (
+                    <span className="px-1.5 py-0.5 text-xs text-primary-foreground rounded-full font-medium bg-primary">
+                      {filteredUnits.length}/{units.length}
+                    </span>
+                  )}
+                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
+
+              {/* Filters panel */}
+              {filtersOpen && (
+                <div className="mb-3 bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm p-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <Select value={filterStatus} onValueChange={setFilterStatus}>
+                      <SelectTrigger className="h-7 text-xs border-border/60 bg-background"><SelectValue placeholder="Status" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all" className="text-xs">Wszystkie</SelectItem>
+                        <SelectItem value="available" className="text-xs">Dostępna</SelectItem>
+                        <SelectItem value="reserved" className="text-xs">Rezerwacja</SelectItem>
+                        <SelectItem value="sold" className="text-xs">Sprzedana</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {roomOptions.length > 0 && (
+                      <Select value={filterRooms} onValueChange={setFilterRooms}>
+                        <SelectTrigger className="h-7 text-xs border-border/60 bg-background"><SelectValue placeholder="Pokoje" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all" className="text-xs">Wszystkie</SelectItem>
+                          {roomOptions.map((r) => (
+                            <SelectItem key={r} value={String(r)} className="text-xs">{r} pokoje</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Pow. min m²" value={filterAreaMin} onChange={(e) => setFilterAreaMin(e.target.value)} type="number" />
+                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Pow. max m²" value={filterAreaMax} onChange={(e) => setFilterAreaMax(e.target.value)} type="number" />
+                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Ogród min m²" value={filterGardenMin} onChange={(e) => setFilterGardenMin(e.target.value)} type="number" />
+                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Ogród max m²" value={filterGardenMax} onChange={(e) => setFilterGardenMax(e.target.value)} type="number" />
+                  </div>
+                  {hasFilters && (
+                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/60">
+                      <p className="text-xs text-muted-foreground">
+                        Pokazuje {filteredUnits.length} z {units.length} nieruchomości
+                      </p>
+                      <button onClick={clearFilters} className="text-xs flex items-center gap-1 transition-colors text-primary hover:opacity-80">
+                        <X className="h-3 w-3" /> Wyczyść filtry
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
             <div className="relative">
               {activeView ? (
                 <div
@@ -295,8 +367,7 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
                   />
                   {tooltip && (
                     <div
-                      className="absolute z-10 bg-card border border-border/60 rounded-xl shadow-lg p-4 pointer-events-none text-sm"
-                      style={{ left: tooltip.x, top: tooltip.y, maxWidth: 220 }}
+                      className="absolute z-10 bg-card border border-border/60 rounded-xl shadow-lg p-4 pointer-events-none text-sm bottom-4 left-4"
                     >
                       <div className="font-serif font-semibold text-base text-foreground">{tooltip.unit.label}</div>
                       <div className="space-y-0.5 mt-1.5 text-muted-foreground">
@@ -344,78 +415,6 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
               )}
             </div>
 
-              {/* Stats + Filtry below image, aligned to image edges */}
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-green-500/20 bg-green-500/10 px-2.5 py-1 text-xs font-medium text-green-700">
-                    <span className="font-bold">{counts.available}</span>
-                    <span className="text-green-700/70">Dostępnych</span>
-                  </div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
-                    <span className="font-bold">{counts.reserved}</span>
-                    <span className="text-amber-700/70">Zarezerwowanych</span>
-                  </div>
-                  <div className="inline-flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-2.5 py-1 text-xs font-medium text-red-700">
-                    <span className="font-bold">{counts.sold}</span>
-                    <span className="text-red-700/70">Sprzedanych</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setFiltersOpen(!filtersOpen)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-primary/10 text-primary"
-                >
-                  <SlidersHorizontal className="h-3 w-3" />
-                  <span>Filtry</span>
-                  {hasFilters && (
-                    <span className="px-1.5 py-0.5 text-xs text-primary-foreground rounded-full font-medium bg-primary">
-                      {filteredUnits.length}/{units.length}
-                    </span>
-                  )}
-                  <ChevronDown className={`h-3 w-3 transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`} />
-                </button>
-              </div>
-
-              {/* Filters panel */}
-              {filtersOpen && (
-                <div className="mt-2 bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm p-3">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <Select value={filterStatus} onValueChange={setFilterStatus}>
-                      <SelectTrigger className="h-7 text-xs border-border/60 bg-background"><SelectValue placeholder="Status" /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all" className="text-xs">Wszystkie</SelectItem>
-                        <SelectItem value="available" className="text-xs">Dostępna</SelectItem>
-                        <SelectItem value="reserved" className="text-xs">Rezerwacja</SelectItem>
-                        <SelectItem value="sold" className="text-xs">Sprzedana</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {roomOptions.length > 0 && (
-                      <Select value={filterRooms} onValueChange={setFilterRooms}>
-                        <SelectTrigger className="h-7 text-xs border-border/60 bg-background"><SelectValue placeholder="Pokoje" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all" className="text-xs">Wszystkie</SelectItem>
-                          {roomOptions.map((r) => (
-                            <SelectItem key={r} value={String(r)} className="text-xs">{r} pokoje</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Pow. min m²" value={filterAreaMin} onChange={(e) => setFilterAreaMin(e.target.value)} type="number" />
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Pow. max m²" value={filterAreaMax} onChange={(e) => setFilterAreaMax(e.target.value)} type="number" />
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Ogród min m²" value={filterGardenMin} onChange={(e) => setFilterGardenMin(e.target.value)} type="number" />
-                    <Input className="h-7 text-xs border-border/60 bg-background" placeholder="Ogród max m²" value={filterGardenMax} onChange={(e) => setFilterGardenMax(e.target.value)} type="number" />
-                  </div>
-                  {hasFilters && (
-                    <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/60">
-                      <p className="text-xs text-muted-foreground">
-                        Pokazuje {filteredUnits.length} z {units.length} nieruchomości
-                      </p>
-                      <button onClick={clearFilters} className="text-xs flex items-center gap-1 transition-colors text-primary hover:opacity-80">
-                        <X className="h-3 w-3" /> Wyczyść filtry
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
             </div>{/* end 66% wrapper */}
 
             {/* Sortable table below map */}
