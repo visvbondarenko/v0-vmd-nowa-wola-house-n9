@@ -49,11 +49,6 @@ export function ContactSection() {
             <h2 className="mt-4 font-serif text-3xl font-bold text-primary-foreground md:text-5xl text-balance">
               Porozmawiajmy o Twoim nowym domu
             </h2>
-            <p className="mt-6 text-lg leading-relaxed text-primary-foreground/70 text-pretty">
-              Masz pytania dotyczące inwestycji? Chętnie odpowiemy na wszystkie
-              wątpliwości i umówimy się na prezentację.
-            </p>
-
             <div className="mt-8 flex flex-col gap-5">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center bg-primary-foreground/10">
@@ -226,7 +221,7 @@ export function ContactSection() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-4 flex items-center justify-center gap-3 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  className="mt-auto flex items-center justify-center gap-3 bg-primary px-8 py-4 text-sm font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 hover:bg-primary/90 hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
                 >
                   {loading ? (
                     <>
