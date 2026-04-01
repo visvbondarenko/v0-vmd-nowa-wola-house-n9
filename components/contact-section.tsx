@@ -41,8 +41,8 @@ export function ContactSection() {
     <section id="kontakt" className="bg-foreground py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid gap-16 lg:grid-cols-2">
-          {/* Left - Info */}
-          <div>
+          {/* Left - Info + Map */}
+          <div className="flex flex-col">
             <p className="text-sm font-medium uppercase tracking-[0.25em] text-primary-foreground/50">
               Kontakt
             </p>
@@ -54,56 +54,70 @@ export function ContactSection() {
               wątpliwości i umówimy się na prezentację.
             </p>
 
-            <div className="mt-12 flex flex-col gap-6">
+            <div className="mt-8 flex flex-col gap-5">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center bg-primary-foreground/10">
-                  <Phone className="h-5 w-5 text-primary-foreground/70" />
+                <div className="flex h-10 w-10 items-center justify-center bg-primary-foreground/10">
+                  <Phone className="h-4 w-4 text-primary-foreground/70" />
                 </div>
                 <div>
-                  <p className="text-sm text-primary-foreground/50">Telefon</p>
+                  <p className="text-xs text-primary-foreground/50">Telefon</p>
                   <a
                     href="tel:+48452068785"
-                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                    className="text-sm font-medium text-primary-foreground hover:text-primary transition-colors"
                   >
                     +48 452 068 785
                   </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center bg-primary-foreground/10">
-                  <Mail className="h-5 w-5 text-primary-foreground/70" />
+                <div className="flex h-10 w-10 items-center justify-center bg-primary-foreground/10">
+                  <Mail className="h-4 w-4 text-primary-foreground/70" />
                 </div>
                 <div>
-                  <p className="text-sm text-primary-foreground/50">E-mail</p>
+                  <p className="text-xs text-primary-foreground/50">E-mail</p>
                   <a
                     href="mailto:vlad@qualops.io"
-                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                    className="text-sm font-medium text-primary-foreground hover:text-primary transition-colors"
                   >
                     vlad@qualops.io
                   </a>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center bg-primary-foreground/10">
-                  <MapPin className="h-5 w-5 text-primary-foreground/70" />
+                <div className="flex h-10 w-10 items-center justify-center bg-primary-foreground/10">
+                  <MapPin className="h-4 w-4 text-primary-foreground/70" />
                 </div>
                 <div>
-                  <p className="text-sm text-primary-foreground/50">Adres</p>
+                  <p className="text-xs text-primary-foreground/50">Adres</p>
                   <a
                     href="https://maps.app.goo.gl/J8jcxErCpiE74cCv8"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-primary-foreground hover:text-primary transition-colors"
+                    className="text-sm font-medium text-primary-foreground hover:text-primary transition-colors"
                   >
                     Patriotów 110, 04-846 Warszawa
                   </a>
                 </div>
               </div>
             </div>
+
+            {/* Map below info, fills remaining height */}
+            <div className="mt-8 flex-1 min-h-[200px] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+              <iframe
+                src="https://maps.google.com/maps?q=Patriot%C3%B3w+110,+04-846+Warszawa&z=15&output=embed"
+                width="100%"
+                height="100%"
+                style={{ border: 0, display: 'block', minHeight: 200 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Lokalizacja - mapa"
+              />
+            </div>
           </div>
 
           {/* Right - Form */}
-          <div>
+          <div className="flex flex-col">
             {submitted ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
@@ -120,7 +134,7 @@ export function ContactSection() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+              <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <label
@@ -232,19 +246,6 @@ export function ContactSection() {
         </div>
       </div>
 
-      {/* Full-width map strip */}
-      <div className="mt-24 w-full overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
-        <iframe
-          src="https://maps.google.com/maps?q=Patriot%C3%B3w+110,+04-846+Warszawa&z=15&output=embed"
-          width="100%"
-          height="220"
-          style={{ border: 0, display: 'block' }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Lokalizacja - mapa"
-        />
-      </div>
     </section>
   );
 }
