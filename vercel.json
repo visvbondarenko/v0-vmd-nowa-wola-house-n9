@@ -1,0 +1,42 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/dane-gov",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/dane-gov-monitor",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/dane-gov-weekly",
+      "schedule": "0 6 * * 5"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/wp-content/uploads/raporty/:slug-dataset.xml",
+      "destination": "/api/dane-gov/:slug?type=xml"
+    },
+    {
+      "source": "/wp-content/uploads/raporty/:slug-dataset.md5",
+      "destination": "/api/dane-gov/:slug?type=md5"
+    },
+    {
+      "source": "/wp-content/uploads/raporty/mieszkania-:slug-:date.csv",
+      "destination": "/api/dane-gov/:slug?type=csv&date=:date"
+    },
+    {
+      "source": "/raporty/:slug-dataset.md5",
+      "destination": "/api/dane-gov/:slug?type=md5"
+    },
+    {
+      "source": "/raporty/:slug-dataset.xml",
+      "destination": "/api/dane-gov/:slug?type=xml"
+    },
+    {
+      "source": "/raporty/mieszkania-:slug-:date.csv",
+      "destination": "/api/dane-gov/:slug?type=csv&date=:date"
+    }
+  ]
+}

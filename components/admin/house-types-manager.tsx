@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -50,10 +50,11 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
   const [houseTypes, setHouseTypes] = useState<HouseType[]>(initialHouseTypes)
   const [expandedType, setExpandedType] = useState<string | null>(null)
   const [showAddType, setShowAddType] = useState(false)
-  const [showAddFloor, setShowAddFloor] = useState<string | null>(null)
-  const [showAddRoom, setShowAddRoom] = useState<string | null>(null)
+  const [showAddFloor, setShowAddFloor] = useState<string | null>(null) // houseTypeId
+  const [showAddRoom, setShowAddRoom] = useState<string | null>(null) // floorPlanId
   const [uploading, setUploading] = useState<string | null>(null)
 
+  // Add House Type
   const [newType, setNewType] = useState({ name: '', totalArea: '' })
   const handleAddType = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -80,6 +81,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
     setHouseTypes((prev) => prev.filter((t) => t.id !== id))
   }
 
+  // Add Floor Plan
   const [newFloor, setNewFloor] = useState({ name: '', area: '' })
   const handleAddFloor = async (e: React.FormEvent, houseTypeId: string) => {
     e.preventDefault()
@@ -118,6 +120,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
     )
   }
 
+  // Image upload
   const handleImageUpload = async (
     floorPlanId: string,
     houseTypeId: string,
@@ -150,6 +153,109 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
     setUploading(null)
   }
 
+  // Edit house type total area inline
+  const [editingTypeArea, setEditingTypeArea] = useState<{ typeId: string; value: string } | null>(null)
+
+  const handleUpdateTypeArea = async (typeId: string) => {
+    if (!editingTypeArea) return
+    const totalArea = editingTypeArea.value ? parseFloat(editingTypeArea.value) : null
+    const res = await fetch(`/api/admin/house-types/${typeId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ totalArea }),
+    })
+    if (res.ok) {
+      setHouseTypes((prev) =>
+        prev.map((t) => (t.id === typeId ? { ...t, totalArea } : t))
+      )
+    }
+    setEditingTypeArea(null)
+  }
+
+  // Edit floor plan area inline
+  const [editingFloorArea, setEditingFloorArea] = useState<{ floorId: string; value: string } | null>(null)
+
+  const handleUpdateFloorArea = async (floorId: string, houseTypeId: string) => {
+    if (!editingFloorArea) return
+    const area = editingFloorArea.value ? parseFloat(editingFloorArea.value) : null
+    const res = await fetch(`/api/admin/floor-plans/${floorId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ area }),
+    })
+    if (res.ok) {
+      setHouseTypes((prev) =>
+        prev.map((t) =>
+          t.id === houseTypeId
+            ? { ...t, floorPlans: t.floorPlans.map((f) => (f.id === floorId ? { ...f, area } : f)) }
+            : t
+        )
+      )
+    }
+    setEditingFloorArea(null)
+  }
+
+  // Edit room name inline
+  const [editingRoomName, setEditingRoomName] = useState<{ roomId: string; value: string } | null>(null)
+
+  const handleUpdateRoomName = async (roomId: string, floorPlanId: string, houseTypeId: string) => {
+    if (!editingRoomName || !editingRoomName.value.trim()) { setEditingRoomName(null); return }
+    const name = editingRoomName.value.trim()
+    const res = await fetch(`/api/admin/rooms/${roomId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    })
+    if (res.ok) {
+      setHouseTypes((prev) =>
+        prev.map((t) =>
+          t.id === houseTypeId
+            ? {
+                ...t,
+                floorPlans: t.floorPlans.map((f) =>
+                  f.id === floorPlanId
+                    ? { ...f, rooms: f.rooms.map((r) => (r.id === roomId ? { ...r, name } : r)) }
+                    : f
+                ),
+              }
+            : t
+        )
+      )
+    }
+    setEditingRoomName(null)
+  }
+
+  // Edit room area inline
+  const [editingArea, setEditingArea] = useState<{ roomId: string; value: string } | null>(null)
+
+  const handleUpdateRoomArea = async (roomId: string, floorPlanId: string, houseTypeId: string) => {
+    if (!editingArea) return
+    const area = editingArea.value ? parseFloat(editingArea.value) : null
+    const res = await fetch(`/api/admin/rooms/${roomId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ area }),
+    })
+    if (res.ok) {
+      setHouseTypes((prev) =>
+        prev.map((t) =>
+          t.id === houseTypeId
+            ? {
+                ...t,
+                floorPlans: t.floorPlans.map((f) =>
+                  f.id === floorPlanId
+                    ? { ...f, rooms: f.rooms.map((r) => (r.id === roomId ? { ...r, area } : r)) }
+                    : f
+                ),
+              }
+            : t
+        )
+      )
+    }
+    setEditingArea(null)
+  }
+
+  // Add Room
   const [newRoom, setNewRoom] = useState({ name: '', area: '', number: '' })
   const handleAddRoom = async (e: React.FormEvent, floorPlanId: string, houseTypeId: string) => {
     e.preventDefault()
@@ -205,7 +311,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle>Typy domów ({houseTypes.length})</CardTitle>
-          <Button size="sm" onClick={() => setShowAddType(true)}>
+          <Button size="sm" onClick={() => setShowAddType(true)} style={{ backgroundColor: 'var(--color-primary)' }}>
             <Plus className="h-4 w-4 mr-1.5" />
             Dodaj typ
           </Button>
@@ -219,10 +325,10 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
         ) : (
           <div className="space-y-3">
             {houseTypes.map((type) => (
-              <div key={type.id} className="border border-border rounded-lg overflow-hidden">
+              <div key={type.id} className="border rounded-lg overflow-hidden">
                 {/* Type header */}
                 <div
-                  className="flex items-center justify-between p-4 bg-muted/50 cursor-pointer hover:bg-muted"
+                  className="flex items-center justify-between p-4 bg-muted/30 cursor-pointer hover:bg-muted/50"
                   onClick={() => setExpandedType(expandedType === type.id ? null : type.id)}
                 >
                   <div className="flex items-center gap-3">
@@ -232,8 +338,28 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     )}
                     <span className="font-medium">{type.name}</span>
-                    {type.totalArea && (
-                      <span className="text-sm text-muted-foreground">{type.totalArea} m² łącznie</span>
+                    {editingTypeArea?.typeId === type.id ? (
+                      <Input
+                        autoFocus
+                        type="number"
+                        step="0.01"
+                        className="h-6 w-24 text-sm px-1 py-0"
+                        value={editingTypeArea.value}
+                        onChange={(e) => setEditingTypeArea({ typeId: type.id, value: e.target.value })}
+                        onBlur={() => handleUpdateTypeArea(type.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleUpdateTypeArea(type.id)
+                          if (e.key === 'Escape') setEditingTypeArea(null)
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <span
+                        className="text-sm text-muted-foreground cursor-pointer hover:underline hover:text-blue-600"
+                        onClick={(e) => { e.stopPropagation(); setEditingTypeArea({ typeId: type.id, value: type.totalArea != null ? String(type.totalArea) : '' }) }}
+                      >
+                        {type.totalArea != null ? `${type.totalArea} m² łącznie` : '— m²'}
+                      </span>
                     )}
                     <span className="text-xs text-muted-foreground">
                       {type.floorPlans.length} {type.floorPlans.length === 1 ? 'kondygnacja' : 'kondygnacje'}
@@ -252,13 +378,33 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                 {/* Expanded content */}
                 {expandedType === type.id && (
                   <div className="p-4 space-y-4">
+                    {/* Floor plans */}
                     {type.floorPlans.map((floor) => (
-                      <div key={floor.id} className="border border-border rounded-lg p-4">
+                      <div key={floor.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="font-medium text-sm">{floor.name}</h4>
                           <div className="flex items-center gap-2">
-                            {floor.area && (
-                              <span className="text-xs text-muted-foreground">{floor.area} m²</span>
+                            {editingFloorArea?.floorId === floor.id ? (
+                              <Input
+                                autoFocus
+                                type="number"
+                                step="0.01"
+                                className="h-6 w-24 text-sm px-1 py-0"
+                                value={editingFloorArea.value}
+                                onChange={(e) => setEditingFloorArea({ floorId: floor.id, value: e.target.value })}
+                                onBlur={() => handleUpdateFloorArea(floor.id, type.id)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handleUpdateFloorArea(floor.id, type.id)
+                                  if (e.key === 'Escape') setEditingFloorArea(null)
+                                }}
+                              />
+                            ) : (
+                              <span
+                                className="text-xs text-muted-foreground cursor-pointer hover:underline hover:text-blue-600"
+                                onClick={() => setEditingFloorArea({ floorId: floor.id, value: floor.area != null ? String(floor.area) : '' })}
+                              >
+                                {floor.area != null ? `${floor.area} m²` : '— m²'}
+                              </span>
                             )}
                             <Button
                               variant="ghost"
@@ -283,7 +429,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                                   <img
                                     src={floor[field]!}
                                     alt={field}
-                                    className="w-full h-24 object-cover rounded border border-border"
+                                    className="w-full h-24 object-cover rounded border"
                                   />
                                   <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 cursor-pointer rounded transition-opacity">
                                     <Upload className="h-5 w-5 text-white" />
@@ -299,12 +445,12 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                                   </label>
                                 </div>
                               ) : (
-                                <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed border-border rounded cursor-pointer hover:bg-muted/50 transition-colors">
+                                <label className="flex flex-col items-center justify-center h-24 border-2 border-dashed rounded cursor-pointer hover:bg-muted/30 transition-colors">
                                   {uploading === `${floor.id}-${field}` ? (
                                     <span className="text-xs text-muted-foreground">Uploading...</span>
                                   ) : (
                                     <>
-                                      <ImageIcon className="h-6 w-6 text-muted-foreground/50 mb-1" />
+                                      <ImageIcon className="h-6 w-6 text-muted-foreground/60 mb-1" />
                                       <span className="text-xs text-muted-foreground">Kliknij aby dodać</span>
                                     </>
                                   )}
@@ -336,13 +482,57 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                             <TableBody>
                               {floor.rooms.map((room) => (
                                 <TableRow key={room.id}>
-                                  <TableCell className="text-sm">{room.name}</TableCell>
-                                  <TableCell className="text-sm">{room.area ?? '—'}</TableCell>
+                                  <TableCell className="text-sm">
+                                    {editingRoomName?.roomId === room.id ? (
+                                      <Input
+                                        autoFocus
+                                        className="h-6 text-sm px-1 py-0"
+                                        value={editingRoomName.value}
+                                        onChange={(e) => setEditingRoomName({ roomId: room.id, value: e.target.value })}
+                                        onBlur={() => handleUpdateRoomName(room.id, floor.id, type.id)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') handleUpdateRoomName(room.id, floor.id, type.id)
+                                          if (e.key === 'Escape') setEditingRoomName(null)
+                                        }}
+                                      />
+                                    ) : (
+                                      <span
+                                        className="cursor-pointer hover:underline hover:text-blue-600"
+                                        onClick={() => setEditingRoomName({ roomId: room.id, value: room.name })}
+                                      >
+                                        {room.name}
+                                      </span>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="text-sm">
+                                    {editingArea?.roomId === room.id ? (
+                                      <Input
+                                        autoFocus
+                                        type="number"
+                                        step="0.01"
+                                        className="h-6 w-24 text-sm px-1 py-0"
+                                        value={editingArea.value}
+                                        onChange={(e) => setEditingArea({ roomId: room.id, value: e.target.value })}
+                                        onBlur={() => handleUpdateRoomArea(room.id, floor.id, type.id)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') handleUpdateRoomArea(room.id, floor.id, type.id)
+                                          if (e.key === 'Escape') setEditingArea(null)
+                                        }}
+                                      />
+                                    ) : (
+                                      <span
+                                        className="cursor-pointer hover:underline hover:text-blue-600"
+                                        onClick={() => setEditingArea({ roomId: room.id, value: room.area != null ? String(room.area) : '' })}
+                                      >
+                                        {room.area ?? '—'}
+                                      </span>
+                                    )}
+                                  </TableCell>
                                   <TableCell>
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      className="h-6 w-6 p-0 text-destructive/60 hover:text-destructive"
+                                      className="h-6 w-6 p-0 text-red-400 hover:text-destructive"
                                       onClick={() => handleDeleteRoom(floor.id, type.id, room.id)}
                                     >
                                       <Trash2 className="h-3 w-3" />
@@ -363,6 +553,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                           Dodaj pomieszczenie
                         </Button>
 
+                        {/* Add room inline dialog */}
                         <Dialog open={showAddRoom === floor.id} onOpenChange={(o) => !o && setShowAddRoom(null)}>
                           <DialogContent>
                             <DialogHeader>
@@ -394,7 +585,9 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                                 <Button type="button" variant="outline" onClick={() => setShowAddRoom(null)}>
                                   Anuluj
                                 </Button>
-                                <Button type="submit">Dodaj</Button>
+                                <Button type="submit" style={{ backgroundColor: 'var(--color-primary)' }}>
+                                  Dodaj
+                                </Button>
                               </DialogFooter>
                             </form>
                           </DialogContent>
@@ -402,6 +595,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                       </div>
                     ))}
 
+                    {/* Add floor plan button */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -412,6 +606,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                       Dodaj kondygnację
                     </Button>
 
+                    {/* Add floor dialog */}
                     <Dialog open={showAddFloor === type.id} onOpenChange={(o) => !o && setShowAddFloor(null)}>
                       <DialogContent>
                         <DialogHeader>
@@ -443,7 +638,9 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                             <Button type="button" variant="outline" onClick={() => setShowAddFloor(null)}>
                               Anuluj
                             </Button>
-                            <Button type="submit">Dodaj</Button>
+                            <Button type="submit" style={{ backgroundColor: 'var(--color-primary)' }}>
+                              Dodaj
+                            </Button>
                           </DialogFooter>
                         </form>
                       </DialogContent>
@@ -487,7 +684,9 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                 <Button type="button" variant="outline" onClick={() => setShowAddType(false)}>
                   Anuluj
                 </Button>
-                <Button type="submit">Utwórz</Button>
+                <Button type="submit" style={{ backgroundColor: 'var(--color-primary)' }}>
+                  Utwórz
+                </Button>
               </DialogFooter>
             </form>
           </DialogContent>

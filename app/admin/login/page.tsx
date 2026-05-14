@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Building2, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,7 +13,6 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
   const searchParams = useSearchParams()
   const from = searchParams.get('from') || '/admin'
 
@@ -29,10 +28,18 @@ function LoginForm() {
     })
 
     if (res.ok) {
-      router.push(from)
-      router.refresh()
+      // Full-page navigation — client-side router.push can race the Set-Cookie
+      // applying to the document jar, causing the Edge middleware to see no session
+      // and bounce us back to /admin/login. Hard nav guarantees cookies flush.
+      window.location.assign(from)
+      return
     } else {
-      setError('Nieprawidłowe hasło')
+      const data = await res.json().catch(() => ({}))
+      if (res.status === 429) {
+        setError(data?.error || 'Zbyt wiele prób. Spróbuj ponownie za 15 minut.')
+      } else {
+        setError('Nieprawidłowe hasło')
+      }
       setLoading(false)
     }
   }
@@ -47,7 +54,7 @@ function LoginForm() {
             </div>
           </div>
           <CardTitle className="text-2xl font-serif">Panel Administracyjny</CardTitle>
-          <CardDescription>VMD Development — Zarządzanie inwestycjami</CardDescription>
+          <CardDescription>Nowa Wola House — Zarządzanie inwestycjami</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

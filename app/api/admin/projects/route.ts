@@ -7,8 +7,11 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const projects = await prisma.project.findMany({
-    include: { units: { select: { status: true } } },
-    orderBy: { createdAt: 'desc' },
+    include: {
+      units: { select: { status: true } },
+      company: { select: { id: true, name: true } },
+    },
+    orderBy: { name: 'asc' },
   })
   return NextResponse.json(projects)
 }
