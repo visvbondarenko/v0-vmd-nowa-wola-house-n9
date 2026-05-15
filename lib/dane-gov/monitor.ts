@@ -1,5 +1,6 @@
 import { createHash } from 'crypto'
 import { PrismaClient } from '@prisma/client'
+import { withDbRetry } from '@/lib/prisma'
 
 // One check's outcome. Status 'critical' triggers an alert, 'warning' is
 // noted but not usually alerting on its own.
@@ -11,15 +12,6 @@ export type MonitorReport = {
   companies: CompanyReport[]
   runAt: string
 }
-
-const COMPANIES = [
-  'bawaria-development-sp-z-o-o',
-  'belgia-development-sp-z-o-o',
-  'jednopietrowa-polska-sp-z-o-o',
-  'jednopietrowa-warszawa-sp-z-o-o',
-  'jednopietrowy-krakow-sp-z-o-o',
-  'parteria-sp-z-o-o',
-]
 
 // A failed fetch / parse / MD5 mismatch / missing today's file is 'critical'.
 // Sanity-ish drift ( ±20% row count, fullPrice < totalPrice, etc. ) is 'warning'.
@@ -254,23 +246,6 @@ async function checkCompany(
   return { slug, status, checks, csvText }
 }
 
-// Neon scale-to-zero + PgBouncer occasionally yields a transient connection-pool
-// timeout on the first query of the day. Retry a couple of times before giving
-// up so the cron survives wake-up flakes.
-async function withDbRetry<T>(fn: () => Promise<T>): Promise<T> {
-  const delays = [2000, 4000]
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await fn()
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
-      const transient = /connection pool|timed out|ECONNREFUSED|terminated|connect_timeout|Can't reach database/i.test(msg)
-      if (!transient || attempt >= delays.length) throw err
-      await new Promise(r => setTimeout(r, delays[attempt]))
-    }
-  }
-}
-
 export async function runMonitor(
   prisma: PrismaClient,
   baseUrl: string
@@ -280,12 +255,14 @@ export async function runMonitor(
 
   // Fetch all DB data upfront in two queries — before any HTTP calls — so the
   // connection is established while the DB is warm and not blocked by the long
-  // HTTP fetch phase that follows.
+  // HTTP fetch phase that follows. Mirrors generate-reports.ts's eligibility
+  // filter so the monitor stays in lockstep with what the cron actually
+  // produces — onboarding a new company in the admin auto-enrolls it here.
   const dbCompanies = await withDbRetry(() => prisma.company.findMany({
-    where: { slug: { in: COMPANIES } },
+    where: { extIdent: { not: null }, units: { some: {} } },
     select: { id: true, slug: true },
-  }))
-  const companyMap = new Map(dbCompanies.map(c => [c.slug, c]))
+    orderBy: { slug: 'asc' },
+  }), 'monitor.companies')
 
   const todaysFiles = await withDbRetry(() => prisma.generatedFile.findMany({
     where: {
@@ -294,15 +271,14 @@ export async function runMonitor(
     },
     select: { companyId: true, createdAt: true },
     orderBy: { createdAt: 'desc' },
-  }))
+  }), 'monitor.todaysFiles')
   const fileByCompany = new Map(todaysFiles.map(f => [f.companyId, f]))
 
   // Run all company HTTP checks in parallel — independent of each other and DB.
   const companies = await Promise.all(
-    COMPANIES.map(slug => {
-      const company = companyMap.get(slug) ?? null
-      const todaysFile = company ? (fileByCompany.get(company.id) ?? null) : null
-      return checkCompany(slug, baseUrl, today, { company, todaysFile })
+    dbCompanies.map(company => {
+      const todaysFile = fileByCompany.get(company.id) ?? null
+      return checkCompany(company.slug, baseUrl, today, { company, todaysFile })
     })
   )
 

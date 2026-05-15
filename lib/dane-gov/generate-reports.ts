@@ -1,5 +1,5 @@
 import { put } from '@vercel/blob'
-import { prisma } from '@/lib/prisma'
+import { prisma, withDbRetry } from '@/lib/prisma'
 import { generateCsvForCompany, getCsvFileName } from './csv-generator'
 import { generateXmlForCompany, generateMd5, getXmlFileName, getMd5FileName, buildResourceEntries } from './xml-generator'
 
@@ -142,43 +142,16 @@ export async function generateReportsForCompany(companyId: string, baseUrl: stri
   }
 }
 
-// Wraps a DB-bound async fn in retry-with-backoff. Only retries on transient
-// connection-level errors (Neon waking up, pool drained, brief network blip).
-// Real errors (FK violation, validation, missing record) propagate immediately
-// so we don't mask logic bugs.
-async function withRetry<T>(
-  fn: () => Promise<T>,
-  label: string,
-  attempts = 3
-): Promise<T> {
-  for (let i = 0; i < attempts; i++) {
-    try {
-      return await fn()
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err)
-      const isTransient =
-        msg.includes('connection pool') ||
-        msg.includes('P1001') ||      // Can't reach database server
-        msg.includes('P1002') ||      // Database server timed out
-        msg.includes('P2024') ||      // Timed out fetching connection
-        msg.includes('ECONNREFUSED') ||
-        msg.includes('ECONNRESET') ||
-        msg.includes('ETIMEDOUT')
-      if (!isTransient || i === attempts - 1) throw err
-      const delay = 2000 * Math.pow(2, i) // 2s, 4s, 8s
-      console.warn(`[generate-reports] ${label} attempt ${i + 1} failed (${msg}); retrying in ${delay}ms`)
-      await new Promise(r => setTimeout(r, delay))
-    }
-  }
-  // Unreachable — loop either returns or throws.
-  throw new Error('withRetry: exhausted')
-}
-
 export async function generateAllReports(baseUrl: string): Promise<{
   success: string[]
   errors: { company: string; error: string }[]
 }> {
-  const companies = await withRetry(
+  // Warm Neon up before the real query — a SELECT 1 returns in milliseconds
+  // once the compute is awake, whereas the first real findMany would otherwise
+  // pay the wake-up cost (and risk a P1001) inside its own retry loop.
+  await withDbRetry(() => prisma.$queryRaw`SELECT 1`, 'wakeup')
+
+  const companies = await withDbRetry(
     () => prisma.company.findMany({
       where: {
         extIdent: { not: null },
@@ -199,7 +172,7 @@ export async function generateAllReports(baseUrl: string): Promise<{
   // cron in two (e.g., A-J then K-Z).
   for (const company of companies) {
     try {
-      await withRetry(
+      await withDbRetry(
         () => generateReportsForCompany(company.id, baseUrl),
         company.slug
       )
