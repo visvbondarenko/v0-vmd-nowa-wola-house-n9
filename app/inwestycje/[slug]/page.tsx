@@ -166,10 +166,11 @@ export default async function ProjectPage({
         <DynamicGallerySection images={project.galleryImages} />
       )}
 
-      {/* Plan Osiedla */}
-      {(project.svgContent || project.planImageUrl || project.planViews.length > 0) && (
-        <DynamicPlanSection slug={project.slug} projectName={project.name} />
-      )}
+      {/* Plan Osiedla — hidden for planned projects (no units yet) */}
+      {project.status !== 'planned' &&
+        (project.svgContent || project.planImageUrl || project.planViews.length > 0) && (
+          <DynamicPlanSection slug={project.slug} projectName={project.name} />
+        )}
 
       {/* Informacje dodatkowe */}
       {(project.additionalInfo || project.documents.length > 0) && (
