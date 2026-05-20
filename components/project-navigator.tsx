@@ -918,7 +918,7 @@ polygon:hover { fill-opacity: 0.45; }`
               <button
                 onClick={() => setFiltersOpen(!filtersOpen)}
                 className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors"
-                style={{ backgroundColor: 'rgba(110, 46, 42, 0.1)', color: 'var(--color-primary)' }}
+                style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}
               >
                 <SlidersHorizontal className="h-3 w-3" />
                 <span>Filtry</span>
@@ -934,7 +934,7 @@ polygon:hover { fill-opacity: 0.45; }`
               <button
                 onClick={() => setFiltersOpen(!filtersOpen)}
                 className="inline-flex sm:hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors"
-                style={{ backgroundColor: 'rgba(110, 46, 42, 0.1)', color: 'var(--color-primary)' }}
+                style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}
               >
                 <SlidersHorizontal className="h-3 w-3" />
                 <span>Filtry</span>
@@ -961,7 +961,7 @@ polygon:hover { fill-opacity: 0.45; }`
                     setSelectedUnit(null)
                   }}
                   className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${stage.id === activeStageId ? '' : 'border border-border/60 hover:bg-secondary/50'}`}
-                  style={stage.id === activeStageId ? { backgroundColor: 'rgba(110, 46, 42, 0.1)', color: 'var(--color-primary)' } : { color: 'var(--color-foreground)' }}
+                  style={stage.id === activeStageId ? { backgroundColor: 'color-mix(in oklch, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' } : { color: 'var(--color-foreground)' }}
                 >
                   {stage.name}
                 </button>
@@ -970,7 +970,7 @@ polygon:hover { fill-opacity: 0.45; }`
           </div>
           {filtersOpen && <FilterPanel {...{ filterStatus, setFilterStatus, filterRooms, setFilterRooms, roomOptions, filterAreaMin, setFilterAreaMin, filterAreaMax, setFilterAreaMax, filterGardenMin, setFilterGardenMin, filterGardenMax, setFilterGardenMax, hasFilters, clearFilters, filteredUnits, data }} />}
 
-          <div className="relative">
+          <div className="relative max-w-4xl mx-auto">
             <NorthCompass angle={activeNorthAngle} />
             {activeStageView?.svgContent ? (
               <div
@@ -1006,7 +1006,7 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToPrevStageView}
                   className="absolute left-2 top-2 sm:left-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'rgba(62, 23, 24, 0.7)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                   aria-label="Poprzedni widok"
                 >
                   <ChevronLeft className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
@@ -1014,12 +1014,12 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToNextStageView}
                   className="absolute right-2 top-2 sm:right-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'rgba(62, 23, 24, 0.7)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                   aria-label="Następny widok"
                 >
                   <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </button>
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'rgba(62, 23, 24, 0.8)' }}>
+                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'var(--color-primary)' }}>
                   <span>{activeStageView?.name}</span>
                   <span className="text-white/70">({currentStageViewIndex + 1}/{stageViewsList.length})</span>
                 </div>
@@ -1115,7 +1115,7 @@ polygon:hover { fill-opacity: 0.45; }`
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors"
-              style={{ backgroundColor: 'rgba(110, 46, 42, 0.1)', color: 'var(--color-primary)' }}
+              style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}
             >
               <SlidersHorizontal className="h-3 w-3" />
               <span>Filtry</span>
@@ -1131,7 +1131,7 @@ polygon:hover { fill-opacity: 0.45; }`
             <div className="flex flex-wrap items-center gap-1.5">
               <button
                 className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                style={{ backgroundColor: 'rgba(110, 46, 42, 0.1)', color: 'var(--color-primary)' }}
+                style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 12%, transparent)', color: 'var(--color-primary)' }}
                 disabled
               >
                 Osiedle
@@ -1155,7 +1155,7 @@ polygon:hover { fill-opacity: 0.45; }`
         </div>
         {filtersOpen && <FilterPanel {...{ filterStatus, setFilterStatus, filterRooms, setFilterRooms, roomOptions, filterAreaMin, setFilterAreaMin, filterAreaMax, setFilterAreaMax, filterGardenMin, setFilterGardenMin, filterGardenMax, setFilterGardenMax, hasFilters, clearFilters, filteredUnits, data }} />}
 
-        <div className="relative">
+        <div className="relative max-w-4xl mx-auto">
             <NorthCompass angle={activeNorthAngle} />
             {activeView ? (
               hasStages ? (
@@ -1178,7 +1178,7 @@ polygon:hover { fill-opacity: 0.45; }`
                     {stageTooltip && (
                       <div
                         className="absolute bottom-4 left-4 z-10 pointer-events-none rounded-xl shadow-xl p-4 text-sm min-w-[160px]"
-                        style={{ backgroundColor: 'rgba(62, 23, 24, 0.93)' }}
+                        style={{ backgroundColor: 'var(--color-primary)' }}
                       >
                         <div className="font-serif font-semibold text-base text-white">{stageTooltip.stage.name}</div>
                         <div className="mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -1261,7 +1261,7 @@ polygon:hover { fill-opacity: 0.45; }`
                   {stageTooltip && (
                     <div
                       className="absolute bottom-4 left-4 z-10 pointer-events-none rounded-xl shadow-xl p-4 text-sm min-w-[160px]"
-                      style={{ backgroundColor: 'rgba(62, 23, 24, 0.93)' }}
+                      style={{ backgroundColor: 'var(--color-primary)' }}
                     >
                       <div className="font-serif font-semibold text-base text-white">{stageTooltip.stage.name}</div>
                       <div className="mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -1308,7 +1308,7 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToPrevView}
                   className="absolute left-2 top-2 sm:left-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'rgba(62, 23, 24, 0.7)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                   aria-label="Poprzedni widok"
                   title={allViews[(currentViewIndex > 0 ? currentViewIndex - 1 : allViews.length - 1)]?.name}
                 >
@@ -1317,13 +1317,13 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToNextView}
                   className="absolute right-2 top-2 sm:right-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'rgba(62, 23, 24, 0.7)' }}
+                  style={{ backgroundColor: 'var(--color-primary)' }}
                   aria-label="Następny widok"
                   title={allViews[(currentViewIndex < allViews.length - 1 ? currentViewIndex + 1 : 0)]?.name}
                 >
                   <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </button>
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'rgba(62, 23, 24, 0.8)' }}>
+                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'var(--color-primary)' }}>
                   <span>{allViews[currentViewIndex]?.name}</span>
                   <span className="text-white/70">({currentViewIndex + 1}/{allViews.length})</span>
                 </div>
@@ -1379,7 +1379,7 @@ function UnitTooltip({ unit, onPdfClick, variant = 'overlay', className = '' }: 
   return (
     <div
       className={`${outer} ${canShowPdf ? '' : 'pointer-events-none'} ${className}`}
-      style={{ backgroundColor: 'rgba(62, 23, 24, 0.8)', backdropFilter: 'blur(8px)' }}
+      style={{ backgroundColor: 'var(--color-primary)', backdropFilter: 'blur(8px)' }}
     >
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="font-serif font-bold text-lg text-white">{unit.label}</div>
@@ -1598,7 +1598,7 @@ function UnitTable({ sortedUnits, selectedUnit, setSelectedUnit, handleSort, Sor
                               type="button"
                               onClick={(e) => { e.stopPropagation(); onHistoryClick(unit) }}
                               className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors hover:opacity-80"
-                              style={{ color: 'var(--color-primary)', border: '1px solid rgba(110,46,42,0.3)' }}
+                              style={{ color: 'var(--color-primary)', border: '1px solid color-mix(in oklch, var(--color-primary) 30%, transparent)' }}
                             >
                               <History className="h-3.5 w-3.5" />
                               Historia
@@ -1608,7 +1608,7 @@ function UnitTable({ sortedUnits, selectedUnit, setSelectedUnit, handleSort, Sor
                             <button
                               onClick={(e) => { e.stopPropagation(); onPdfClick(unit); }}
                               className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors hover:opacity-80"
-                              style={{ color: 'var(--color-primary)', border: '1px solid rgba(110,46,42,0.3)' }}
+                              style={{ color: 'var(--color-primary)', border: '1px solid color-mix(in oklch, var(--color-primary) 30%, transparent)' }}
                             >
                               <FileDown className="h-3.5 w-3.5" />
                               PDF
@@ -1696,7 +1696,7 @@ function UnitTable({ sortedUnits, selectedUnit, setSelectedUnit, handleSort, Sor
                           type="button"
                           onClick={(e) => { e.stopPropagation(); onHistoryClick(unit) }}
                           className="inline-flex items-center justify-center h-6 w-6 rounded-md border transition-colors hover:bg-secondary/60"
-                          style={{ borderColor: 'rgba(110,46,42,0.3)', color: 'var(--color-primary)' }}
+                          style={{ borderColor: 'color-mix(in oklch, var(--color-primary) 30%, transparent)', color: 'var(--color-primary)' }}
                           title="Historia cen"
                           aria-label="Historia cen"
                         >
@@ -1734,7 +1734,7 @@ function UnitTable({ sortedUnits, selectedUnit, setSelectedUnit, handleSort, Sor
                       <button
                         onClick={(e) => { e.stopPropagation(); onPdfClick(unit); }}
                         className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-colors hover:opacity-80"
-                        style={{ color: 'var(--color-primary)', border: '1px solid rgba(110,46,42,0.3)' }}
+                        style={{ color: 'var(--color-primary)', border: '1px solid color-mix(in oklch, var(--color-primary) 30%, transparent)' }}
                       >
                         <FileDown className="h-3.5 w-3.5" />
                         PDF
