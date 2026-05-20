@@ -632,29 +632,6 @@ polygon:hover { fill-opacity: 0.45; }`
   const activeView = planViews.find(v => v.id === activeViewId) ?? null
   const activeStageView = currentStage?.stageViews.find(v => v.id === activeStageViewId) ?? currentStage?.stageViews[0] ?? null
 
-  // Stable aspect ratio per mode — prevents layout jump when user navigates
-  // between views whose viewBoxes have different W/H. We pick the min ratio
-  // (tallest image) so every view fits inside via preserveAspectRatio meet.
-  const parseSvgAspect = (svg?: string | null): number | null => {
-    if (!svg) return null
-    const m = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/)
-    if (!m) return null
-    const w = parseFloat(m[1]); const h = parseFloat(m[2])
-    return w > 0 && h > 0 ? w / h : null
-  }
-  const defaultMapAspect = useMemo(() => {
-    const ratios: number[] = []
-    const r = parseSvgAspect(data?.svgContent); if (r) ratios.push(r)
-    for (const pv of planViews) { const rr = parseSvgAspect(pv.svgContent); if (rr) ratios.push(rr) }
-    return ratios.length ? Math.min(...ratios) : null
-  }, [data?.svgContent, planViews])
-  const stageMapAspect = useMemo(() => {
-    if (!currentStage) return null
-    const ratios: number[] = []
-    for (const sv of currentStage.stageViews) { const rr = parseSvgAspect(sv.svgContent); if (rr) ratios.push(rr) }
-    return ratios.length ? Math.min(...ratios) : null
-  }, [currentStage])
-
   // Resolve which map's north angle to display. Stage view > plan view > project main plan.
   const activeNorthAngle: number | null = activeStageView?.northAngle
     ?? activeView?.northAngle
@@ -970,7 +947,7 @@ polygon:hover { fill-opacity: 0.45; }`
           </div>
           {filtersOpen && <FilterPanel {...{ filterStatus, setFilterStatus, filterRooms, setFilterRooms, roomOptions, filterAreaMin, setFilterAreaMin, filterAreaMax, setFilterAreaMax, filterGardenMin, setFilterGardenMin, filterGardenMax, setFilterGardenMax, hasFilters, clearFilters, filteredUnits, data }} />}
 
-          <div className="relative max-w-4xl mx-auto">
+          <div className="relative max-w-4xl mx-auto h-[420px] sm:h-[520px] lg:h-[600px]">
             <NorthCompass angle={activeNorthAngle} />
             {activeStageView?.svgContent ? (
               <div
@@ -979,7 +956,7 @@ polygon:hover { fill-opacity: 0.45; }`
                     ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                     : 'opacity-100 translate-x-0'
                 }`}
-                style={stageMapAspect ? { aspectRatio: stageMapAspect } : undefined}
+                style={{ height: '100%' }}
                 onClick={handleViewSvgClick}
                 onMouseMove={handleStageViewMove}
                 onMouseLeave={() => { setHoveredUnit(null); setTooltip(null) }}
@@ -988,7 +965,7 @@ polygon:hover { fill-opacity: 0.45; }`
             ) : activeStageView?.imageUrl ? (
               <div
                 className="border border-border/60 rounded-2xl overflow-hidden shadow-sm flex items-center justify-center bg-secondary/10"
-                style={stageMapAspect ? { aspectRatio: stageMapAspect } : undefined}
+                style={{ height: '100%' }}
               >
                 <img src={activeStageView.imageUrl} alt={activeStageView.name} className="w-full h-full object-contain" />
               </div>
@@ -1006,7 +983,7 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToPrevStageView}
                   className="absolute left-2 top-2 sm:left-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(4px)' }}
                   aria-label="Poprzedni widok"
                 >
                   <ChevronLeft className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
@@ -1014,12 +991,12 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToNextStageView}
                   className="absolute right-2 top-2 sm:right-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(4px)' }}
                   aria-label="Następny widok"
                 >
                   <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </button>
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'var(--color-primary)' }}>
+                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(4px)' }}>
                   <span>{activeStageView?.name}</span>
                   <span className="text-white/70">({currentStageViewIndex + 1}/{stageViewsList.length})</span>
                 </div>
@@ -1155,7 +1132,7 @@ polygon:hover { fill-opacity: 0.45; }`
         </div>
         {filtersOpen && <FilterPanel {...{ filterStatus, setFilterStatus, filterRooms, setFilterRooms, roomOptions, filterAreaMin, setFilterAreaMin, filterAreaMax, setFilterAreaMax, filterGardenMin, setFilterGardenMin, filterGardenMax, setFilterGardenMax, hasFilters, clearFilters, filteredUnits, data }} />}
 
-        <div className="relative max-w-4xl mx-auto">
+        <div className="relative max-w-4xl mx-auto h-[420px] sm:h-[520px] lg:h-[600px]">
             <NorthCompass angle={activeNorthAngle} />
             {activeView ? (
               hasStages ? (
@@ -1169,7 +1146,7 @@ polygon:hover { fill-opacity: 0.45; }`
                           ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                           : 'opacity-100 translate-x-0'
                       }`}
-                      style={defaultMapAspect ? { aspectRatio: defaultMapAspect } : undefined}
+                      style={{ height: '100%' }}
                       onClick={handleViewStageClick}
                       onMouseMove={handleViewStageMove}
                       onMouseLeave={() => { setHoveredStage(null); setStageTooltip(null) }}
@@ -1178,7 +1155,7 @@ polygon:hover { fill-opacity: 0.45; }`
                     {stageTooltip && (
                       <div
                         className="absolute bottom-4 left-4 z-10 pointer-events-none rounded-xl shadow-xl p-4 text-sm min-w-[160px]"
-                        style={{ backgroundColor: 'var(--color-primary)' }}
+                        style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 65%, transparent)', backdropFilter: 'blur(6px)' }}
                       >
                         <div className="font-serif font-semibold text-base text-white">{stageTooltip.stage.name}</div>
                         <div className="mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -1197,7 +1174,7 @@ polygon:hover { fill-opacity: 0.45; }`
                         ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                         : 'opacity-100 translate-x-0'
                     }`}
-                    style={defaultMapAspect ? { aspectRatio: defaultMapAspect } : undefined}
+                    style={{ height: '100%' }}
                   >
                     <img src={activeView.imageUrl} alt={activeView.name} className="block w-full h-full object-contain" />
                   </div>
@@ -1216,7 +1193,7 @@ polygon:hover { fill-opacity: 0.45; }`
                           ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                           : 'opacity-100 translate-x-0'
                       }`}
-                      style={defaultMapAspect ? { aspectRatio: defaultMapAspect } : undefined}
+                      style={{ height: '100%' }}
                       onClick={handleViewSvgClick}
                       onMouseMove={handleStageViewMove}
                       onMouseLeave={() => { setHoveredUnit(null); setTooltip(null) }}
@@ -1231,7 +1208,7 @@ polygon:hover { fill-opacity: 0.45; }`
                         ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                         : 'opacity-100 translate-x-0'
                     }`}
-                    style={defaultMapAspect ? { aspectRatio: defaultMapAspect } : undefined}
+                    style={{ height: '100%' }}
                   >
                     <img src={activeView.imageUrl} alt={activeView.name} className="block w-full h-full object-contain" />
                   </div>
@@ -1252,7 +1229,7 @@ polygon:hover { fill-opacity: 0.45; }`
                         ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                         : 'opacity-100 translate-x-0'
                     }`}
-                    style={defaultMapAspect ? { aspectRatio: defaultMapAspect } : undefined}
+                    style={{ height: '100%' }}
                     onClick={handleStagePlanClick}
                     onMouseMove={handleStagePlanMove}
                     onMouseLeave={() => { setHoveredStage(null); setStageTooltip(null) }}
@@ -1261,7 +1238,7 @@ polygon:hover { fill-opacity: 0.45; }`
                   {stageTooltip && (
                     <div
                       className="absolute bottom-4 left-4 z-10 pointer-events-none rounded-xl shadow-xl p-4 text-sm min-w-[160px]"
-                      style={{ backgroundColor: 'var(--color-primary)' }}
+                      style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 65%, transparent)', backdropFilter: 'blur(6px)' }}
                     >
                       <div className="font-serif font-semibold text-base text-white">{stageTooltip.stage.name}</div>
                       <div className="mt-1 text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
@@ -1288,7 +1265,7 @@ polygon:hover { fill-opacity: 0.45; }`
                       ? slideDirection === 'left' ? 'opacity-0 translate-x-4' : 'opacity-0 -translate-x-4'
                       : 'opacity-100 translate-x-0'
                   }`}
-                  style={defaultMapAspect ? { aspectRatio: defaultMapAspect } : undefined}
+                  style={{ height: '100%' }}
                   onClick={handleSvgClick}
                   onMouseMove={handleSvgMove}
                   onMouseLeave={() => { setHoveredUnit(null); setTooltip(null) }}
@@ -1308,7 +1285,7 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToPrevView}
                   className="absolute left-2 top-2 sm:left-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(4px)' }}
                   aria-label="Poprzedni widok"
                   title={allViews[(currentViewIndex > 0 ? currentViewIndex - 1 : allViews.length - 1)]?.name}
                 >
@@ -1317,13 +1294,13 @@ polygon:hover { fill-opacity: 0.45; }`
                 <button
                   onClick={goToNextView}
                   className="absolute right-2 top-2 sm:right-3 sm:top-4 z-20 flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl transition-all shadow-sm text-white cursor-pointer hover:opacity-90"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(4px)' }}
                   aria-label="Następny widok"
                   title={allViews[(currentViewIndex < allViews.length - 1 ? currentViewIndex + 1 : 0)]?.name}
                 >
                   <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                 </button>
-                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'var(--color-primary)' }}>
+                <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-4 sm:py-2 rounded-full text-white text-[11px] sm:text-sm font-medium shadow-sm" style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(4px)' }}>
                   <span>{allViews[currentViewIndex]?.name}</span>
                   <span className="text-white/70">({currentViewIndex + 1}/{allViews.length})</span>
                 </div>
@@ -1379,7 +1356,7 @@ function UnitTooltip({ unit, onPdfClick, variant = 'overlay', className = '' }: 
   return (
     <div
       className={`${outer} ${canShowPdf ? '' : 'pointer-events-none'} ${className}`}
-      style={{ backgroundColor: 'var(--color-primary)', backdropFilter: 'blur(8px)' }}
+      style={{ backgroundColor: 'color-mix(in oklch, var(--color-primary) 60%, transparent)', backdropFilter: 'blur(8px)' }}
     >
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="font-serif font-bold text-lg text-white">{unit.label}</div>
