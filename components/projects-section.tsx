@@ -30,12 +30,12 @@ export async function ProjectsSection() {
 
   const renderCard = (project: (typeof dbProjects)[number]) => {
     const st = STATUS_MAP[project.status] ?? STATUS_MAP.active;
-    return (
-      <Link
-        key={project.id}
-        href={`/projects/${project.slug}`}
-        className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-xl"
-      >
+    const isPlanned = project.status === "planned";
+    const cardClassName =
+      "group relative flex flex-col overflow-hidden border border-border bg-card transition-all duration-500 hover:border-primary/30 hover:shadow-xl";
+
+    const inner = (
+      <>
         <div className="relative aspect-[16/10] overflow-hidden bg-muted">
           {project.imageUrl ? (
             <img
@@ -71,13 +71,29 @@ export async function ProjectsSection() {
               {project.description}
             </p>
           )}
-          <div className="mt-6">
-            <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
-              Dowiedz się więcej
-              <ArrowRight className="h-3.5 w-3.5" />
-            </span>
-          </div>
+          {!isPlanned && (
+            <div className="mt-6">
+              <span className="inline-flex items-center gap-2 bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-widest text-primary-foreground transition-all duration-300 group-hover:bg-primary/90 group-hover:gap-3">
+                Dowiedz się więcej
+                <ArrowRight className="h-3.5 w-3.5" />
+              </span>
+            </div>
+          )}
         </div>
+      </>
+    );
+
+    if (isPlanned) {
+      return (
+        <div key={project.id} className={cardClassName}>
+          {inner}
+        </div>
+      );
+    }
+
+    return (
+      <Link key={project.id} href={`/inwestycje/${project.slug}`} className={cardClassName}>
+        {inner}
       </Link>
     );
   };

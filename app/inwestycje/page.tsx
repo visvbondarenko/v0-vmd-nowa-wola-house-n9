@@ -55,9 +55,9 @@ export default async function InwestycjePage() {
                   .map((u) => u.price!)
                 const minPrice = prices.length ? Math.min(...prices) : null
 
-                return (
-                  <Link key={project.id} href={`/inwestycje/${project.slug}`}>
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+                const isPlanned = project.status === 'planned'
+                const card = (
+                  <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
                       <div className="aspect-video bg-muted/50 relative overflow-hidden">
                         {project.imageUrl ? (
                           <Image
@@ -127,6 +127,15 @@ export default async function InwestycjePage() {
                         )}
                       </div>
                     </div>
+                )
+
+                if (isPlanned) {
+                  return <div key={project.id}>{card}</div>
+                }
+
+                return (
+                  <Link key={project.id} href={`/inwestycje/${project.slug}`}>
+                    {card}
                   </Link>
                 )
               })}

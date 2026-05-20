@@ -397,21 +397,44 @@ export function ProjectNavigator({ slug, projectName }: { slug: string; projectN
   // Derived: the active stage object
   const currentStage = useMemo(() => stages.find(s => s.id === activeStageId) ?? null, [stages, activeStageId])
 
-  const stageFilterOptions = useMemo(() => {
+  // Only show działki that have a polygon drawn for them in any SVG (main
+  // plan, additional plan views, or stage views). Polygons reference units via
+  // either id="<svgElementId>" (main plan) or data-unit-id="<unit.id>".
+  const displayUnits = useMemo(() => {
     if (!data) return []
-    const s = new Set(data.units.map((u) => u.stage).filter(Boolean) as string[])
+    const svgs: string[] = []
+    if (data.svgContent) svgs.push(data.svgContent)
+    for (const pv of planViews) if (pv.svgContent) svgs.push(pv.svgContent)
+    for (const st of stages) for (const sv of st.stageViews) if (sv.svgContent) svgs.push(sv.svgContent)
+    const polyIds = new Set<string>()
+    const polyDataUnitIds = new Set<string>()
+    const polyRe = /<polygon\b([^>]*?)\/?>/g
+    for (const svg of svgs) {
+      let m: RegExpExecArray | null
+      polyRe.lastIndex = 0
+      while ((m = polyRe.exec(svg)) !== null) {
+        const attrs = m[1]
+        const idMatch = attrs.match(/\bid="([^"]+)"/)
+        if (idMatch) polyIds.add(idMatch[1])
+        const dataMatch = attrs.match(/\bdata-unit-id="([^"]+)"/)
+        if (dataMatch) polyDataUnitIds.add(dataMatch[1])
+      }
+    }
+    return data.units.filter(u => polyIds.has(u.svgElementId) || polyDataUnitIds.has(u.id))
+  }, [data, planViews, stages])
+
+  const stageFilterOptions = useMemo(() => {
+    const s = new Set(displayUnits.map((u) => u.stage).filter(Boolean) as string[])
     return Array.from(s).sort()
-  }, [data])
+  }, [displayUnits])
 
   const roomOptions = useMemo(() => {
-    if (!data) return []
-    const r = new Set(data.units.map((u) => u.rooms).filter(Boolean) as number[])
+    const r = new Set(displayUnits.map((u) => u.rooms).filter(Boolean) as number[])
     return Array.from(r).sort((a, b) => a - b)
-  }, [data])
+  }, [displayUnits])
 
   const filteredUnits = useMemo(() => {
-    if (!data) return []
-    return data.units.filter((u) => {
+    return displayUnits.filter((u) => {
       if (activeStage !== 'all' && u.stage !== activeStage) return false
       if (filterStatus !== 'all' && u.status !== filterStatus) return false
       if (filterRooms !== 'all' && String(u.rooms) !== filterRooms) return false
@@ -421,7 +444,7 @@ export function ProjectNavigator({ slug, projectName }: { slug: string; projectN
       if (filterGardenMax && (u.gardenArea ?? Infinity) > parseFloat(filterGardenMax)) return false
       return true
     })
-  }, [data, activeStage, filterStatus, filterRooms, filterAreaMin, filterAreaMax, filterGardenMin, filterGardenMax])
+  }, [displayUnits, activeStage, filterStatus, filterRooms, filterAreaMin, filterAreaMax, filterGardenMin, filterGardenMax])
 
   const sortedUnits = useMemo(() => {
     return [...filteredUnits].sort((a, b) => {
@@ -856,10 +879,10 @@ polygon:hover { fill-opacity: 0.45; }`
   const hasFilters = filterStatus !== 'all' || filterRooms !== 'all' || !!filterAreaMin || !!filterAreaMax || !!filterGardenMin || !!filterGardenMax
 
   const counts = useMemo(() => ({
-    available: data?.units.filter((u) => u.status === 'available').length ?? 0,
-    reserved: data?.units.filter((u) => u.status === 'reserved').length ?? 0,
-    sold: data?.units.filter((u) => u.status === 'sold').length ?? 0,
-  }), [data])
+    available: displayUnits.filter((u) => u.status === 'available').length,
+    reserved: displayUnits.filter((u) => u.status === 'reserved').length,
+    sold: displayUnits.filter((u) => u.status === 'sold').length,
+  }), [displayUnits])
 
   if (loading) return (
     <div className="py-20 text-center">
@@ -1759,8 +1782,11 @@ function HouseTypesCarousel({ data, activeHouseTypeIndex, setActiveHouseTypeInde
   const currentType = data.houseTypes[activeHouseTypeIndex]
   const currentFloor = currentType?.floorPlans[activeFloor]
 
+  const selectType = (index: number) => { setActiveHouseTypeIndex(index); setActiveFloor(0); setFloorView('3d'); }
+  const roomCount = (ht: HouseType) => ht.floorPlans.reduce((sum, fp) => sum + fp.rooms.length, 0)
+
   return (
-    <div className="space-y-5 pt-4">
+    <div className="space-y-6 pt-4">
       <div className="text-center mb-8">
         <h3 className="font-serif text-2xl lg:text-3xl font-semibold mb-2" style={{ color: 'var(--color-foreground)' }}>
           Typy domów
@@ -1770,29 +1796,63 @@ function HouseTypesCarousel({ data, activeHouseTypeIndex, setActiveHouseTypeInde
         </p>
       </div>
 
-      <div className="relative max-w-[74rem] mx-auto">
-        {data.houseTypes.length > 1 && (
-          <>
-            <button
-              onClick={() => { setActiveHouseTypeIndex((activeHouseTypeIndex === 0 ? data.houseTypes.length - 1 : activeHouseTypeIndex - 1)); setActiveFloor(0); setFloorView('3d'); }}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 lg:-translate-x-6 z-10 w-10 h-10 flex items-center justify-center rounded-sm transition-all hover:opacity-80"
-              style={{ backgroundColor: 'rgba(110, 46, 42, 0.7)' }}
-              aria-label="Poprzedni typ"
-            >
-              <ChevronLeft className="w-5 h-5 text-white" />
-            </button>
-            <button
-              onClick={() => { setActiveHouseTypeIndex((activeHouseTypeIndex === data.houseTypes.length - 1 ? 0 : activeHouseTypeIndex + 1)); setActiveFloor(0); setFloorView('3d'); }}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 lg:translate-x-6 z-10 w-10 h-10 flex items-center justify-center rounded-sm transition-all hover:opacity-80"
-              style={{ backgroundColor: 'var(--color-foreground)' }}
-              aria-label="Następny typ"
-            >
-              <ChevronRight className="w-5 h-5 text-white" />
-            </button>
-          </>
-        )}
+      <div className="max-w-[74rem] mx-auto">
+        {/* House type table (sm+) */}
+        <div className="hidden sm:block overflow-x-auto bg-card border border-border/60 rounded-2xl shadow-sm">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border/60 bg-secondary/50">
+                <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-foreground)' }}>Typ domu</th>
+                <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-foreground)' }}>Powierzchnia</th>
+                <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-foreground)' }}>Kondygnacje</th>
+                <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-foreground)' }}>Pomieszczenia</th>
+                <th className="px-5 py-4" />
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border/40">
+              {data.houseTypes.map((ht, index) => {
+                const selected = index === activeHouseTypeIndex
+                return (
+                  <tr
+                    key={ht.id}
+                    onClick={() => selectType(index)}
+                    className={`cursor-pointer transition-colors hover:bg-secondary/30 ${selected ? 'bg-secondary/50' : ''}`}
+                  >
+                    <td className="px-5 py-4 font-semibold" style={{ color: 'var(--color-foreground)' }}>{ht.name}</td>
+                    <td className="px-5 py-4 font-semibold" style={{ color: 'var(--color-primary)' }}>{ht.totalArea ? `${ht.totalArea} m²` : '—'}</td>
+                    <td className="px-5 py-4" style={{ color: 'var(--color-foreground)', opacity: 0.8 }}>{ht.floorPlans.length || '—'}</td>
+                    <td className="px-5 py-4" style={{ color: 'var(--color-foreground)', opacity: 0.8 }}>{roomCount(ht) || '—'}</td>
+                    <td className="px-5 py-4 text-right">
+                      <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-primary)' }}>
+                        {selected ? 'Wybrany' : 'Zobacz'}
+                      </span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
 
-        <div className="bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm">
+        {/* House type list (mobile) */}
+        <div className="sm:hidden space-y-2">
+          {data.houseTypes.map((ht, index) => {
+            const selected = index === activeHouseTypeIndex
+            return (
+              <button
+                key={ht.id}
+                onClick={() => selectType(index)}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-colors ${selected ? 'bg-secondary/50' : 'bg-card'}`}
+                style={{ borderColor: selected ? 'var(--color-primary)' : 'rgba(0,0,0,0.08)' }}
+              >
+                <span className="font-medium" style={{ color: 'var(--color-foreground)' }}>{ht.name}</span>
+                <span className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>{ht.totalArea ? `${ht.totalArea} m²` : ''}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div className="mt-6 bg-card border border-border/60 rounded-2xl overflow-hidden shadow-sm">
           <div className="flex items-center justify-between px-5 py-4 border-b border-border/60 bg-secondary/50">
             <h4 className="font-serif text-xl lg:text-2xl font-semibold" style={{ color: 'var(--color-foreground)' }}>
               {currentType.name}
@@ -1894,20 +1954,6 @@ function HouseTypesCarousel({ data, activeHouseTypeIndex, setActiveHouseTypeInde
             </div>
           )}
         </div>
-
-        {data.houseTypes.length > 1 && (
-          <div className="flex justify-center gap-2 mt-4">
-            {data.houseTypes.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => { setActiveHouseTypeIndex(index); setActiveFloor(0); setFloorView('3d'); }}
-                className={`w-2.5 h-2.5 rounded-full transition-all ${activeHouseTypeIndex === index ? '' : 'opacity-40'}`}
-                style={{ backgroundColor: 'var(--color-primary)' }}
-                aria-label={`Typ domu ${index + 1}`}
-              />
-            ))}
-          </div>
-        )}
       </div>
     </div>
   )
