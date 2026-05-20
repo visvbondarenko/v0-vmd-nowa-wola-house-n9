@@ -98,15 +98,19 @@ export default async function DynamicProjectPage({
         <DynamicGallerySection images={project.galleryImages} />
       )}
 
-      <WolaHouseSchema
-        projectName={project.name}
-        description={project.units.length > 0 ? 'Kliknij na wybraną działkę aby poznać szczegóły.' : undefined}
-        svgContent={project.svgContent}
-        planImageUrl={project.planImageUrl}
-        units={project.units as any}
-        houseTypes={project.houseTypes as any}
-        planViews={project.planViews}
-      />
+      {/* Schemat/Dostępność — hidden for planned projects and until a plan is uploaded */}
+      {project.status !== 'planned' &&
+        (project.svgContent || project.planImageUrl || project.planViews.length > 0) && (
+          <WolaHouseSchema
+            projectName={project.name}
+            description={project.units.length > 0 ? 'Kliknij na wybraną działkę aby poznać szczegóły.' : undefined}
+            svgContent={project.svgContent}
+            planImageUrl={project.planImageUrl}
+            units={project.units as any}
+            houseTypes={project.houseTypes as any}
+            planViews={project.planViews}
+          />
+        )}
 
       {hasMap && (
         <DynamicMapSection
