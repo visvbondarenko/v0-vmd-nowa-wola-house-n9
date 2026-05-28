@@ -515,7 +515,7 @@ export function ProjectNavigator({ slug, projectName }: { slug: string; projectN
     const dots = buildStatusDots(data.svgContent, data.units, filteredUnitIds, 'id', overrides)
     const withStyle = data.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${styles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%;display:block">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">`)
     return injectBeforeSvgClose(withStyle, dots)
   }, [data, filteredUnits, hoveredUnit, selectedUnit])
 
@@ -533,7 +533,7 @@ polygon:hover { fill-opacity: 0.45; }`
 
     return data.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${styles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%;display:block">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">`)
   }, [data])
 
   // ── Main plan SVG: colors stage polygons (stage mode) ──
@@ -561,7 +561,7 @@ polygon:hover { fill-opacity: 0.45; }`
 
     return data.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${styles}\n${hideOther}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%;display:block">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">`)
   }, [data, stages, hoveredStage])
 
   // ── Stage view SVG: colors unit polygons ──
@@ -585,7 +585,7 @@ polygon:hover { fill-opacity: 0.45; }`
     const dots = buildStatusDots(sv.svgContent, data?.units ?? [], filteredUnitIds, 'data-unit-id', overrides)
     const withStyle = sv.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${baseStyle}\n${unitStyles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%;display:block">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">`)
     return injectBeforeSvgClose(withStyle, dots)
   }, [data, selectedUnit, filteredUnits])
 
@@ -601,7 +601,7 @@ polygon:hover { fill-opacity: 0.45; }`
 polygon:hover { fill-opacity: 0.45; }`
     return pv.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${styles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%;display:block">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">`)
   }, [])
 
   // ── Plan view SVG (no-stage mode, existing) ──
@@ -625,7 +625,7 @@ polygon:hover { fill-opacity: 0.45; }`
     const dots = buildStatusDots(pv.svgContent, data?.units ?? [], filteredUnitIds, 'data-unit-id', overrides)
     const withStyle = pv.svgContent
       .replace(/(<svg[^>]*>)/, `$1<style>${baseStyle}\n${unitStyles}</style>${imgTag}`)
-      .replace(/<svg([^>]*)>/, `<svg$1 style="width:100%;height:100%;display:block">`)
+      .replace(/<svg([^>]*)>/, `<svg$1 preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%;display:block">`)
     return injectBeforeSvgClose(withStyle, dots)
   }, [data, selectedUnit, filteredUnits])
 
@@ -967,7 +967,7 @@ polygon:hover { fill-opacity: 0.45; }`
                 className="border border-border/60 rounded-2xl overflow-hidden shadow-sm flex items-center justify-center bg-secondary/10"
                 style={{ height: '100%' }}
               >
-                <img src={activeStageView.imageUrl} alt={activeStageView.name} className="w-full h-full object-contain" />
+                <img src={activeStageView.imageUrl} alt={activeStageView.name} className="w-full h-full object-cover" />
               </div>
             ) : (
               <div className="border border-border/60 rounded-2xl p-16 text-center bg-secondary/30">
@@ -1176,7 +1176,7 @@ polygon:hover { fill-opacity: 0.45; }`
                     }`}
                     style={{ height: '100%' }}
                   >
-                    <img src={activeView.imageUrl} alt={activeView.name} className="block w-full h-full object-contain" />
+                    <img src={activeView.imageUrl} alt={activeView.name} className="block w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="border border-border/60 rounded-2xl p-16 text-center bg-secondary/30">
@@ -1210,7 +1210,7 @@ polygon:hover { fill-opacity: 0.45; }`
                     }`}
                     style={{ height: '100%' }}
                   >
-                    <img src={activeView.imageUrl} alt={activeView.name} className="block w-full h-full object-contain" />
+                    <img src={activeView.imageUrl} alt={activeView.name} className="block w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="border border-border/60 rounded-2xl p-16 text-center bg-secondary/30">
