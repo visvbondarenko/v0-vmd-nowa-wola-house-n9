@@ -1070,9 +1070,12 @@ polygon:hover { fill-opacity: 0.45; }`
         </div>
       )}
 
-      {!hasStages && planViews.length > 0 && !activeView && (
-        <div className="text-center">
-          <p className="text-sm font-medium" style={{ color: 'var(--color-primary)' }}>
+      {!hasStages && planViews.length > 0 && (
+        <div className="text-center" aria-hidden={!!activeView}>
+          <p
+            className="text-sm font-medium"
+            style={{ color: 'var(--color-primary)', visibility: activeView ? 'hidden' : 'visible' }}
+          >
             Kliknij na obszar na planie lub użyj strzałek, aby zobaczyć działki
           </p>
         </div>
