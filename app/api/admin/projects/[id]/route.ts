@@ -71,7 +71,7 @@ export async function PUT(
   // Whitelist allowed fields so a stray relation in the body can't blow away
   // nested data via Prisma's `set` semantics.
   const {
-    name, slug, location, description, svgContent, imageUrl, planImageUrl,
+    name, slug, location, description, svgContent, imageUrl, planImageUrl, planLabel,
     status, published, heroSubtitle, contactPhone, contactEmail, contactAddress,
     companyId,
     investVoivodeship, investCounty, investMunicipality, investCity,
@@ -91,6 +91,7 @@ export async function PUT(
   if (svgContent !== undefined) data.svgContent = svgContent
   if (imageUrl !== undefined) data.imageUrl = imageUrl
   if (planImageUrl !== undefined) data.planImageUrl = planImageUrl
+  if (planLabel !== undefined) data.planLabel = planLabel || null
   if (status !== undefined) data.status = status
   if (published !== undefined) data.published = published
   if (heroSubtitle !== undefined) data.heroSubtitle = heroSubtitle || null

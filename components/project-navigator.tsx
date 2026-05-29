@@ -36,6 +36,7 @@ type Unit = {
 type DotOverride = { unitId: string; dotX: number; dotY: number }
 type ProjectData = {
   svgContent: string | null; planImageUrl: string | null
+  planLabel: string | null
   northAngle: number | null
   units: Unit[]; houseTypes: HouseType[]
   dotOverrides: DotOverride[]
@@ -386,7 +387,7 @@ export function ProjectNavigator({ slug, projectName }: { slug: string; projectN
       if (unitData && Array.isArray(unitData.units)) {
         setData(unitData)
       } else {
-        setData({ svgContent: null, planImageUrl: null, northAngle: null, units: [], houseTypes: [], dotOverrides: [] })
+        setData({ svgContent: null, planImageUrl: null, planLabel: null, northAngle: null, units: [], houseTypes: [], dotOverrides: [] })
       }
       setPlanViews(Array.isArray(views) ? views : [])
       setStages(Array.isArray(stagesData) ? stagesData : [])
@@ -653,9 +654,9 @@ polygon:hover { fill-opacity: 0.45; }`
 
   // ── View navigation for NO-STAGE mode (existing plan views) ──
   const allViews = useMemo(() => {
-    const mainPlan = { id: null as string | null, name: 'Plan główny' }
+    const mainPlan = { id: null as string | null, name: data?.planLabel?.trim() || 'Plan główny' }
     return [mainPlan, ...planViews.map(pv => ({ id: pv.id, name: pv.name }))]
-  }, [planViews])
+  }, [planViews, data?.planLabel])
 
   const currentViewIndex = useMemo(() => {
     return allViews.findIndex(v => v.id === activeViewId)

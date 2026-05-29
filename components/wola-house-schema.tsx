@@ -31,6 +31,7 @@ export type WolaHouseSchemaProps = {
   description?: string
   svgContent: string | null
   planImageUrl: string | null
+  planLabel?: string | null
   units: Unit[]
   houseTypes: HouseType[]
   planViews: PlanViewItem[]
@@ -51,7 +52,7 @@ function fmt(price: number | null) {
 type SortKey = 'label' | 'area' | 'gardenArea' | 'rooms' | 'price' | 'status'
 type SortDir = 'asc' | 'desc'
 
-export function WolaHouseSchema({ projectName, description, svgContent, planImageUrl, units, houseTypes, planViews }: WolaHouseSchemaProps) {
+export function WolaHouseSchema({ projectName, description, svgContent, planImageUrl, planLabel, units, houseTypes, planViews }: WolaHouseSchemaProps) {
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null)
   const [expandedUnitId, setExpandedUnitId] = useState<string | null>(null)
   const [contactUnit, setContactUnit] = useState<Unit | null>(null)
@@ -177,9 +178,9 @@ export function WolaHouseSchema({ projectName, description, svgContent, planImag
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null)
 
   const allViews = useMemo(() => {
-    const mainPlan = { id: null as string | null, name: 'Plan główny' }
+    const mainPlan = { id: null as string | null, name: planLabel?.trim() || 'Plan główny' }
     return [mainPlan, ...planViews.map(pv => ({ id: pv.id, name: pv.name }))]
-  }, [planViews])
+  }, [planViews, planLabel])
 
   const currentViewIndex = useMemo(() => {
     return allViews.findIndex(v => v.id === activeViewId)

@@ -76,6 +76,7 @@ model Project {
   svgContent   String? @db.Text
   imageUrl     String?
   planImageUrl String?
+  planLabel    String? // Display label for the main plan in /inwestycje/[slug] navigation (default "Plan główny")
   status       String  @default("active")
   published    Boolean @default(false)
   northAngle   Int? // Compass rotation in degrees (0-359, null = no compass)

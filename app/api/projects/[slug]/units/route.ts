@@ -44,6 +44,7 @@ export async function GET(
     return NextResponse.json({
       svgContent: project.svgContent,
       planImageUrl: project.planImageUrl,
+      planLabel: project.planLabel,
       northAngle: project.northAngle,
       units: project.units,
       houseTypes: project.houseTypes,

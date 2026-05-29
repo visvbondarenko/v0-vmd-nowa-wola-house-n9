@@ -537,6 +537,8 @@ export function AdminPlanViewEditor({ projectId, mainPlanUnits, stages }: AdminP
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [newViewName, setNewViewName] = useState('')
   const [adding, setAdding] = useState(false)
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState('')
 
   useEffect(() => {
     fetch(`/api/admin/projects/${projectId}/plan-views`)
@@ -571,6 +573,38 @@ export function AdminPlanViewEditor({ projectId, mainPlanUnits, stages }: AdminP
     toast('Widok usunięty')
   }
 
+  const startRename = (view: PlanViewRecord) => {
+    setRenamingId(view.id)
+    setRenameValue(view.name)
+  }
+
+  const cancelRename = () => {
+    setRenamingId(null)
+    setRenameValue('')
+  }
+
+  const commitRename = async (viewId: string) => {
+    const trimmed = renameValue.trim()
+    const current = views.find(v => v.id === viewId)
+    if (!current) { cancelRename(); return }
+    if (!trimmed || trimmed === current.name) { cancelRename(); return }
+    const previous = current.name
+    setViews(prev => prev.map(v => v.id === viewId ? { ...v, name: trimmed } : v))
+    setRenamingId(null)
+    setRenameValue('')
+    try {
+      const res = await fetch(`/api/admin/projects/${projectId}/plan-views/${viewId}`, {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      toast.success('Nazwa zapisana')
+    } catch {
+      setViews(prev => prev.map(v => v.id === viewId ? { ...v, name: previous } : v))
+      toast.error('Błąd zapisu nazwy')
+    }
+  }
+
   const activeView = views.find(v => v.id === activeViewId) ?? null
 
   return (
@@ -598,14 +632,40 @@ export function AdminPlanViewEditor({ projectId, mainPlanUnits, stages }: AdminP
           <div className="flex flex-wrap gap-2 mb-4">
             {views.map(v => (
               <div key={v.id} className="flex items-center gap-1">
-                <button
-                  onClick={() => setActiveViewId(activeViewId === v.id ? null : v.id)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeViewId === v.id ? 'text-white' : 'bg-muted/50 text-foreground hover:bg-border'}`}
-                  style={activeViewId === v.id ? { backgroundColor: 'var(--color-primary)' } : {}}
-                >
-                  {v.name}
-                </button>
-                <button onClick={() => handleDeleteView(v.id)} className="text-muted-foreground/60 hover:text-destructive transition-colors">
+                {renamingId === v.id ? (
+                  <Input
+                    autoFocus
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') { e.preventDefault(); commitRename(v.id) }
+                      else if (e.key === 'Escape') { e.preventDefault(); cancelRename() }
+                    }}
+                    onBlur={() => commitRename(v.id)}
+                    className="h-8 px-2 py-1 text-sm w-40"
+                  />
+                ) : (
+                  <button
+                    onClick={() => setActiveViewId(activeViewId === v.id ? null : v.id)}
+                    onDoubleClick={() => startRename(v)}
+                    title="Kliknij dwukrotnie aby zmienić nazwę"
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${activeViewId === v.id ? 'text-white' : 'bg-muted/50 text-foreground hover:bg-border'}`}
+                    style={activeViewId === v.id ? { backgroundColor: 'var(--color-primary)' } : {}}
+                  >
+                    {v.name}
+                  </button>
+                )}
+                {renamingId !== v.id && (
+                  <button
+                    onClick={() => startRename(v)}
+                    className="text-muted-foreground/60 hover:text-foreground transition-colors"
+                    aria-label="Zmień nazwę"
+                    title="Zmień nazwę"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                )}
+                <button onClick={() => handleDeleteView(v.id)} className="text-muted-foreground/60 hover:text-destructive transition-colors" aria-label="Usuń">
                   <X className="h-3.5 w-3.5" />
                 </button>
               </div>

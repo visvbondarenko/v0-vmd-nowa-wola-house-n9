@@ -106,6 +106,7 @@ export default async function DynamicProjectPage({
             description={project.units.length > 0 ? 'Kliknij na wybraną działkę aby poznać szczegóły.' : undefined}
             svgContent={project.svgContent}
             planImageUrl={project.planImageUrl}
+            planLabel={project.planLabel}
             units={project.units as any}
             houseTypes={project.houseTypes as any}
             planViews={project.planViews}

@@ -102,6 +102,7 @@ type Project = {
   svgContent: string | null
   imageUrl: string | null
   planImageUrl: string | null
+  planLabel: string | null
   status: string
   published: boolean
   heroSubtitle: string | null
@@ -748,6 +749,7 @@ export default function EditProjectPage() {
         additionalInfo: project.additionalInfo,
         latitude: project.latitude,
         longitude: project.longitude,
+        planLabel: project.planLabel,
       }),
     })
     if (res.ok) {
@@ -1105,6 +1107,21 @@ export default function EditProjectPage() {
           stages={project.stages.map(s => ({ id: s.id, svgElementId: s.svgElementId, name: s.name, order: s.order }))}
           onStagesChange={fetchProject}
         />
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-end gap-2 sm:gap-3">
+          <div className="flex-1 space-y-1.5">
+            <Label htmlFor="planLabel">Nazwa planu głównego</Label>
+            <Input
+              id="planLabel"
+              value={project.planLabel ?? ''}
+              onChange={(e) => setProject(p => p ? { ...p, planLabel: e.target.value } : p)}
+              placeholder="Plan główny"
+            />
+            <p className="text-xs text-muted-foreground">Wyświetla się jako etykieta widoku 1/N w sekcji Schemat inwestycji. Pozostaw puste, aby użyć domyślnej.</p>
+          </div>
+          <Button size="sm" variant="outline" onClick={handleSaveDetails} disabled={saving}>
+            <Save className="h-3.5 w-3.5 mr-1.5" />Zapisz nazwę
+          </Button>
+        </div>
       </div>
 
       {/* Plan View Editor */}
