@@ -1846,32 +1846,23 @@ function HouseTypesCarousel({ data, activeHouseTypeIndex, setActiveHouseTypeInde
           {currentType.floorPlans.length > 0 ? (
             <div className="flex flex-col lg:flex-row">
               <div className="lg:flex-[2] p-5">
-                <div className="flex gap-6 mb-6">
-                  {currentType.floorPlans.map((floor, index) => (
-                    <button
-                      key={floor.id}
-                      onClick={() => { setActiveFloor(index); setFloorView('3d'); }}
-                      className={`text-left pb-1 transition-all ${activeFloor === index ? 'border-b-2' : ''}`}
-                      style={activeFloor === index ? { borderColor: 'var(--color-primary)' } : {}}
-                    >
-                      <p className="font-medium" style={{ color: activeFloor === index ? 'var(--color-foreground)' : '#999' }}>{floor.name}</p>
-                      {floor.area && <p className="text-sm" style={{ color: activeFloor === index ? 'var(--color-primary)' : '#bbb' }}>{floor.area} m²</p>}
-                    </button>
-                  ))}
-                </div>
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                  <div className="flex gap-6">
+                    {currentType.floorPlans.map((floor, index) => (
+                      <button
+                        key={floor.id}
+                        onClick={() => setActiveFloor(index)}
+                        className={`text-left pb-1 transition-all ${activeFloor === index ? 'border-b-2' : ''}`}
+                        style={activeFloor === index ? { borderColor: 'var(--color-primary)' } : {}}
+                      >
+                        <p className="font-medium" style={{ color: activeFloor === index ? 'var(--color-foreground)' : '#999' }}>{floor.name}</p>
+                        {floor.area && <p className="text-sm" style={{ color: activeFloor === index ? 'var(--color-primary)' : '#bbb' }}>{floor.area} m²</p>}
+                      </button>
+                    ))}
+                  </div>
 
-                {currentFloor && (currentFloor.image3dUrl || currentFloor.image2dUrl) && (
-                  <>
-                    <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
-                      <img
-                        src={floorView === '3d'
-                          ? (currentFloor.image3dUrl ?? currentFloor.image2dUrl ?? '')
-                          : (currentFloor.image2dUrl ?? currentFloor.image3dUrl ?? '')}
-                        alt={`${currentType.name} - ${currentFloor.name} Rzut ${floorView === '3d' ? '3D' : '2D'}`}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex mt-4">
+                  {currentFloor && (currentFloor.image3dUrl || currentFloor.image2dUrl) && (
+                    <div className="flex">
                       {currentFloor.image3dUrl && (
                         <button
                           onClick={() => setFloorView('3d')}
@@ -1895,7 +1886,19 @@ function HouseTypesCarousel({ data, activeHouseTypeIndex, setActiveHouseTypeInde
                         </button>
                       )}
                     </div>
-                  </>
+                  )}
+                </div>
+
+                {currentFloor && (currentFloor.image3dUrl || currentFloor.image2dUrl) && (
+                  <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+                    <img
+                      src={floorView === '3d'
+                        ? (currentFloor.image3dUrl ?? currentFloor.image2dUrl ?? '')
+                        : (currentFloor.image2dUrl ?? currentFloor.image3dUrl ?? '')}
+                      alt={`${currentType.name} - ${currentFloor.name} Rzut ${floorView === '3d' ? '3D' : '2D'}`}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 )}
               </div>
 
