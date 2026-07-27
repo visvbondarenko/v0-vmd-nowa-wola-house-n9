@@ -180,7 +180,7 @@ export interface AdminPlanEditorProps {
   initialUnits: DbUnit[]
   initialSvgContent: string | null
   onPlanImageChange?: (url: string) => void
-  houseTypes?: Array<{ id: string; name: string }>
+  houseTypes?: Array<{ id: string; name: string; totalArea?: number | null }>
   stages?: StageInfo[]
   onStagesChange?: () => void
 }
@@ -557,7 +557,8 @@ export default function AdminPlanEditor({
     const body = {
       label:         editForm.label,
       status:        editForm.status,
-      area:          editForm.area       ? parseFloat(editForm.area)       : null,
+      // area is derived from the house type (sum of its room areas) and computed
+      // at read time — never entered or stored here.
       gardenArea:    editForm.gardenArea ? parseFloat(editForm.gardenArea) : null,
       rooms:         editForm.rooms      ? parseInt(editForm.rooms)        : null,
       floors:        editForm.floors     ? parseInt(editForm.floors)       : null,
@@ -1141,8 +1142,18 @@ export default function AdminPlanEditor({
                     </Select>
                   </div>
                 )}
+                {/* Pow. m² is derived from the selected house type (sum of its
+                    room areas) — read-only here. No type → no area. */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Pow. m²</Label>
+                  <div className="h-7 text-xs mt-1 px-2 flex items-center rounded-md border bg-muted text-muted-foreground font-medium">
+                    {(() => {
+                      const ta = houseTypes.find(ht => ht.id === editForm.houseTypeId)?.totalArea
+                      return ta != null ? `${ta} m²` : (editForm.houseTypeId ? '—' : 'Wybierz typ domu')
+                    })()}
+                  </div>
+                </div>
                 {[
-                  ['area',         'Pow. m²',      'number', '101.2'],
                   ['gardenArea',   'Ogród m²',     'number', '200'],
                   ['rooms',        'Pokoje',       'number', '4'  ],
                   ['floors',       'Piętra',       'number', '2'  ],

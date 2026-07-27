@@ -268,7 +268,7 @@ function UnitEditDialog({
         buildingLabel: form.buildingLabel,
         status: form.status,
         stage: form.stage,
-        area: form.area,
+        // area is derived from the house type's rooms — read-only, never sent.
         gardenArea: form.gardenArea,
         floor: form.floor,
         rooms: form.rooms,
@@ -343,7 +343,16 @@ function UnitEditDialog({
 
           <div>
             <Label htmlFor="area">Powierzchnia (m²)</Label>
-            <Input id="area" type="number" step="0.01" value={form.area ?? ''} onChange={e => set('area', numOrNull(e.target.value))} />
+            <Input
+              id="area"
+              type="number"
+              step="0.01"
+              value={form.area ?? ''}
+              readOnly
+              disabled
+              title="Wyliczana automatycznie z sumy pomieszczeń typu domu"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Wyliczana z pomieszczeń typu domu</p>
           </div>
           <div>
             <Label htmlFor="gardenArea">Ogród (m²)</Label>

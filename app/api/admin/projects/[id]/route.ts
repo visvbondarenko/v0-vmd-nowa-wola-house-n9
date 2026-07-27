@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isAuthenticated } from '@/lib/auth'
 import { geocodeAddress, buildProjectAddress } from '@/lib/geocode'
+import { typeArea, floorArea } from '@/lib/house-type-area'
 
 export async function GET(
   _request: Request,
@@ -55,7 +56,24 @@ export async function GET(
     },
   })
   if (!project) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(project)
+
+  // Unit/type size is always the sum of the type's room areas — computed here
+  // at read time, never stored. Fill in floor/type areas and sync each unit's
+  // area to its type so the admin UI matches the public site.
+  const typeAreaById = new Map(project.houseTypes.map((t) => [t.id, typeArea(t.floorPlans)]))
+  const serialized = {
+    ...project,
+    houseTypes: project.houseTypes.map((t) => ({
+      ...t,
+      totalArea: typeAreaById.get(t.id) ?? null,
+      floorPlans: t.floorPlans.map((f) => ({ ...f, area: floorArea(f.rooms) })),
+    })),
+    units: project.units.map((u) => ({
+      ...u,
+      area: u.houseTypeId != null ? typeAreaById.get(u.houseTypeId) ?? null : null,
+    })),
+  }
+  return NextResponse.json(serialized)
 }
 
 export async function PUT(

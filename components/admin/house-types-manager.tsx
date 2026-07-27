@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Plus, Trash2, Upload, Image as ImageIcon, ChevronDown, ChevronRight } from 'lucide-react'
+import { withDerivedAreas } from '@/lib/house-type-area'
 
 type Room = {
   id: string
@@ -47,7 +48,11 @@ async function uploadImage(file: File): Promise<string> {
 }
 
 export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
-  const [houseTypes, setHouseTypes] = useState<HouseType[]>(initialHouseTypes)
+  // Areas are always the sum of room areas — derive on load so existing types
+  // display correctly without a write, then keep them in sync on every edit.
+  const [houseTypes, setHouseTypes] = useState<HouseType[]>(() =>
+    initialHouseTypes.map(withDerivedAreas)
+  )
   const [expandedType, setExpandedType] = useState<string | null>(null)
   const [showAddType, setShowAddType] = useState(false)
   const [showAddFloor, setShowAddFloor] = useState<string | null>(null) // houseTypeId
@@ -55,7 +60,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
   const [uploading, setUploading] = useState<string | null>(null)
 
   // Add House Type
-  const [newType, setNewType] = useState({ name: '', totalArea: '' })
+  const [newType, setNewType] = useState({ name: '' })
   const handleAddType = async (e: React.FormEvent) => {
     e.preventDefault()
     const res = await fetch('/api/admin/house-types', {
@@ -64,14 +69,13 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       body: JSON.stringify({
         projectId,
         name: newType.name,
-        totalArea: newType.totalArea ? parseFloat(newType.totalArea) : null,
       }),
     })
     if (res.ok) {
       const data = await res.json()
-      setHouseTypes((prev) => [...prev, data])
+      setHouseTypes((prev) => [...prev, withDerivedAreas(data)])
       setShowAddType(false)
-      setNewType({ name: '', totalArea: '' })
+      setNewType({ name: '' })
     }
   }
 
@@ -82,7 +86,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
   }
 
   // Add Floor Plan
-  const [newFloor, setNewFloor] = useState({ name: '', area: '' })
+  const [newFloor, setNewFloor] = useState({ name: '' })
   const handleAddFloor = async (e: React.FormEvent, houseTypeId: string) => {
     e.preventDefault()
     const res = await fetch('/api/admin/floor-plans', {
@@ -91,7 +95,6 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       body: JSON.stringify({
         houseTypeId,
         name: newFloor.name,
-        area: newFloor.area ? parseFloat(newFloor.area) : null,
       }),
     })
     if (res.ok) {
@@ -99,12 +102,12 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       setHouseTypes((prev) =>
         prev.map((t) =>
           t.id === houseTypeId
-            ? { ...t, floorPlans: [...t.floorPlans, data] }
+            ? withDerivedAreas({ ...t, floorPlans: [...t.floorPlans, data] })
             : t
         )
       )
       setShowAddFloor(null)
-      setNewFloor({ name: '', area: '' })
+      setNewFloor({ name: '' })
     }
   }
 
@@ -114,7 +117,7 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
     setHouseTypes((prev) =>
       prev.map((t) =>
         t.id === houseTypeId
-          ? { ...t, floorPlans: t.floorPlans.filter((f) => f.id !== floorId) }
+          ? withDerivedAreas({ ...t, floorPlans: t.floorPlans.filter((f) => f.id !== floorId) })
           : t
       )
     )
@@ -151,48 +154,6 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       alert('Błąd uploadu')
     }
     setUploading(null)
-  }
-
-  // Edit house type total area inline
-  const [editingTypeArea, setEditingTypeArea] = useState<{ typeId: string; value: string } | null>(null)
-
-  const handleUpdateTypeArea = async (typeId: string) => {
-    if (!editingTypeArea) return
-    const totalArea = editingTypeArea.value ? parseFloat(editingTypeArea.value) : null
-    const res = await fetch(`/api/admin/house-types/${typeId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ totalArea }),
-    })
-    if (res.ok) {
-      setHouseTypes((prev) =>
-        prev.map((t) => (t.id === typeId ? { ...t, totalArea } : t))
-      )
-    }
-    setEditingTypeArea(null)
-  }
-
-  // Edit floor plan area inline
-  const [editingFloorArea, setEditingFloorArea] = useState<{ floorId: string; value: string } | null>(null)
-
-  const handleUpdateFloorArea = async (floorId: string, houseTypeId: string) => {
-    if (!editingFloorArea) return
-    const area = editingFloorArea.value ? parseFloat(editingFloorArea.value) : null
-    const res = await fetch(`/api/admin/floor-plans/${floorId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ area }),
-    })
-    if (res.ok) {
-      setHouseTypes((prev) =>
-        prev.map((t) =>
-          t.id === houseTypeId
-            ? { ...t, floorPlans: t.floorPlans.map((f) => (f.id === floorId ? { ...f, area } : f)) }
-            : t
-        )
-      )
-    }
-    setEditingFloorArea(null)
   }
 
   // Edit room name inline
@@ -240,14 +201,14 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       setHouseTypes((prev) =>
         prev.map((t) =>
           t.id === houseTypeId
-            ? {
+            ? withDerivedAreas({
                 ...t,
                 floorPlans: t.floorPlans.map((f) =>
                   f.id === floorPlanId
                     ? { ...f, rooms: f.rooms.map((r) => (r.id === roomId ? { ...r, area } : r)) }
                     : f
                 ),
-              }
+              })
             : t
         )
       )
@@ -274,12 +235,12 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
       setHouseTypes((prev) =>
         prev.map((t) =>
           t.id === houseTypeId
-            ? {
+            ? withDerivedAreas({
                 ...t,
                 floorPlans: t.floorPlans.map((f) =>
                   f.id === floorPlanId ? { ...f, rooms: [...f.rooms, data] } : f
                 ),
-              }
+              })
             : t
         )
       )
@@ -293,14 +254,14 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
     setHouseTypes((prev) =>
       prev.map((t) =>
         t.id === houseTypeId
-          ? {
+          ? withDerivedAreas({
               ...t,
               floorPlans: t.floorPlans.map((f) =>
                 f.id === floorPlanId
                   ? { ...f, rooms: f.rooms.filter((r) => r.id !== roomId) }
                   : f
               ),
-            }
+            })
           : t
       )
     )
@@ -338,29 +299,12 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                       <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     )}
                     <span className="font-medium">{type.name}</span>
-                    {editingTypeArea?.typeId === type.id ? (
-                      <Input
-                        autoFocus
-                        type="number"
-                        step="0.01"
-                        className="h-6 w-24 text-sm px-1 py-0"
-                        value={editingTypeArea.value}
-                        onChange={(e) => setEditingTypeArea({ typeId: type.id, value: e.target.value })}
-                        onBlur={() => handleUpdateTypeArea(type.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') handleUpdateTypeArea(type.id)
-                          if (e.key === 'Escape') setEditingTypeArea(null)
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <span
-                        className="text-sm text-muted-foreground cursor-pointer hover:underline hover:text-blue-600"
-                        onClick={(e) => { e.stopPropagation(); setEditingTypeArea({ typeId: type.id, value: type.totalArea != null ? String(type.totalArea) : '' }) }}
-                      >
-                        {type.totalArea != null ? `${type.totalArea} m² łącznie` : '— m²'}
-                      </span>
-                    )}
+                    <span
+                      className="text-sm text-muted-foreground"
+                      title="Suma powierzchni pomieszczeń (wyliczana automatycznie)"
+                    >
+                      {type.totalArea != null ? `${type.totalArea} m² łącznie` : '— m²'}
+                    </span>
                     <span className="text-xs text-muted-foreground">
                       {type.floorPlans.length} {type.floorPlans.length === 1 ? 'kondygnacja' : 'kondygnacje'}
                     </span>
@@ -384,28 +328,12 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="font-medium text-sm">{floor.name}</h4>
                           <div className="flex items-center gap-2">
-                            {editingFloorArea?.floorId === floor.id ? (
-                              <Input
-                                autoFocus
-                                type="number"
-                                step="0.01"
-                                className="h-6 w-24 text-sm px-1 py-0"
-                                value={editingFloorArea.value}
-                                onChange={(e) => setEditingFloorArea({ floorId: floor.id, value: e.target.value })}
-                                onBlur={() => handleUpdateFloorArea(floor.id, type.id)}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') handleUpdateFloorArea(floor.id, type.id)
-                                  if (e.key === 'Escape') setEditingFloorArea(null)
-                                }}
-                              />
-                            ) : (
-                              <span
-                                className="text-xs text-muted-foreground cursor-pointer hover:underline hover:text-blue-600"
-                                onClick={() => setEditingFloorArea({ floorId: floor.id, value: floor.area != null ? String(floor.area) : '' })}
-                              >
-                                {floor.area != null ? `${floor.area} m²` : '— m²'}
-                              </span>
-                            )}
+                            <span
+                              className="text-xs text-muted-foreground"
+                              title="Suma powierzchni pomieszczeń tej kondygnacji (wyliczana automatycznie)"
+                            >
+                              {floor.area != null ? `${floor.area} m²` : '— m²'}
+                            </span>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -623,16 +551,9 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                                 required
                               />
                             </div>
-                            <div className="space-y-2">
-                              <Label>Powierzchnia m²</Label>
-                              <Input
-                                type="number"
-                                step="0.01"
-                                value={newFloor.area}
-                                onChange={(e) => setNewFloor((p) => ({ ...p, area: e.target.value }))}
-                                placeholder="75.0"
-                              />
-                            </div>
+                            <p className="col-span-2 text-xs text-muted-foreground">
+                              Powierzchnia kondygnacji wyliczy się automatycznie z sumy pomieszczeń.
+                            </p>
                           </div>
                           <DialogFooter>
                             <Button type="button" variant="outline" onClick={() => setShowAddFloor(null)}>
@@ -669,16 +590,9 @@ export function HouseTypesManager({ projectId, initialHouseTypes }: Props) {
                     required
                   />
                 </div>
-                <div className="col-span-2 space-y-2">
-                  <Label>Łączna powierzchnia m²</Label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    value={newType.totalArea}
-                    onChange={(e) => setNewType((p) => ({ ...p, totalArea: e.target.value }))}
-                    placeholder="150.0"
-                  />
-                </div>
+                <p className="col-span-2 text-xs text-muted-foreground">
+                  Łączna powierzchnia wyliczy się automatycznie z sumy pomieszczeń po dodaniu kondygnacji i pokoi.
+                </p>
               </div>
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setShowAddType(false)}>

@@ -4,6 +4,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import sharp from 'sharp'
 import React from 'react'
 import { UnitPdfDocument, type UnitPdfData } from '@/lib/pdf/unit-pdf-template'
+import { typeArea, floorArea } from '@/lib/house-type-area'
 
 async function fetchImageAsDataUri(url: string): Promise<string | null> {
   try {
@@ -121,7 +122,8 @@ export async function GET(
     const pdfData: UnitPdfData = {
       projectName: project.name,
       unitLabel: unit.label,
-      totalArea: unit.houseType.totalArea,
+      // Size is always the sum of the type's room areas — computed, never stored.
+      totalArea: typeArea(unit.houseType.floorPlans),
       rooms: unit.rooms,
       price: unit.price == null ? null : unit.price
         + (unit.parkingPrice ?? 0)
@@ -131,7 +133,7 @@ export async function GET(
       houseTypeName: unit.houseType.name,
       floorPlans: unit.houseType.floorPlans.map(fp => ({
         name: fp.name,
-        area: fp.area,
+        area: floorArea(fp.rooms),
         // Only pass images that were successfully converted to data URIs
         image3dUrl: fp.image3dUrl ? (imageCache.get(fp.image3dUrl) ?? null) : null,
         image2dUrl: fp.image2dUrl ? (imageCache.get(fp.image2dUrl) ?? null) : null,

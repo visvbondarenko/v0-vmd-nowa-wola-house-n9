@@ -1,10 +1,11 @@
 import { prisma } from '@/lib/prisma'
 import { UnitsManager } from './units-manager'
+import { typeArea } from '@/lib/house-type-area'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminUnitsPage() {
-  const units = await prisma.unit.findMany({
+  const rows = await prisma.unit.findMany({
     select: {
       id: true,
       label: true,
@@ -32,6 +33,9 @@ export default async function AdminUnitsPage() {
       description: true,
       project: { select: { id: true, name: true, slug: true } },
       company: { select: { id: true, name: true } },
+      // Size is the sum of the type's room areas — computed here, never the
+      // stored column. Needed to show the right value on this read-only field.
+      houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
     },
     orderBy: [
       { projectId: 'asc' },
@@ -39,6 +43,11 @@ export default async function AdminUnitsPage() {
       { label: 'asc' },
     ],
   })
+
+  const units = rows.map(({ houseType, ...u }) => ({
+    ...u,
+    area: houseType ? typeArea(houseType.floorPlans) : null,
+  }))
 
   return <UnitsManager initialUnits={units} />
 }

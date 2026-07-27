@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { withDerivedAreas } from '@/lib/house-type-area'
 
 export async function GET(
   request: Request,
@@ -41,13 +42,27 @@ export async function GET(
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
+
+    // Unit/type size is always the sum of the type's room areas — computed here
+    // at read time, never stored. Derive each type's floor/total areas, then
+    // sync every unit's area to its type (no type → no area).
+    const houseTypes = project.houseTypes.map(withDerivedAreas)
+    const typeAreaById = new Map(houseTypes.map((t) => [t.id, t.totalArea]))
+    const units = project.units.map((u) => ({
+      ...u,
+      area: u.houseTypeId != null ? typeAreaById.get(u.houseTypeId) ?? null : null,
+      houseType: u.houseType
+        ? { ...u.houseType, totalArea: typeAreaById.get(u.houseType.id) ?? u.houseType.totalArea }
+        : u.houseType,
+    }))
+
     return NextResponse.json({
       svgContent: project.svgContent,
       planImageUrl: project.planImageUrl,
       planLabel: project.planLabel,
       northAngle: project.northAngle,
-      units: project.units,
-      houseTypes: project.houseTypes,
+      units,
+      houseTypes,
       dotOverrides: project.dotOverrides,
     })
   } catch (error) {

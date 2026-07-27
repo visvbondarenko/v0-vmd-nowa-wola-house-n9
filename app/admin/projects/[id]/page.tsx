@@ -1102,7 +1102,7 @@ export default function EditProjectPage() {
           planImageUrl={project.planImageUrl}
           initialUnits={project.units}
           initialSvgContent={project.svgContent}
-          houseTypes={project.houseTypes.map(ht => ({ id: ht.id, name: ht.name }))}
+          houseTypes={project.houseTypes.map(ht => ({ id: ht.id, name: ht.name, totalArea: ht.totalArea }))}
           onPlanImageChange={(url) => setProject(p => p ? { ...p, planImageUrl: url } : p)}
           stages={project.stages.map(s => ({ id: s.id, svgElementId: s.svgElementId, name: s.name, order: s.order }))}
           onStagesChange={fetchProject}
