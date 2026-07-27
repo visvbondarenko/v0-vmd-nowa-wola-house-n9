@@ -1,5 +1,6 @@
 import { Resend } from "resend"
 import { NextResponse } from "next/server"
+import { isValidEmail } from "@/lib/validation/email"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -8,6 +9,11 @@ const RECIPIENTS = ["vmdbondarenko@gmail.com"]
 export async function POST(req: Request) {
   try {
     const { name, email, phone, message, subject } = await req.json()
+
+    // Server-side guard mirroring the client-side email verification.
+    if (!isValidEmail(String(email ?? ""))) {
+      return NextResponse.json({ ok: false, error: "invalid_email" }, { status: 400 })
+    }
 
     const emailSubject = subject
       ? `Zapytanie: ${subject} — ${name}`

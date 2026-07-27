@@ -44,7 +44,9 @@ const CITY_CENTERS: Record<CityKey, { lat: number; lng: number }> = {
   Krakow: { lat: 50.0647, lng: 19.945 },
 }
 
-const CITIES: CityKey[] = ["Warszawa", "Wroclaw", "Krakow"]
+// Only Warszawa is active for now. Re-add "Wroclaw" / "Krakow" here to restore
+// their tabs.
+const CITIES: CityKey[] = ["Warszawa"]
 
 export function CityMap({
   apiKey,
@@ -96,8 +98,8 @@ export function CityMap({
 
   return (
     <>
-      {/* City tabs */}
-      <div className="flex gap-2 mb-8 flex-wrap">
+      {/* City tabs — hidden while only a single city is active */}
+      <div className={`gap-2 mb-8 flex-wrap ${CITIES.length > 1 ? "flex" : "hidden"}`}>
         {CITIES.map((city) => {
           const count = points.filter((p) => p.city === city).length
           return (

@@ -2,19 +2,39 @@
 
 import { useState } from "react";
 import { Send, Phone, Mail, MapPin, Loader2 } from "lucide-react";
+import { PhoneField } from "@/components/forms/phone-field";
+import { DEFAULT_COUNTRY, type Country } from "@/lib/contact/countries";
+import { isValidEmail, EMAIL_ERROR_MESSAGE } from "@/lib/validation/email";
+import { isValidNationalNumber, PHONE_ERROR_MESSAGE } from "@/lib/validation/phone";
 
 export function ContactSection() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
-
     const form = e.currentTarget;
     const formData = new FormData(form);
+    const email = String(formData.get("email") ?? "");
+
+    // Validate email + phone before sending; highlight the offending field(s).
+    const emailOk = isValidEmail(email);
+    const phoneOk = isValidNationalNumber(country.dial, phoneNumber, country.nationalLength);
+    setEmailError(emailOk ? null : EMAIL_ERROR_MESSAGE);
+    setPhoneError(phoneOk ? null : PHONE_ERROR_MESSAGE);
+    if (!emailOk || !phoneOk) return;
+
+    // Send the composed international number, not the raw national field.
+    formData.set("phone", `${country.dial} ${phoneNumber.trim()}`);
+    formData.delete("phone-number");
+
+    setLoading(true);
+    setError(null);
 
     try {
       const response = await fetch("https://formspree.io/f/mykbjvap", {
@@ -27,6 +47,8 @@ export function ContactSection() {
 
       if (response.ok) {
         setSubmitted(true);
+        setPhoneNumber("");
+        setCountry(DEFAULT_COUNTRY);
       } else {
         setError("Wystąpił błąd. Spróbuj ponownie.");
       }
@@ -177,9 +199,17 @@ export function ContactSection() {
                     name="email"
                     type="email"
                     required
+                    aria-invalid={!!emailError}
+                    aria-describedby={emailError ? "contact-email-error" : undefined}
+                    onChange={() => emailError && setEmailError(null)}
                     className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none transition-colors"
                     placeholder="jan@example.com"
                   />
+                  {emailError && (
+                    <p id="contact-email-error" className="mt-1.5 text-sm text-red-400">
+                      {emailError}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -189,12 +219,18 @@ export function ContactSection() {
                   >
                     Telefon
                   </label>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    className="w-full border-b border-primary-foreground/20 bg-transparent py-3 text-primary-foreground placeholder:text-primary-foreground/30 focus:border-primary-foreground/60 focus:outline-none transition-colors"
-                    placeholder="+48 000 000 000"
+                  <PhoneField
+                    inputId="phone"
+                    variant="dark"
+                    required
+                    country={country}
+                    onCountryChange={setCountry}
+                    number={phoneNumber}
+                    onNumberChange={(v) => {
+                      setPhoneNumber(v);
+                      if (phoneError) setPhoneError(null);
+                    }}
+                    error={phoneError}
                   />
                 </div>
 

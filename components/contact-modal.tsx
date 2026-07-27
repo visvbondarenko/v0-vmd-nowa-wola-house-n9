@@ -7,6 +7,10 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
+import { PhoneField } from "@/components/forms/phone-field"
+import { DEFAULT_COUNTRY, type Country } from "@/lib/contact/countries"
+import { isValidEmail, EMAIL_ERROR_MESSAGE } from "@/lib/validation/email"
+import { isValidNationalNumber, PHONE_ERROR_MESSAGE } from "@/lib/validation/phone"
 
 interface ContactModalProps {
   isOpen: boolean
@@ -17,11 +21,19 @@ interface ContactModalProps {
 export function ContactModal({ isOpen, onClose, subject }: ContactModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY)
+  const [phoneNumber, setPhoneNumber] = useState("")
+  const [phoneError, setPhoneError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
   useEffect(() => {
     if (!isOpen) {
       setSubmitted(false)
+      setCountry(DEFAULT_COUNTRY)
+      setPhoneNumber("")
+      setPhoneError(null)
+      setEmailError(null)
     }
   }, [isOpen])
 
@@ -36,13 +48,22 @@ export function ContactModal({ isOpen, onClose, subject }: ContactModalProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setIsSubmitting(true)
     const form = e.currentTarget
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value
+
+    // Validate before sending — highlight the offending field(s) and bail.
+    const emailOk = isValidEmail(email)
+    const phoneOk = isValidNationalNumber(country.dial, phoneNumber, country.nationalLength)
+    setEmailError(emailOk ? null : EMAIL_ERROR_MESSAGE)
+    setPhoneError(phoneOk ? null : PHONE_ERROR_MESSAGE)
+    if (!emailOk || !phoneOk) return
+
+    setIsSubmitting(true)
     const data = {
       subject,
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      phone: (form.elements.namedItem("phone") as HTMLInputElement).value,
+      email,
+      phone: `${country.dial} ${phoneNumber.trim()}`,
       message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
     }
     try {
@@ -54,6 +75,8 @@ export function ContactModal({ isOpen, onClose, subject }: ContactModalProps) {
       if (res.ok) {
         setSubmitted(true)
         formRef.current?.reset()
+        setPhoneNumber("")
+        setCountry(DEFAULT_COUNTRY)
       } else {
         alert("Wystąpił błąd. Spróbuj ponownie lub skontaktuj się telefonicznie.")
       }
@@ -115,13 +138,40 @@ export function ContactModal({ isOpen, onClose, subject }: ContactModalProps) {
               <label htmlFor="modal-phone" className="block text-sm font-medium text-foreground mb-1.5">
                 Telefon *
               </label>
-              <Input id="modal-phone" name="phone" type="tel" required placeholder="+48 123 456 789" className="bg-background border-border" />
+              <PhoneField
+                inputId="modal-phone"
+                variant="light"
+                required
+                country={country}
+                onCountryChange={setCountry}
+                number={phoneNumber}
+                onNumberChange={(v) => {
+                  setPhoneNumber(v)
+                  if (phoneError) setPhoneError(null)
+                }}
+                error={phoneError}
+              />
             </div>
             <div>
               <label htmlFor="modal-email" className="block text-sm font-medium text-foreground mb-1.5">
                 Adres e-mail *
               </label>
-              <Input id="modal-email" name="email" type="email" required placeholder="jan@example.com" className="bg-background border-border" />
+              <Input
+                id="modal-email"
+                name="email"
+                type="email"
+                required
+                placeholder="jan@example.com"
+                className="bg-background border-border"
+                aria-invalid={!!emailError}
+                aria-describedby={emailError ? "modal-email-error" : undefined}
+                onChange={() => emailError && setEmailError(null)}
+              />
+              {emailError && (
+                <p id="modal-email-error" className="mt-1.5 text-sm text-red-600">
+                  {emailError}
+                </p>
+              )}
             </div>
             <div>
               <label htmlFor="modal-message" className="block text-sm font-medium text-foreground mb-1.5">

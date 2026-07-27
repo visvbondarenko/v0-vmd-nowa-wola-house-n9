@@ -57,23 +57,22 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Center nav links (desktop) */}
-        <div className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`text-sm font-medium tracking-wide transition-colors duration-300 hover:opacity-70 ${
-                scrolled ? "text-foreground" : "text-primary-foreground"
-              }`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
-        {/* Right side — contact buttons (desktop) + hamburger (mobile) */}
+        {/* Right side — nav links + contact buttons (desktop) + hamburger (mobile) */}
         <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-8 md:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium tracking-wide transition-colors duration-300 hover:opacity-70 ${
+                  scrolled ? "text-foreground" : "text-primary-foreground"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
           <div className="hidden items-center gap-3 md:flex">
             <button
               type="button"
