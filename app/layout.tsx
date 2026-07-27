@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { CookieConsent } from "@/components/cookie-consent";
 import "./globals.css";
 
 const _dmSans = DM_Sans({
@@ -52,6 +53,7 @@ export default function RootLayout({
     <html lang="pl" data-scroll-behavior="smooth">
       <body className="font-sans antialiased">
         {children}
+        <CookieConsent />
         <Analytics />
       </body>
     </html>
