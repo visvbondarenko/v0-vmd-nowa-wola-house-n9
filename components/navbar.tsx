@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Menu, X, Phone, Mail } from "lucide-react";
 import Link from "next/link";
+import { ContactModal } from "@/components/contact-modal";
 
 const navLinks = [
   { label: "O nas", href: "/#o-nas" },
@@ -13,18 +14,22 @@ const navLinks = [
 // Public contact details, mirrored from the contact section.
 const CONTACT_PHONE = "+48 452 068 785";
 const CONTACT_PHONE_HREF = "tel:+48452068785";
-const CONTACT_EMAIL = "vlad@qualops.io";
-const CONTACT_EMAIL_HREF = "mailto:vlad@qualops.io";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Shared outline treatment so mail and phone buttons look identical.
+  const outline = scrolled
+    ? "border-border text-foreground hover:bg-muted"
+    : "border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10";
 
   return (
     <header
@@ -52,6 +57,7 @@ export function Navbar() {
           </span>
         </Link>
 
+        {/* Center nav links (desktop) */}
         <div className="hidden items-center gap-8 md:flex">
           {navLinks.map((link) => (
             <Link
@@ -64,40 +70,39 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-
-          {/* Contact buttons */}
-          <div className="flex items-center gap-3 pl-2">
-            <a
-              href={CONTACT_EMAIL_HREF}
-              aria-label={`Napisz e-mail: ${CONTACT_EMAIL}`}
-              title={CONTACT_EMAIL}
-              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 ${
-                scrolled
-                  ? "border-border text-foreground hover:bg-muted"
-                  : "border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10"
-              }`}
-            >
-              <Mail className="h-4 w-4" />
-            </a>
-            <a
-              href={CONTACT_PHONE_HREF}
-              className="flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-sm transition-colors duration-300 hover:bg-primary/90"
-            >
-              <Phone className="h-4 w-4" />
-              <span className="hidden lg:inline">{CONTACT_PHONE}</span>
-            </a>
-          </div>
         </div>
 
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className={`md:hidden transition-colors ${
-            scrolled ? "text-foreground" : "text-primary-foreground"
-          }`}
-          aria-label={mobileOpen ? "Zamknij menu" : "Otwórz menu"}
-        >
-          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Right side — contact buttons (desktop) + hamburger (mobile) */}
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-3 md:flex">
+            <button
+              type="button"
+              onClick={() => setContactOpen(true)}
+              aria-label="Napisz do nas"
+              title="Napisz do nas"
+              className={`flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 ${outline}`}
+            >
+              <Mail className="h-4 w-4" />
+            </button>
+            <a
+              href={CONTACT_PHONE_HREF}
+              className={`flex h-9 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors duration-300 ${outline}`}
+            >
+              <Phone className="h-4 w-4" />
+              {CONTACT_PHONE}
+            </a>
+          </div>
+
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className={`md:hidden transition-colors ${
+              scrolled ? "text-foreground" : "text-primary-foreground"
+            }`}
+            aria-label={mobileOpen ? "Zamknij menu" : "Otwórz menu"}
+          >
+            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </nav>
 
       {mobileOpen && (
@@ -122,17 +127,23 @@ export function Navbar() {
                 <Phone className="h-4 w-4" />
                 {CONTACT_PHONE}
               </a>
-              <a
-                href={CONTACT_EMAIL_HREF}
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setContactOpen(true);
+                }}
                 className="flex items-center justify-center gap-2 rounded-full border border-border px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 <Mail className="h-4 w-4" />
-                {CONTACT_EMAIL}
-              </a>
+                Napisz do nas
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      <ContactModal isOpen={contactOpen} onClose={() => setContactOpen(false)} />
     </header>
   );
 }
