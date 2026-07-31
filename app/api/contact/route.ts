@@ -4,7 +4,7 @@ import { isValidEmail } from "@/lib/validation/email"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const RECIPIENTS = ["vmdbondarenko@gmail.com"]
+const RECIPIENTS = ["kontakt@vmd-development.com"]
 
 export async function POST(req: Request) {
   try {

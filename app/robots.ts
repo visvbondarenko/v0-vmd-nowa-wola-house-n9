@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 
 // Canonical host. Override with NEXT_PUBLIC_BASE_URL in the environment.
-const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://vmddevelopment.pl').replace(/\/$/, '')
+const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.vmd-development.com').replace(/\/$/, '')
 
 export default function robots(): MetadataRoute.Robots {
   return {

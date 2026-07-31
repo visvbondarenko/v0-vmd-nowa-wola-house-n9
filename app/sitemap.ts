@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next'
 import { prisma } from '@/lib/prisma'
 
 // Canonical host. Override with NEXT_PUBLIC_BASE_URL in the environment.
-const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://vmddevelopment.pl').replace(/\/$/, '')
+const baseUrl = (process.env.NEXT_PUBLIC_BASE_URL || 'https://www.vmd-development.com').replace(/\/$/, '')
 
 // Generated on each request so newly published investments/articles appear
 // without a rebuild.

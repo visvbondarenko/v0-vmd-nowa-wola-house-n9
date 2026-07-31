@@ -29,20 +29,24 @@ export function ContactSection() {
     setPhoneError(phoneOk ? null : PHONE_ERROR_MESSAGE);
     if (!emailOk || !phoneOk) return;
 
-    // Send the composed international number, not the raw national field.
-    formData.set("phone", `${country.dial} ${phoneNumber.trim()}`);
-    formData.delete("phone-number");
+    const firstName = String(formData.get("firstName") ?? "").trim();
+    const lastName = String(formData.get("lastName") ?? "").trim();
+    const payload = {
+      name: `${firstName} ${lastName}`.trim(),
+      email,
+      // Send the composed international number, not the raw national field.
+      phone: `${country.dial} ${phoneNumber.trim()}`,
+      message: String(formData.get("message") ?? ""),
+    };
 
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("https://formspree.io/f/mykbjvap", {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        body: formData,
-        headers: {
-          Accept: "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -93,10 +97,10 @@ export function ContactSection() {
                 <div>
                   <p className="text-xs text-primary-foreground/50">E-mail</p>
                   <a
-                    href="mailto:vlad@qualops.io"
+                    href="mailto:kontakt@vmd-development.com"
                     className="text-sm font-medium text-primary-foreground hover:text-primary transition-colors"
                   >
-                    vlad@qualops.io
+                    kontakt@vmd-development.com
                   </a>
                 </div>
               </div>

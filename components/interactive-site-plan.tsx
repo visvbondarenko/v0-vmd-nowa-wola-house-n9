@@ -295,7 +295,7 @@ export function InteractiveSitePlan({ slug }: { slug: string }) {
               )}
               {selectedUnit.status === 'available' && (
                 <a
-                  href={`mailto:kontakt@jednopietrowawarszawa.pl?subject=Zapytanie o działkę ${selectedUnit.label}`}
+                  href={`mailto:kontakt@vmd-development.com?subject=Zapytanie o działkę ${selectedUnit.label}`}
                 >
                   <Button className="w-full" style={{ backgroundColor: 'var(--color-primary)' }}>
                     <Mail className="h-4 w-4 mr-2" />
