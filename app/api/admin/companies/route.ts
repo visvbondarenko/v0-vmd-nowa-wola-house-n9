@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { normalizeStructuredText } from '@/lib/normalize-text'
 import { isAuthenticated, hasRole } from '@/lib/auth'
 
 export async function GET() {
@@ -25,41 +26,45 @@ export async function POST(request: Request) {
   if (!body.regon?.trim()) return NextResponse.json({ error: 'REGON jest wymagany' }, { status: 400 })
 
   try {
+    // Same folding as the PUT path — see the comment there.
+    const norm = (v: unknown): string | null =>
+      typeof v === 'string' ? normalizeStructuredText(v) || null : null
+
     const company = await prisma.company.create({
       data: {
-        name: body.name,
-        slug: body.slug,
-        legalForm: body.legalForm || null,
-        nip: body.nip,
-        krs: body.krs || null,
-        ceidg: body.ceidg || null,
-        regon: body.regon,
-        addrVoivodeship: body.addrVoivodeship || null,
-        addrCounty: body.addrCounty || null,
-        addrMunicipality: body.addrMunicipality || null,
-        addrCity: body.addrCity || null,
-        addrStreet: body.addrStreet || null,
-        addrBuildingNr: body.addrBuildingNr || null,
-        addrUnitNr: body.addrUnitNr || null,
-        addrPostalCode: body.addrPostalCode || null,
-        salesVoivodeship: body.salesVoivodeship || null,
-        salesCounty: body.salesCounty || null,
-        salesMunicipality: body.salesMunicipality || null,
-        salesCity: body.salesCity || null,
-        salesStreet: body.salesStreet || null,
-        salesBuildingNr: body.salesBuildingNr || null,
-        salesUnitNr: body.salesUnitNr || null,
-        salesPostalCode: body.salesPostalCode || null,
-        salesAdditional: body.salesAdditional || null,
-        salesContact: body.salesContact || null,
-        contactEmail: body.contactEmail || null,
-        contactPhone: body.contactPhone || null,
-        contactFax: body.contactFax || null,
-        contactPerson: body.contactPerson || null,
-        websiteUrl: body.websiteUrl || null,
-        extIdent: body.extIdent || null,
-        xmlBasePath: body.xmlBasePath || null,
-        csvBasePath: body.csvBasePath || null,
+        name: normalizeStructuredText(body.name ?? ""),
+        slug: normalizeStructuredText(body.slug ?? ""),
+        legalForm: norm(body.legalForm),
+        nip: normalizeStructuredText(body.nip ?? ""),
+        krs: norm(body.krs),
+        ceidg: norm(body.ceidg),
+        regon: normalizeStructuredText(body.regon ?? ""),
+        addrVoivodeship: norm(body.addrVoivodeship),
+        addrCounty: norm(body.addrCounty),
+        addrMunicipality: norm(body.addrMunicipality),
+        addrCity: norm(body.addrCity),
+        addrStreet: norm(body.addrStreet),
+        addrBuildingNr: norm(body.addrBuildingNr),
+        addrUnitNr: norm(body.addrUnitNr),
+        addrPostalCode: norm(body.addrPostalCode),
+        salesVoivodeship: norm(body.salesVoivodeship),
+        salesCounty: norm(body.salesCounty),
+        salesMunicipality: norm(body.salesMunicipality),
+        salesCity: norm(body.salesCity),
+        salesStreet: norm(body.salesStreet),
+        salesBuildingNr: norm(body.salesBuildingNr),
+        salesUnitNr: norm(body.salesUnitNr),
+        salesPostalCode: norm(body.salesPostalCode),
+        salesAdditional: norm(body.salesAdditional),
+        salesContact: norm(body.salesContact),
+        contactEmail: norm(body.contactEmail),
+        contactPhone: norm(body.contactPhone),
+        contactFax: norm(body.contactFax),
+        contactPerson: norm(body.contactPerson),
+        websiteUrl: norm(body.websiteUrl),
+        extIdent: norm(body.extIdent),
+        xmlBasePath: norm(body.xmlBasePath),
+        csvBasePath: norm(body.csvBasePath),
       },
     })
     return NextResponse.json(company)

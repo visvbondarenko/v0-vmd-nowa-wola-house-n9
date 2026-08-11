@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { normalizeStructuredText } from '@/lib/normalize-text'
 import { isAuthenticated } from '@/lib/auth'
 import { geocodeAddress, buildProjectAddress } from '@/lib/geocode'
 import { typeArea, floorArea } from '@/lib/house-type-area'
@@ -101,6 +102,13 @@ export async function PUT(
     locationAddress, locationTransport, locationSurroundings,
   } = body
 
+  // Structured, machine-read values (the dane.gov.pl address block, contact
+  // details, URLs) get folded on the way in — pasted look-alike characters like
+  // U+2011 in a postal code are invisible in the form but corrupt the feed.
+  // Prose fields are left untouched; their en/em dashes are intentional.
+  const norm = (v: unknown): string | null =>
+    typeof v === 'string' ? normalizeStructuredText(v) || null : null
+
   const data: Record<string, unknown> = {}
   if (name !== undefined) data.name = name
   if (slug !== undefined) data.slug = slug
@@ -113,19 +121,19 @@ export async function PUT(
   if (status !== undefined) data.status = status
   if (published !== undefined) data.published = published
   if (heroSubtitle !== undefined) data.heroSubtitle = heroSubtitle || null
-  if (contactPhone !== undefined) data.contactPhone = contactPhone || null
-  if (contactEmail !== undefined) data.contactEmail = contactEmail || null
+  if (contactPhone !== undefined) data.contactPhone = norm(contactPhone)
+  if (contactEmail !== undefined) data.contactEmail = norm(contactEmail)
   if (contactAddress !== undefined) data.contactAddress = contactAddress || null
   if (companyId !== undefined) data.companyId = companyId || null
-  if (investVoivodeship !== undefined) data.investVoivodeship = investVoivodeship || null
-  if (investCounty !== undefined) data.investCounty = investCounty || null
-  if (investMunicipality !== undefined) data.investMunicipality = investMunicipality || null
-  if (investCity !== undefined) data.investCity = investCity || null
-  if (investStreet !== undefined) data.investStreet = investStreet || null
-  if (investBuildingNr !== undefined) data.investBuildingNr = investBuildingNr || null
-  if (investPostalCode !== undefined) data.investPostalCode = investPostalCode || null
+  if (investVoivodeship !== undefined) data.investVoivodeship = norm(investVoivodeship)
+  if (investCounty !== undefined) data.investCounty = norm(investCounty)
+  if (investMunicipality !== undefined) data.investMunicipality = norm(investMunicipality)
+  if (investCity !== undefined) data.investCity = norm(investCity)
+  if (investStreet !== undefined) data.investStreet = norm(investStreet)
+  if (investBuildingNr !== undefined) data.investBuildingNr = norm(investBuildingNr)
+  if (investPostalCode !== undefined) data.investPostalCode = norm(investPostalCode)
   if (propertyType !== undefined) data.propertyType = propertyType || null
-  if (prospektUrl !== undefined) data.prospektUrl = prospektUrl || null
+  if (prospektUrl !== undefined) data.prospektUrl = norm(prospektUrl)
   if (additionalInfo !== undefined) data.additionalInfo = additionalInfo || null
   if (latitude !== undefined) {
     data.latitude = latitude === null || latitude === '' ? null : Number(latitude)

@@ -989,11 +989,13 @@ export default function EditProjectPage() {
                   <Label className="text-xs">Rodzaj nieruchomości</Label>
                   <select
                     className="w-full rounded-md border border-border px-3 py-2 text-sm"
-                    value={project.propertyType || 'Mieszkanie'}
+                    value={project.propertyType || 'lokal mieszkalny'}
                     onChange={(e) => setProject(p => p ? { ...p, propertyType: e.target.value } : p)}
                   >
-                    <option value="Mieszkanie">Mieszkanie</option>
-                    <option value="Dom jednorodzinny">Dom jednorodzinny</option>
+                    {/* Exactly the two values CSV col 37's header allows — the
+                        wording goes into the feed verbatim, so don't prettify it. */}
+                    <option value="lokal mieszkalny">lokal mieszkalny</option>
+                    <option value="dom jednorodzinny">dom jednorodzinny</option>
                   </select>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { typeArea } from '@/lib/house-type-area'
 import { getCurrentRole } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -48,6 +49,8 @@ export default async function CompanyViewPage({ params }: { params: Promise<{ id
       units: {
         include: {
           project: { select: { id: true, name: true, slug: true, investVoivodeship: true, investCity: true, investStreet: true } },
+          // Size is the sum of the type's room areas, never the stored column.
+          houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
         },
         orderBy: [{ projectId: 'asc' }, { buildingLabel: 'asc' }, { label: 'asc' }],
       },
@@ -56,12 +59,17 @@ export default async function CompanyViewPage({ params }: { params: Promise<{ id
 
   if (!company) notFound()
 
+  const units = company.units.map(({ houseType, ...u }) => ({
+    ...u,
+    area: houseType ? typeArea(houseType.floorPlans) : null,
+  }))
+
   const byProject = new Map<string, {
     project: { id: string; name: string; slug: string; investCity: string | null; investStreet: string | null }
-    buildings: Map<string, typeof company.units>
+    buildings: Map<string, typeof units>
   }>()
 
-  for (const u of company.units) {
+  for (const u of units) {
     if (!byProject.has(u.project.id)) {
       byProject.set(u.project.id, { project: u.project, buildings: new Map() })
     }
@@ -71,10 +79,10 @@ export default async function CompanyViewPage({ params }: { params: Promise<{ id
     entry.buildings.get(bldg)!.push(u)
   }
 
-  const totalUnits = company.units.length
-  const availableUnits = company.units.filter(u => u.status === 'available').length
-  const reservedUnits = company.units.filter(u => u.status === 'reserved').length
-  const soldUnits = company.units.filter(u => u.status === 'sold').length
+  const totalUnits = units.length
+  const availableUnits = units.filter(u => u.status === 'available').length
+  const reservedUnits = units.filter(u => u.status === 'reserved').length
+  const soldUnits = units.filter(u => u.status === 'sold').length
 
   return (
     <div>

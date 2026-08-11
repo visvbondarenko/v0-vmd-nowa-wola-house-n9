@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isAuthenticated, hasRole } from '@/lib/auth'
+import { unitAreaById } from '@/lib/unit-area'
 
 export async function PUT(
   request: Request,
@@ -35,8 +36,9 @@ export async function PUT(
     (body.rightsPrice !== undefined && body.rightsPrice !== existing.rightsPrice) ||
     (body.otherPrice !== undefined && body.otherPrice !== existing.otherPrice)
   )) {
-    const pricePerSqm = unit.price && unit.area && unit.area > 0
-      ? unit.price / unit.area
+    const area = await unitAreaById(id)
+    const pricePerSqm = unit.price && area && area > 0
+      ? unit.price / area
       : null
     await prisma.priceHistory.create({
       data: {

@@ -110,7 +110,10 @@ model Project {
   investStreet       String?
   investBuildingNr   String?
   investPostalCode   String?
-  propertyType       String? @default("Mieszkanie") // Mieszkanie / Dom jednorodzinny
+  // CSV col 37. The header enumerates the only two accepted values verbatim:
+  // "lokal mieszkalny" / "dom jednorodzinny". Anything else (the old
+  // "Mieszkanie") is off-schema.
+  propertyType       String? @default("lokal mieszkalny")
   prospektUrl        String?
   additionalInfo     String? @db.Text
   latitude           Float? // Geocoded for /lokalizacja map

@@ -1,4 +1,6 @@
 import { prisma } from '@/lib/prisma'
+import { unitArea } from '@/lib/house-type-area'
+import { normalizeStructuredText } from '@/lib/normalize-text'
 
 // Exact column headers from dane.gov.pl WordPress CSVs (59 columns)
 const CSV_HEADERS = [
@@ -80,14 +82,17 @@ function formatDateShort(date: Date): string {
   return `${y}-${m}-${d}`
 }
 
+// Last line of defence: every field is folded on the way out, so no pasted
+// look-alike character can reach the regulator even if it slipped past the
+// admin-side normalisation and into the DB.
 function val(v: string | null | undefined): string {
-  return v || 'X'
+  return v ? normalizeStructuredText(v) || 'X' : 'X'
 }
 
 // Unit-level optional text fields (partsType/Label, roomsType/Label, rightsDesc,
 // otherDesc): WP writes literal empty when null, not "X".
 function valEmpty(v: string | null | undefined): string {
-  return v || ''
+  return v ? normalizeStructuredText(v) : ''
 }
 
 function numVal(v: number | null | undefined): string {
@@ -123,6 +128,8 @@ export async function generateCsvForCompany(companyId: string): Promise<string> 
     },
     include: {
       project: true,
+      // Size is the sum of the type's room areas, never the stored column.
+      houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
       priceHistory: {
         orderBy: { date: 'desc' },
         take: 1,
@@ -130,6 +137,15 @@ export async function generateCsvForCompany(companyId: string): Promise<string> 
     },
     orderBy: [{ projectId: 'asc' }, { label: 'asc' }],
   })
+
+  // Col 29 "Sposób kontaktu nabywcy z deweloperem": the channels a buyer can
+  // actually reach us on, assembled from the same company fields the public site
+  // renders, so the two can't drift. `salesContact` stays an explicit override
+  // for the cases where the regulator-facing wording needs to differ.
+  const salesContact = company.salesContact
+    || [company.contactPhone, company.contactEmail, company.websiteUrl]
+      .filter(Boolean).join(', ')
+    || null
 
   const rows: string[] = []
 
@@ -141,9 +157,17 @@ export async function generateCsvForCompany(companyId: string): Promise<string> 
     const latestPrice = unit.priceHistory[0]
     const priceDate = latestPrice ? formatDate(latestPrice.date) : formatDate(unit.updatedAt)
 
-    const pricePerSqm = latestPrice?.pricePerSqm
-      ?? (unit.area && unit.area > 0 && unit.price ? unit.price / unit.area : null)
     const totalPrice = unit.price
+    // Col 39 must be col 41 divided by the unit's area — the header defines col 41
+    // as their product, so a reviewer can (and does) check the arithmetic. Compute
+    // it here rather than reading PriceHistory.pricePerSqm: that snapshot is only
+    // written when a *price* component changes, so an area correction alone would
+    // leave a stale zł/m² in the feed forever. Falls back to the snapshot only for
+    // units with no area at all.
+    const area = unitArea(unit)
+    const pricePerSqm = area && area > 0 && totalPrice
+      ? totalPrice / area
+      : latestPrice?.pricePerSqm ?? null
     // fullPrice per regulator = totalPrice + art. 19a components (parking/storage/rights/other).
     // Always compute from components — the stored unit.fullPrice column can go stale if
     // parts are edited without resaving price (and the admin UI already shows it as a
@@ -188,7 +212,7 @@ export async function generateCsvForCompany(companyId: string): Promise<string> 
       val(company.salesUnitNr),               // 26 Sprzedaż - nr lokalu
       val(company.salesPostalCode),           // 27 Sprzedaż - kod pocztowy
       val(company.salesAdditional),           // 28 Dodatkowe lokalizacje
-      val(company.salesContact),              // 29 Sposób kontaktu
+      val(salesContact),                      // 29 Sposób kontaktu
       val(project.investVoivodeship),         // 30 Inwestycja - woj
       val(project.investCounty),              // 31 Inwestycja - powiat
       val(project.investMunicipality),        // 32 Inwestycja - gmina

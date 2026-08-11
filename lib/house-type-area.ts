@@ -37,6 +37,19 @@ export function typeArea(floorPlans: FloorLike[]): number | null {
   return any ? roundArea(total) : null
 }
 
+// A unit's size: its house type's total, falling back to the stored `area`
+// column only for units that have no type yet. The stored column is no longer
+// maintained by the admin (see the plan editor / units manager), so anything
+// that must not go stale — the dane.gov.pl CSV above all — has to go through
+// here rather than reading `unit.area` directly.
+export function unitArea(unit: {
+  area: number | null
+  houseType?: { floorPlans: FloorLike[] } | null
+}): number | null {
+  const derived = unit.houseType ? typeArea(unit.houseType.floorPlans) : null
+  return derived ?? unit.area
+}
+
 // Returns a copy of a house type with floor `area` and `totalArea` filled in
 // from its rooms. Generic over the concrete shape so it works on both the
 // public and admin serialized types.

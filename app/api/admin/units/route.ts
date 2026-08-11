@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isAuthenticated } from '@/lib/auth'
+import { unitAreaById } from '@/lib/unit-area'
+import { unitArea } from '@/lib/house-type-area'
 
 export async function GET() {
   if (!(await isAuthenticated())) {
@@ -8,15 +10,18 @@ export async function GET() {
   }
   // All units with project + company info — used by the company edit page's
   // unit-assignment selector and the global units manager.
-  const units = await prisma.unit.findMany({
+  const rows = await prisma.unit.findMany({
     select: {
       id: true, label: true, buildingLabel: true, status: true,
       area: true, price: true, companyId: true,
       project: { select: { id: true, name: true } },
       company: { select: { id: true, name: true } },
+      // Size is the sum of the type's room areas, never the stored column.
+      houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
     },
     orderBy: [{ projectId: 'asc' }, { buildingLabel: 'asc' }, { label: 'asc' }],
   })
+  const units = rows.map(({ houseType, ...u }) => ({ ...u, area: unitArea({ ...u, houseType }) }))
   return NextResponse.json(units)
 }
 
@@ -35,7 +40,8 @@ export async function POST(request: Request) {
 
   // Initial PriceHistory entry so price changes have a baseline to diff against.
   if (unit.price) {
-    const pricePerSqm = unit.area && unit.area > 0 ? unit.price / unit.area : null
+    const area = await unitAreaById(unit.id)
+    const pricePerSqm = area && area > 0 ? unit.price / area : null
     await prisma.priceHistory.create({
       data: {
         unitId: unit.id,

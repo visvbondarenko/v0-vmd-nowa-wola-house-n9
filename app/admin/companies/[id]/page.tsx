@@ -359,7 +359,15 @@ export default function CompanyEditPage() {
               <Field label="Dodatkowe miejsce sprzedaży" name="salesAdditional" value={form.salesAdditional} onChange={onChange} />
             </div>
             <div className="md:col-span-2">
-              <Field label="Sposób kontaktu" name="salesContact" value={form.salesContact} onChange={onChange} />
+              {/* Left blank, CSV col 29 falls back to phone + e-mail + website
+                  from the fields above, so the feed can't drift from the site. */}
+              <Field
+                label="Sposób kontaktu"
+                name="salesContact"
+                value={form.salesContact}
+                onChange={onChange}
+                placeholder={[form.contactPhone, form.contactEmail, form.websiteUrl].filter(Boolean).join(', ') || 'telefon, e-mail, strona www'}
+              />
             </div>
           </CardContent>
         </Card>

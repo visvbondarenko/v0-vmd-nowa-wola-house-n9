@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { isAuthenticated } from '@/lib/auth'
+import { unitArea } from '@/lib/house-type-area'
 
 // Backfill: create one PriceHistory row per priced unit that has no history yet.
 // Useful right after the dane.gov.pl schema upgrade so existing units get a baseline.
@@ -14,12 +15,16 @@ export async function POST() {
       price: { not: null },
       priceHistory: { none: {} },
     },
+    include: {
+      houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
+    },
   })
 
   let created = 0
   for (const unit of units) {
-    const pricePerSqm = unit.area && unit.area > 0 && unit.price
-      ? unit.price / unit.area
+    const area = unitArea(unit)
+    const pricePerSqm = area && area > 0 && unit.price
+      ? unit.price / area
       : null
 
     await prisma.priceHistory.create({
