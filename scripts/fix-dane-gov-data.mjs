@@ -53,5 +53,16 @@ const stale = await prisma.project.updateMany({
 })
 if (stale.count) console.log(`Project.propertyType: normalised ${stale.count} other project(s)`)
 
-if (!companyChanges.length && !projectChanges.length && !stale.count) console.log('nothing to change')
+// Clear the stored `area` on units whose size comes from a house type. The
+// column is a read-time fallback for units that have no type, so leaving a
+// stale value there means unlinking a type would silently resurrect it — and
+// for these two units that value (129) is exactly the wrong figure the feed
+// used to publish. One source of truth, no wrong shadow behind it.
+const shadowed = await prisma.unit.updateMany({
+  where: { houseTypeId: { not: null }, area: { not: null } },
+  data: { area: null },
+})
+if (shadowed.count) console.log(`Unit.area: cleared on ${shadowed.count} unit(s) sized by a house type`)
+
+if (!companyChanges.length && !projectChanges.length && !stale.count && !shadowed.count) console.log('nothing to change')
 await prisma.$disconnect()
