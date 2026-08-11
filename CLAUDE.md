@@ -194,7 +194,7 @@ Each verifies `Authorization: Bearer ${CRON_SECRET}`.
 
 | Path | Schedule (UTC) | Action |
 | --- | --- | --- |
-| `/api/cron/dane-gov` | `0 1 * * *` | Generate tomorrow's CSV + XML + MD5 for every company, upload to Blob |
+| `/api/cron/dane-gov` | `0 1 * * *` | Generate **today's** CSV + XML + MD5 for every company, upload to Blob. `generateReportsForCompany` dates the file from `new Date()`, and `put()` uses `addRandomSuffix: false, allowOverwrite: true` — so re-running it any time replaces the same day's file at the same URL. Never delete the blob first: the `GeneratedFile` row keeps pointing at the old URL, so `/raporty/…` 404s until the next run. |
 | `/api/cron/dane-gov-monitor` | `0 2 * * *` | Health checks every dataset, write `MonitorResult`, email on warning/critical |
 | `/api/cron/dane-gov-weekly` | `0 6 * * 5` | Friday rollup email |
 
