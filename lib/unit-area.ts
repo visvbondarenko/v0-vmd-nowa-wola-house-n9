@@ -8,7 +8,6 @@ export async function unitAreaById(unitId: string): Promise<number | null> {
   const unit = await prisma.unit.findUnique({
     where: { id: unitId },
     select: {
-      area: true,
       houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
     },
   })

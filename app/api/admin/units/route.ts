@@ -13,15 +13,15 @@ export async function GET() {
   const rows = await prisma.unit.findMany({
     select: {
       id: true, label: true, buildingLabel: true, status: true,
-      area: true, price: true, companyId: true,
+      price: true, companyId: true,
       project: { select: { id: true, name: true } },
       company: { select: { id: true, name: true } },
-      // Size is the sum of the type's room areas, never the stored column.
+      // Size is the sum of the type's room areas — see lib/house-type-area.
       houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
     },
     orderBy: [{ projectId: 'asc' }, { buildingLabel: 'asc' }, { label: 'asc' }],
   })
-  const units = rows.map(({ houseType, ...u }) => ({ ...u, area: unitArea({ ...u, houseType }) }))
+  const units = rows.map(({ houseType, ...u }) => ({ ...u, area: unitArea({ houseType }) }))
   return NextResponse.json(units)
 }
 

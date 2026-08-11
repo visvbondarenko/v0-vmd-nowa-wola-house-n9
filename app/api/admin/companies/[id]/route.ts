@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { normalizeStructuredText } from '@/lib/normalize-text'
 import { isAuthenticated, hasRole } from '@/lib/auth'
+import { unitArea } from '@/lib/house-type-area'
+
+// The unit rows this route serves carry a derived size rather than a column.
+type UnitWithType = { houseType: { floorPlans: { rooms: { area: number | null }[] }[] } | null }
+function withUnitAreas<U extends UnitWithType, C extends { units: U[] }>(company: C) {
+  return {
+    ...company,
+    units: company.units.map(({ houseType, ...u }) => ({ ...u, area: unitArea({ houseType }) })),
+  }
+}
+
 
 export async function GET(
   _request: Request,
@@ -17,8 +28,10 @@ export async function GET(
       units: {
         select: {
           id: true, label: true, buildingLabel: true, status: true,
-          area: true, price: true,
+          price: true,
           project: { select: { id: true, name: true, slug: true } },
+          // Size is the sum of the type's room areas — see lib/house-type-area.
+          houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
         },
         orderBy: [{ projectId: 'asc' }, { buildingLabel: 'asc' }, { label: 'asc' }],
       },
@@ -27,7 +40,7 @@ export async function GET(
   if (!company) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  return NextResponse.json(company)
+  return NextResponse.json(withUnitAreas(company))
 }
 
 export async function PUT(
@@ -116,15 +129,17 @@ export async function PUT(
       units: {
         select: {
           id: true, label: true, buildingLabel: true, status: true,
-          area: true, price: true,
+          price: true,
           project: { select: { id: true, name: true, slug: true } },
+          // Size is the sum of the type's room areas — see lib/house-type-area.
+          houseType: { select: { floorPlans: { select: { rooms: { select: { area: true } } } } } },
         },
         orderBy: [{ projectId: 'asc' }, { buildingLabel: 'asc' }, { label: 'asc' }],
       },
     },
   })
 
-  return NextResponse.json(company)
+  return NextResponse.json(withUnitAreas(company))
 }
 
 export async function DELETE(

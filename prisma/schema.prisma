@@ -194,7 +194,8 @@ model Unit {
   label         String
   status        String     @default("available")
   stage         String?
-  area          Float?
+  // No `area` column by design — a unit's size is the sum of its house type's
+  // room areas, computed at read time via lib/house-type-area.
   gardenArea    Float?
   floor         String?
   rooms         Int?

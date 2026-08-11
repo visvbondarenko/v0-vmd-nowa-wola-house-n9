@@ -111,6 +111,17 @@ LoginAttempt (rate-limit source for /api/admin/auth/login)
 
 **Deprecated, kept temporarily:** `Project.aboutHeading`, `aboutText`, `mapEmbedUrl`, `locationAddress`, `locationTransport`, `locationSurroundings`, and the entire `AboutFeature` model. The new `/inwestycje/[slug]` page reads `ProjectSection` rows instead. Safe to drop after confirming no external consumer reads them.
 
+### Unit size
+
+`Unit` has **no `area` column** — a unit's size is the sum of its house type's
+room areas (`FloorPlan` → `Room`), computed at read time by
+`lib/house-type-area.ts` (`unitArea` / `typeArea` / `floorArea`). No type means
+no area. Anything that needs a size — the dane.gov.pl CSV, the admin tables, the
+public unit APIs, the PDF — must go through those helpers; never reintroduce a
+stored column. The old one was dropped in `20260811152836_drop_unit_area` after
+a stale value in it caused the CSV to publish a price per m² against 129 m²
+while the rooms summed to 129.79.
+
 ### Unit price tracking
 
 `/api/admin/units` POST and PUT auto-compute `fullPrice = price + parkingPrice + storagePrice + rightsPrice + otherPrice` and append a `PriceHistory` row whenever any price component changes. `/api/admin/seed-price-history` is a one-shot backfill for units that pre-date this logic.
@@ -277,6 +288,9 @@ Single full port from `../v0-real-estate-developer-website` completed 2026-05-13
 
 - `0_init/` — baseline of pre-migration N9 schema (resolved as applied, never re-executed)
 - `20260513224225_upgrade_full_cms/` — 15 new models + extensions to `Project`, `Unit`, `PlanView`, `StageView`. 396 lines of additive SQL.
+- `20260528120000_add_project_plan_label/` — `Project.planLabel`.
+- `20260811150852_property_type_schema_wording/` — `Project.propertyType` default becomes `lokal mieszkalny`, one of the two values CSV col 37 accepts.
+- `20260811152836_drop_unit_area/` — destructive: drops `Unit.area`. See "Unit size" above.
 
 To diff DB against current `schema.prisma` and produce the next migration:
 

@@ -37,17 +37,14 @@ export function typeArea(floorPlans: FloorLike[]): number | null {
   return any ? roundArea(total) : null
 }
 
-// A unit's size: its house type's total, falling back to the stored `area`
-// column only for units that have no type yet. The stored column is no longer
-// maintained by the admin (see the plan editor / units manager), so anything
-// that must not go stale — the dane.gov.pl CSV above all — has to go through
-// here rather than reading `unit.area` directly.
+// A unit's size is its house type's total and nothing else — no type, no area.
+// There is deliberately no stored column behind this: `Unit.area` was dropped so
+// a hand-entered value can never shadow the rooms again, which is exactly how
+// the dane.gov.pl feed came to publish a price per m² against a stale 129 m².
 export function unitArea(unit: {
-  area: number | null
   houseType?: { floorPlans: FloorLike[] } | null
 }): number | null {
-  const derived = unit.houseType ? typeArea(unit.houseType.floorPlans) : null
-  return derived ?? unit.area
+  return unit.houseType ? typeArea(unit.houseType.floorPlans) : null
 }
 
 // Returns a copy of a house type with floor `area` and `totalArea` filled in

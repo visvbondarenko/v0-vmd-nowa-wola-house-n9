@@ -13,7 +13,6 @@ export default async function AdminUnitsPage() {
       svgElementId: true,
       status: true,
       stage: true,
-      area: true,
       gardenArea: true,
       floor: true,
       rooms: true,
