@@ -65,14 +65,20 @@ const CSV_HEADERS = [
   'Adres strony internetowej, pod którym dostępny jest prospekt informacyjny', // 59
 ]
 
+// "Data, od której cena obowiązuje" is a legally effective moment in Poland, so
+// it is rendered in Polish civil time regardless of where the generator runs.
+// Reading the server's local clock published these two hours early on Vercel
+// (UTC) and made the same price produce a different timestamp depending on the
+// machine. sv-SE is the locale whose format is already `YYYY-MM-DD HH:MM:SS`.
+const priceDateFormat = new Intl.DateTimeFormat('sv-SE', {
+  timeZone: 'Europe/Warsaw',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit',
+  hour12: false,
+})
+
 function formatDate(date: Date): string {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-  const h = String(date.getHours()).padStart(2, '0')
-  const min = String(date.getMinutes()).padStart(2, '0')
-  const s = String(date.getSeconds()).padStart(2, '0')
-  return `${y}-${m}-${d} ${h}:${min}:${s}`
+  return priceDateFormat.format(date)
 }
 
 function formatDateShort(date: Date): string {
