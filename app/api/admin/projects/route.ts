@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { geocodeAddress, buildProjectAddress } from '@/lib/geocode'
 import { isAuthenticated } from '@/lib/auth'
 
 export async function GET() {
@@ -21,6 +22,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
   const body = await request.json()
-  const project = await prisma.project.create({ data: body })
+  let project = await prisma.project.create({ data: body })
+  // A new project gets its map position from the address right away — the dane.gov.pl report requires
+  // coordinates (D8/D9). Edits geocode too (projects/[id]); a failed lookup just leaves them empty.
+  if (project.latitude == null || project.longitude == null) {
+    const address = buildProjectAddress(project)
+    if (address) {
+      const g = await geocodeAddress(address)
+      if (g.ok) project = await prisma.project.update({ where: { id: project.id }, data: { latitude: g.lat, longitude: g.lng } })
+    }
+  }
   return NextResponse.json(project, { status: 201 })
 }

@@ -5,7 +5,7 @@ import { useRouter, useParams, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Save, Trash2, RefreshCw, Loader2, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, Save, Trash2, RefreshCw, Loader2, ChevronDown, ChevronUp, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 
 type CompanyUnit = {
@@ -101,6 +101,13 @@ export default function CompanyEditPage() {
   const [generating, setGenerating] = useState(false)
   const [lastGenerated, setLastGenerated] = useState<string | null>(null)
   const [lastError, setLastError] = useState<string | null>(null)
+  // Dry run of today's dane.gov.pl report (Dz.U. 2026 poz. 1489): what would make it incomplete.
+  type Readiness = { units: number; issues: { what: string; field: string; where: string; units: string[] }[] }
+  const [readiness, setReadiness] = useState<Readiness | null>(null)
+  const loadReadiness = () => {
+    fetch(`/api/admin/companies/${id}/readiness`).then(r => (r.ok ? r.json() : null)).then(setReadiness).catch(() => setReadiness(null))
+  }
+  useEffect(() => { if (id && id !== 'new') loadReadiness() }, [id]) // eslint-disable-line react-hooks/exhaustive-deps
   const [message, setMessage] = useState<string | null>(null)
 
   const [assignedUnitIds, setAssignedUnitIds] = useState<Set<string>>(new Set())
@@ -268,6 +275,7 @@ export default function CompanyEditPage() {
       setLastGenerated(new Date().toISOString())
       setLastError(null)
       setMessage('Raporty wygenerowane pomyślnie')
+      loadReadiness()
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Generation failed'
       setLastError(msg)
@@ -564,6 +572,26 @@ export default function CompanyEditPage() {
                     Generuj teraz
                   </Button>
                 </div>
+                {readiness && readiness.units > 0 && (readiness.issues.length === 0 ? (
+                  <p className="mt-3 flex items-center gap-2 text-xs text-green-700">
+                    <CheckCircle2 className="h-4 w-4" /> Dane kompletne — raport spełnia wymogi rozporządzenia (Dz.U. 2026 poz. 1489)
+                  </p>
+                ) : (
+                  <div className="mt-3 rounded-md border border-red-200 bg-red-50 p-3 text-xs">
+                    <p className="flex items-center gap-2 font-medium text-red-700">
+                      <AlertTriangle className="h-4 w-4" /> Raport będzie niekompletny — uzupełnij:
+                    </p>
+                    <ul className="mt-2 space-y-1">
+                      {readiness.issues.map(i => (
+                        <li key={i.what + i.field}>
+                          <span className="font-medium">{i.what}</span> — {i.field}
+                          {i.what === 'Lokal' && i.units.length > 0 && <span className="text-muted-foreground"> (lokale: {i.units.join(', ')})</span>}
+                          {i.where && <span className="text-muted-foreground"> · {i.where}</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
