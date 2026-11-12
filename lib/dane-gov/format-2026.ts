@@ -17,6 +17,7 @@
 //   - F (pomieszczenia przynależne), G (prawa niezbędne), H (inne świadczenia) are filled ONLY for items whose
 //     price is NOT included in E5. Each item gets its own row; the unit's A–E data is repeated on every row,
 //     and the unit identifier (E2) is repeated in F5/G4/H4. Row i of a unit carries the i-th item of each group.
+//   - Add-on mapping (art. 19a ust. 1 pkt 2/3): komórka → F, prawa → G, parking and ogródek → H (see itemsOf).
 //
 // This file is pure (no DB, no imports) and is kept identical in JPW, Nowa Wola House and Dewelo.
 
@@ -232,16 +233,18 @@ function since(unit: Unit2026, key: PriceKey, current: Num): Date {
 // --- add-ons → groups F / G / H -----------------------------------------------------------------
 
 /**
- * Mapping of the four add-on price fields onto the regulation's groups. An add-on with a price of 0 / null is
- * treated as included in E5 (or not offered) and is not reported — per the regulation F/G/H are filled only
- * when the price was NOT included in E5.
+ * Mapping of the four add-on price fields onto the regulation's groups, following art. 19a ust. 1 of the act:
+ *   pkt 2 — pomieszczenia przynależne (art. 2 ust. 4 u.w.l.: piwnica, strych, komórka, garaż) → F,
+ *           prawa niezbędne do korzystania z lokalu/domu (e.g. a share in the access road)     → G,
+ *   pkt 3 — inne świadczenia pieniężne the buyer must pay the developer                       → H.
  *
- *   storagePrice (komórka lokatorska)           → F  pomieszczenie przynależne
- *   parkingPrice (miejsce postojowe)            → G  prawo do wyłącznego korzystania z miejsca postojowego
- *   otherPrice   (ogródek — public label)       → G  prawo do wyłącznego korzystania z ogródka
- *   rightsPrice  (prawa)                        → G  rightsDesc or a generic description
+ *   storagePrice (komórka lokatorska; roomsType may say "garaż"/"piwnica") → F
+ *   rightsPrice  (rightsDesc)                                               → G
+ *   parkingPrice (miejsce postojowe — not a room, not a necessary right)    → H
+ *   otherPrice   (ogródek — exclusive use, not a necessary right)           → H
  *
- * Group H (inne świadczenia pieniężne) has no source field yet and stays "X".
+ * An add-on with a price of 0 / null is treated as included in E5 (or not offered) and is not reported —
+ * F/G/H are filled only when the price was NOT included in E5.
  */
 function itemsOf(unit: Unit2026, text: (s: string) => string): { F: Item[]; G: Item[]; H: Item[] } {
   const F: Item[] = []
@@ -255,25 +258,25 @@ function itemsOf(unit: Unit2026, text: (s: string) => string): { F: Item[]; G: I
       date: since(unit, 'storagePrice', unit.storagePrice),
     })
   }
-  if (unit.parkingPrice && unit.parkingPrice > 0) {
-    G.push({
-      desc: 'prawo do wyłącznego korzystania z miejsca postojowego',
-      amount: unit.parkingPrice,
-      date: since(unit, 'parkingPrice', unit.parkingPrice),
-    })
-  }
-  if (unit.otherPrice && unit.otherPrice > 0) {
-    G.push({
-      desc: 'prawo do wyłącznego korzystania z ogródka',
-      amount: unit.otherPrice,
-      date: since(unit, 'otherPrice', unit.otherPrice),
-    })
-  }
   if (unit.rightsPrice && unit.rightsPrice > 0) {
     G.push({
       desc: text(unit.rightsDesc || 'prawa niezbędne do korzystania z lokalu mieszkalnego albo domu jednorodzinnego'),
       amount: unit.rightsPrice,
       date: since(unit, 'rightsPrice', unit.rightsPrice),
+    })
+  }
+  if (unit.parkingPrice && unit.parkingPrice > 0) {
+    H.push({
+      desc: 'cena miejsca postojowego',
+      amount: unit.parkingPrice,
+      date: since(unit, 'parkingPrice', unit.parkingPrice),
+    })
+  }
+  if (unit.otherPrice && unit.otherPrice > 0) {
+    H.push({
+      desc: 'cena prawa do wyłącznego korzystania z ogródka',
+      amount: unit.otherPrice,
+      date: since(unit, 'otherPrice', unit.otherPrice),
     })
   }
   return { F, G, H }
