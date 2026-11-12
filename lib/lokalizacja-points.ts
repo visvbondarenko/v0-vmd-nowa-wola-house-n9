@@ -33,7 +33,7 @@ function classifyCityByCoords(coords: { lat: number; lng: number }): CityKey | n
   return bestDist <= CITY_RADIUS_KM ? best : null
 }
 
-function parseCoordsFromMapUrl(url: string | null | undefined): { lat: number; lng: number } | null {
+export function parseCoordsFromMapUrl(url: string | null | undefined): { lat: number; lng: number } | null {
   if (!url) return null
   const normalized = url.match(/^https?:\/\//) ? url : `https://${url}`
   const placeMatches = [...normalized.matchAll(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/g)]
