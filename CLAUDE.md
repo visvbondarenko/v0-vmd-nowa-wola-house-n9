@@ -206,7 +206,7 @@ Mature regulatory subsystem ported from the production VMD site. Each `Company` 
 
 ### What gets generated
 
-- **Daily CSV** — 60-column file matching dane.gov.pl's Polish schema, one row per priced Unit owned by the company
+- **Daily CSV** — since 2026-11-11 the 48-field structure of Dz.U. 2026 poz. 1489 (groups A–H; `lib/dane-gov/format-2026.ts`, shared verbatim with JPW and Dewelo). One row per on-sale unit, plus one extra row per add-on with its own price (F komórka, G parking/ogródek/prawa). Decimal comma, `X` for empty, Warsaw time, coordinates from `Project.latitude/longitude` (required). Rules: `../v0-real-estate-developer-website/docs/dane-gov-conventions.md`. The monitor validates the structure daily.
 - **Dataset XML** — index of all CSVs (historical + today's) with stable per-resource `extIdent` values
 - **MD5 sidecar** — checksum of the XML, used by dane.gov.pl to detect changes
 

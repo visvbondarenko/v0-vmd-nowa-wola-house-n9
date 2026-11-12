@@ -1,6 +1,7 @@
 import { createHash } from 'crypto'
 import { PrismaClient } from '@prisma/client'
 import { withDbRetry } from '@/lib/prisma'
+import { COL_2026, COLUMN_COUNT_2026, parseAmount2026, validateCsv2026 } from './format-2026'
 
 // One check's outcome. Status 'critical' triggers an alert, 'warning' is
 // noted but not usually alerting on its own.
@@ -74,6 +75,48 @@ function parseCsvLine(line: string): string[] {
   }
   out.push(cur)
   return out
+}
+
+// The email summaries below were written for the 59-column layout (one row per unit, indexes COL_*).
+// A 2026-format file (48 columns, one row per add-on) is folded back into that shape here: one row per
+// unit, "project" = investment location (the 2026 structure has no investment name), full price =
+// E5 + every F/G/H amount, parts = the add-on descriptions.
+function toSummaryRows(csvLines: string[]): string[][] {
+  if (csvLines.length === 0) return []
+  const header = parseCsvLine(csvLines[0].replace(/^﻿/, ''))
+  const rows = csvLines.slice(1).map(parseCsvLine)
+  if (header.length !== COLUMN_COUNT_2026) return rows
+  const C = COL_2026
+  const dot = (s: string) => (s && s !== 'X' ? s.replace(',', '.') : '')
+  const byUnit = new Map<string, { row: string[]; extras: number; types: string[] }>()
+  for (const r of rows) {
+    const street = r[C.investStreet] && r[C.investStreet] !== 'X' ? `, ${r[C.investStreet]}` : ''
+    const project = `${r[C.investCity]}${street}`
+    const key = `${project}|${r[C.unitId]}`
+    let u = byUnit.get(key)
+    if (!u) {
+      const row = new Array<string>(59).fill('')
+      row[COL_COMPANY] = r[C.firma]
+      row[COL_PROJECT] = project
+      row[COL_TYPE] = r[C.type]
+      row[COL_LABEL] = r[C.unitId]
+      row[COL_PPS] = dot(r[C.pps])
+      row[COL_TOTAL] = dot(r[C.price])
+      u = { row, extras: 0, types: [] }
+      byUnit.set(key, u)
+    }
+    for (const [desc, amount] of [[C.roomType, C.roomPrice], [C.rightDesc, C.rightValue], [C.otherDesc, C.otherValue]]) {
+      const v = parseAmount2026(r[amount])
+      if (v > 0) { u.extras += v; u.types.push(r[desc]) }
+    }
+  }
+  return [...byUnit.values()].map(({ row, extras, types }) => {
+    const total = parseFloat(row[COL_TOTAL]) || 0
+    row[COL_FULL] = total ? String(total + extras) : ''
+    row[COL_PARTS_P] = extras ? String(extras) : ''
+    row[COL_PARTS_T] = types.join(', ')
+    return row
+  })
 }
 
 type DbData = {
@@ -157,12 +200,12 @@ async function checkCompany(
       checks.push({ name: 'csv.rowCount', status: 'ok', message: 'all units sold (0 rows)' })
     } else {
       const header = parseCsvLine(lines[0])
-      const expected = 59
+      const expected = COLUMN_COUNT_2026
       if (header.length !== expected) {
         checks.push({
           name: 'csv.columns',
           status: 'critical',
-          message: `Header has ${header.length} columns, expected ${expected}`,
+          message: `Header has ${header.length} columns, expected ${expected} (Dz.U. 2026 poz. 1489)`,
         })
       } else {
         checks.push({ name: 'csv.columns', status: 'ok' })
@@ -178,26 +221,20 @@ async function checkCompany(
       } else {
         checks.push({ name: 'csv.rows', status: 'ok' })
       }
-      todayRowCount = dataRows.length
+      // One row per add-on in the 2026 format, so count units, not lines.
+      todayRowCount = toSummaryRows(lines).length
       checks.push({
         name: 'csv.rowCount',
         status: todayRowCount > 0 ? 'ok' : 'critical',
-        message: `${todayRowCount} rows`,
+        message: `${todayRowCount} units (${dataRows.length} rows)`,
       })
 
-      // Regulator sanity: fullPrice >= totalPrice
-      let fullLtTotal = 0
-      for (const row of dataRows) {
-        const totalPrice = parseFloat(row[40] || '') || 0
-        const fullPrice = parseFloat(row[42] || '') || 0
-        if (totalPrice > 0 && fullPrice > 0 && fullPrice < totalPrice - 0.5) fullLtTotal++
-      }
-      if (fullLtTotal > 0) {
-        checks.push({
-          name: 'csv.fullPrice >= totalPrice',
-          status: 'warning',
-          message: `${fullLtTotal} row(s) have fullPrice < totalPrice`,
-        })
+      // Structure of Dz.U. 2026 poz. 1489: required fields, E1 values, number/date/coordinate formats.
+      if (header.length === expected) {
+        const problems = validateCsv2026(header, dataRows)
+        checks.push(problems.length
+          ? { name: 'csv.structure-2026', status: 'critical', message: problems.join('; ') }
+          : { name: 'csv.structure-2026', status: 'ok' })
       }
     }
   }
@@ -206,7 +243,7 @@ async function checkCompany(
   if (csvRes.ok && todayRowCount > 0 && ydRes.ok) {
     const clean = ydRes.text.charCodeAt(0) === 0xfeff ? ydRes.text.slice(1) : ydRes.text
     const ydLines = clean.split(/\r?\n/).filter(l => l.trim().length > 0)
-    const ydRowCount = Math.max(0, ydLines.length - 1)
+    const ydRowCount = toSummaryRows(ydLines).length
     if (ydRowCount > 0) {
       const pctDelta = Math.abs(todayRowCount - ydRowCount) / ydRowCount
       if (pctDelta > 0.2) {
@@ -372,7 +409,7 @@ function buildCompanyHtml(c: CompanyReport, todayStr: string): string {
       `<div style="margin-top:6px;padding:8px 12px;background:#f0fdf4;border-left:3px solid #22c55e;border-radius:0 4px 4px 0;font-size:11px;color:#166534;">Wszystkie lokale sprzedane</div>` +
       `</td></tr>`
   }
-  const rows = csvLines.slice(1).map(parseCsvLine)
+  const rows = toSummaryRows(csvLines)
   const companyName = rows[0]?.[COL_COMPANY] || c.slug
 
   const projects = new Map<string, typeof rows>()
@@ -461,7 +498,7 @@ function buildDailyHtml(report: MonitorReport, todayStr: string): string {
   for (const c of report.companies) {
     if (!c.csvText) continue
     const csvLines = c.csvText.split(/\r?\n/).filter(l => l.trim())
-    const rows = csvLines.slice(1).map(parseCsvLine)
+    const rows = toSummaryRows(csvLines)
     totalUnits += rows.length
     const projs = new Set<string>()
     for (const r of rows) projs.add(r[COL_PROJECT] || '')
@@ -561,7 +598,7 @@ export function formatDailyEmail(
       lines.push('='.repeat(72))
       continue
     }
-    const rows = csvLines.slice(1).map(parseCsvLine)
+    const rows = toSummaryRows(csvLines)
     const companyName = rows[0]?.[COL_COMPANY] || c.slug
 
     lines.push(`${companyName.toUpperCase()}  (${rows.length} ${rows.length === 1 ? 'lokal' : 'lokali'})`)
