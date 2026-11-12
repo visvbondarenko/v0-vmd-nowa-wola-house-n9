@@ -46,7 +46,9 @@ export async function GET(
     return NextResponse.json({ error: 'Failed to fetch file' }, { status: 502 })
   }
 
-  const body = await response.text()
+  // Pass the stored bytes through unchanged: response.text() decodes UTF-8 and drops the CSV's BOM,
+  // which the dane.gov.pl model file (Dz.U. 2026 poz. 1489) has. XML/MD5 have no BOM, so they are unaffected.
+  const body = await response.arrayBuffer()
 
   return new NextResponse(body, {
     headers: {
